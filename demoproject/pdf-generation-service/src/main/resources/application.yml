@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+# Config Server base (used by MappingService)
+config-server:
+  url: http://localhost:8888
+
+# Import properties from Spring Cloud Config Server (optional)
+spring:
+  config:
+    import: optional:configserver:${config-server.url}
+  application:
+    name: pdf-generation-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,configprops
+  endpoint:
+    configprops:
+      enabled: true
