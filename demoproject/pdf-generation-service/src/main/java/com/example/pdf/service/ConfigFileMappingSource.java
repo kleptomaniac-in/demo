@@ -21,10 +21,6 @@ public class ConfigFileMappingSource implements MappingSource {
 
     @Override
     public Optional<Map<String, Object>> fetch(GenerateRequest req, String label) throws Exception {
-        ConfigServerClient.ConfigServerResponse resp = client.getFile("default", label, path);
-        if (resp == null || resp.propertySources == null || resp.propertySources.isEmpty()) return Optional.empty();
-        Map<String, Object> source = resp.propertySources.get(0).source;
-        if (source == null) return Optional.empty();
-        return Optional.of(source);
+        return client.getFileSource("default", label, path);
     }
 }

@@ -5,8 +5,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Compose mapping fragments by fetching candidate fragments (via mapping sources)
@@ -29,18 +31,56 @@ public class MappingComposer {
      */
     public Map<String, Object> compose(GenerateRequest req, String label, List<String> candidates) {
         Map<String, Object> merged = new LinkedHashMap<>();
+        // per-compose cache to avoid duplicate HTTP calls for the same candidate
+        Map<String, Optional<Map<String, Object>>> cache = new HashMap<>();
+
         for (String candidate : candidates) {
+            String raw = candidate == null ? "" : candidate.trim();
+            if (raw.isEmpty()) continue;
+
             try {
+                // normalize key used for caching & dispatch
+                String key;
                 MappingSource src;
-                if (candidate.contains("/")) {
-                    String path = candidate + ".yml";
-                    src = new ConfigFileMappingSource(client, path);
+                if (raw.startsWith("file:")) {
+                    String p = raw.substring("file:".length());
+                    if (!p.endsWith(".yml") && !p.endsWith(".yaml") && !p.endsWith(".json")) {
+                        p = p + ".yml";
+                    }
+                    key = "file:" + p; // canonical file key (with extension)
+                    src = new ConfigFileMappingSource(client, p);
+                } else if (raw.startsWith("app:")) {
+                    String appName = raw.substring("app:".length());
+                    key = "app:" + appName;
+                    src = new ApplicationMappingSource(client, appName);
+                } else if (raw.startsWith("mappings/") || raw.endsWith(".yml") || raw.endsWith(".yaml") || raw.endsWith(".json") || raw.contains("/")) {
+                    // treat as file path by default when it looks like one
+                    String p = raw;
+                    if (!p.endsWith(".yml") && !p.endsWith(".yaml") && !p.endsWith(".json")) {
+                        p = p + ".yml";
+                    }
+                    key = "file:" + p;
+                    src = new ConfigFileMappingSource(client, p);
                 } else {
-                    src = new ApplicationMappingSource(client, candidate);
+                    String appName = raw;
+                    key = "app:" + appName;
+                    src = new ApplicationMappingSource(client, appName);
                 }
 
-                src.fetch(req, label).ifPresent(fragment -> {
-                    Map<String, Object> nested = unflatten(fragment);
+                Optional<Map<String, Object>> fragment = cache.get(key);
+                if (fragment == null) {
+                    try {
+                        fragment = src.fetch(req, label);
+                    } catch (Exception e) {
+                        log.warn("Error fetching candidate {}: {}", candidate, e.toString());
+                        log.debug("Candidate fetch error", e);
+                        fragment = Optional.empty();
+                    }
+                    cache.put(key, fragment);
+                }
+
+                if (fragment.isPresent()) {
+                    Map<String, Object> nested = unflatten(fragment.get());
                     if (nested.containsKey("pdf") && !nested.containsKey("mapping")) {
                         Object pdfNode = nested.remove("pdf");
                         Map<String, Object> mappingNode = new LinkedHashMap<>();
@@ -48,9 +88,10 @@ public class MappingComposer {
                         nested.put("mapping", mappingNode);
                     }
                     deepMerge(merged, nested);
-                });
+                }
             } catch (Exception ex) {
                 log.warn("Ignoring candidate {} due to error: {}", candidate, ex.toString());
+                log.debug("Candidate processing error", ex);
             }
         }
         return merged;

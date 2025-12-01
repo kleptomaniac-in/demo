@@ -1,5 +1,7 @@
 package com.example.pdf.service;
 
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,10 +15,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ConfigServerClient {
+
+    public ConfigServerClient() {
+        this(null, null);
+    }
 
     private static final Logger log = LoggerFactory.getLogger(ConfigServerClient.class);
 
@@ -44,9 +59,33 @@ public class ConfigServerClient {
         return rest.getForObject(url, ConfigServerResponse.class);
     }
 
+    /**
+     * Convenience: return the first property source 'source' map for the application endpoint.
+     */
+    @Cacheable(cacheNames = "appSource", key = "#application + '|' + #profile + '|' + #label")
+    public Optional<Map<String, Object>> getApplicationSource(String application, String profile, String label) {
+        ConfigServerResponse resp = getApplicationConfig(application, profile, label);
+        if (resp == null || resp.propertySources == null || resp.propertySources.isEmpty()) return Optional.empty();
+        return Optional.ofNullable(resp.propertySources.get(0).source);
+    }
+
     public ConfigServerResponse getFile(String profile, String label, String pathWithExtension) {
+        // Normalize inputs and encode each path segment so special characters don't break the URL.
         // pathWithExtension should be like "mappings/base-application.yml" or "mappings/templates/invoice-v2.yml"
-        String url = String.format("%s/application/%s/%s/%s", baseUrl, profile, label, pathWithExtension);
+        if (pathWithExtension == null) return null;
+        String normalizedPath = pathWithExtension.trim();
+        // remove any leading slashes
+        while (normalizedPath.startsWith("/")) normalizedPath = normalizedPath.substring(1);
+
+        // Encode each segment separately so '/' separators remain
+        String encodedPath = Arrays.stream(normalizedPath.split("/"))
+            .map(s -> URLEncoder.encode(s, StandardCharsets.UTF_8))
+            .collect(Collectors.joining("/"));
+
+        String encodedProfile = URLEncoder.encode(profile == null ? "default" : profile, StandardCharsets.UTF_8);
+        String encodedLabel = URLEncoder.encode(label == null ? "main" : label, StandardCharsets.UTF_8);
+
+        String url = String.format("%s/application/%s/%s/%s", baseUrl, encodedProfile, encodedLabel, encodedPath);
         log.debug("Fetching file config from {}", url);
         try {
             ResponseEntity<String> resp = rest.exchange(url, HttpMethod.GET, HttpEntity.EMPTY, String.class);
@@ -82,6 +121,21 @@ public class ConfigServerClient {
             log.warn("HTTP error fetching file {}: {}", url, ex.toString());
             return null;
         }
+    }
+
+    /**
+     * Convenience: return the first property source 'source' map for a file endpoint.
+     */
+    public Optional<Map<String, Object>> getFileSource(String profile, String label, String pathWithExtension) {
+        ConfigServerResponse resp = getFile(profile, label, pathWithExtension);
+        if (resp == null || resp.propertySources == null || resp.propertySources.isEmpty()) return Optional.empty();
+        return Optional.ofNullable(resp.propertySources.get(0).source);
+    }
+
+    @CacheEvict(cacheNames = {"configFile", "appSource"}, allEntries = true)
+    public void evictAllConfigCaches() {
+        // Intended to be called when config changes are known (e.g., via actuator endpoint or CI hook).
+        log.info("Evicted all config caches");
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

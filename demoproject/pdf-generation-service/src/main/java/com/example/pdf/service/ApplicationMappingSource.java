@@ -21,10 +21,6 @@ public class ApplicationMappingSource implements MappingSource {
 
     @Override
     public Optional<Map<String, Object>> fetch(GenerateRequest req, String label) throws Exception {
-        ConfigServerClient.ConfigServerResponse resp = client.getApplicationConfig(applicationName, "default", label);
-        if (resp == null || resp.propertySources == null || resp.propertySources.isEmpty()) return Optional.empty();
-        Map<String, Object> source = resp.propertySources.get(0).source;
-        if (source == null) return Optional.empty();
-        return Optional.of(source);
+        return client.getApplicationSource(applicationName, "default", label);
     }
 }
