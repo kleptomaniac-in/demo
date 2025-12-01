@@ -8,12 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -30,33 +26,37 @@ import org.springframework.stereotype.Component;
 public class ConfigServerClient {
 
     public ConfigServerClient() {
-        this(null, null);
+        this((WebClient) null, null);
     }
 
     private static final Logger log = LoggerFactory.getLogger(ConfigServerClient.class);
 
-    private final RestTemplate rest;
+    private final WebClient webClient;
     private final String baseUrl;
     private final ObjectMapper json = new ObjectMapper();
     private final ObjectMapper yaml = new ObjectMapper(new YAMLFactory());
 
-    public ConfigServerClient(RestTemplate rest, String baseUrl) {
-        // ensure timeouts are set on provided RestTemplate or create one
-        if (rest == null) {
-            SimpleClientHttpRequestFactory f = new SimpleClientHttpRequestFactory();
-            f.setConnectTimeout(2_000);
-            f.setReadTimeout(5_000);
-            this.rest = new RestTemplate(f);
-        } else {
-            this.rest = rest;
-        }
+    public ConfigServerClient(WebClient webClient, String baseUrl) {
         this.baseUrl = baseUrl == null ? "http://localhost:8888" : baseUrl;
+        this.webClient = webClient == null ? WebClient.builder().baseUrl(this.baseUrl).build() : webClient;
     }
 
     public ConfigServerResponse getApplicationConfig(String application, String profile, String label) {
-        String url = String.format("%s/%s/%s/%s", baseUrl, application, profile, label);
-        log.debug("Fetching application config from {}", url);
-        return rest.getForObject(url, ConfigServerResponse.class);
+        String uri = String.format("/%s/%s/%s", application, profile, label);
+        log.debug("Fetching application config from {}{}", baseUrl, uri);
+        try {
+            return webClient.get()
+                    .uri(uri)
+                    .retrieve()
+                    .bodyToMono(ConfigServerResponse.class)
+                    .block();
+        } catch (WebClientResponseException wre) {
+            log.warn("HTTP error fetching application config {}: {}", uri, wre.getMessage());
+            return null;
+        } catch (Exception ex) {
+            log.warn("Error fetching application config {}: {}", uri, ex.toString());
+            return null;
+        }
     }
 
     /**
@@ -85,11 +85,14 @@ public class ConfigServerClient {
         String encodedProfile = URLEncoder.encode(profile == null ? "default" : profile, StandardCharsets.UTF_8);
         String encodedLabel = URLEncoder.encode(label == null ? "main" : label, StandardCharsets.UTF_8);
 
-        String url = String.format("%s/application/%s/%s/%s", baseUrl, encodedProfile, encodedLabel, encodedPath);
-        log.debug("Fetching file config from {}", url);
+        String uri = String.format("/application/%s/%s/%s", encodedProfile, encodedLabel, encodedPath);
+        log.debug("Fetching file config from {}{}", baseUrl, uri);
         try {
-            ResponseEntity<String> resp = rest.exchange(url, HttpMethod.GET, HttpEntity.EMPTY, String.class);
-            String body = resp.getBody();
+            String body = webClient.get()
+                    .uri(uri)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
             if (body == null || body.isBlank()) return null;
 
             // Try to parse as a ConfigServerResponse JSON first (some endpoints return JSON)
@@ -117,8 +120,11 @@ public class ConfigServerClient {
                 log.warn("Failed to parse file response as YAML: {}", ye.toString());
                 return null;
             }
+        } catch (WebClientResponseException wre) {
+            log.warn("HTTP error fetching file {}: {}", uri, wre.getMessage());
+            return null;
         } catch (Exception ex) {
-            log.warn("HTTP error fetching file {}: {}", url, ex.toString());
+            log.warn("Error fetching file {}: {}", uri, ex.toString());
             return null;
         }
     }
@@ -126,6 +132,7 @@ public class ConfigServerClient {
     /**
      * Convenience: return the first property source 'source' map for a file endpoint.
      */
+    @Cacheable(cacheNames = "configFile", key = "#profile + '|' + #label + '|' + #pathWithExtension")
     public Optional<Map<String, Object>> getFileSource(String profile, String label, String pathWithExtension) {
         ConfigServerResponse resp = getFile(profile, label, pathWithExtension);
         if (resp == null || resp.propertySources == null || resp.propertySources.isEmpty()) return Optional.empty();

@@ -23,17 +23,12 @@ public class MappingService {
     private final ObjectMapper json = new ObjectMapper();
 
     public MappingService() {
-        this.configClient = new ConfigServerClient(null, "http://localhost:8888");
-    }
-
-    // Constructor for tests or custom RestTemplate
-    public MappingService(org.springframework.web.client.RestTemplate rest) {
-        this.configClient = new ConfigServerClient(rest, "http://localhost:8888");
+        this.configClient = new ConfigServerClient();
     }
 
     // Constructor to inject custom client
     public MappingService(ConfigServerClient client) {
-        this.configClient = client == null ? new ConfigServerClient(null, "http://localhost:8888") : client;
+        this.configClient = client == null ? new ConfigServerClient() : client;
     }
 
     // Resolve mapping either from override YAML or from Config Server

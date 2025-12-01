@@ -15,7 +15,7 @@ public class MappingComposerTest {
         public final Map<String, Optional<Map<String,Object>>> responses = new HashMap<>();
 
         public TestClient() {
-            super(null, null);
+            super();
         }
 
         @Override
