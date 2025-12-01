@@ -76,6 +76,11 @@
             <artifactId>caffeine</artifactId>
             <version>3.1.8</version>
         </dependency>
+        <!-- Ensure Logback is available for SLF4JBridgeHandler logging paths -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
