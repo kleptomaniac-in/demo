@@ -1,7 +1,0 @@
-mapping:
-  pdf:
-    field:
-      stateTax: tax.caRate
-
-metadata:
-  state: CA

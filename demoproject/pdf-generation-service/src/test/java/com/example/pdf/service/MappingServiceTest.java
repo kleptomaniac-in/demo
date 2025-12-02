@@ -23,7 +23,12 @@ class MappingServiceTest {
         ));
         svc.setMappingProperties(props);
 
-        List<String> candidates = svc.buildCandidates("invoice-v2", "medicare", "group", "CA");
+        com.example.pdf.controller.GenerateRequest req = new com.example.pdf.controller.GenerateRequest();
+        req.setTemplateName("invoice-v2");
+        req.setProductType("medicare");
+        req.setMarketCategory("group");
+        req.setState("CA");
+        List<String> candidates = svc.buildCandidates(req);
 
         assertEquals(6, candidates.size());
         assertEquals("mappings/base-application", candidates.get(0));
@@ -47,7 +52,9 @@ class MappingServiceTest {
         svc.setMappingProperties(props);
 
         // template missing -> template entries should be skipped
-        List<String> candidates = svc.buildCandidates(null, "medicare", null, null);
+        com.example.pdf.controller.GenerateRequest req2 = new com.example.pdf.controller.GenerateRequest();
+        req2.setProductType("medicare");
+        List<String> candidates = svc.buildCandidates(req2);
         assertTrue(candidates.contains("mappings/base-application"));
         assertTrue(candidates.contains("mappings/products/medicare"));
         // template-based entries should not be present
@@ -60,7 +67,10 @@ class MappingServiceTest {
     void fallbackOrderingWhenNoProperties() {
         MappingService svc = new MappingService();
         // do not set mappingProperties -> should use fallback
-        List<String> candidates = svc.buildCandidates("t1", null, "marketA", null);
+        com.example.pdf.controller.GenerateRequest req3 = new com.example.pdf.controller.GenerateRequest();
+        req3.setTemplateName("t1");
+        req3.setMarketCategory("marketA");
+        List<String> candidates = svc.buildCandidates(req3);
         // fallback always includes base and present segments only
         assertTrue(candidates.contains("mappings/base-application"));
         assertTrue(candidates.contains("mappings/templates/t1"));
@@ -78,7 +88,9 @@ class MappingServiceTest {
         props.setCandidateOrder(List.of("  mappings/templates/{template}  "));
         svc.setMappingProperties(props);
 
-        List<String> candidates = svc.buildCandidates("invoice-v2", null, null, null);
+        com.example.pdf.controller.GenerateRequest req4 = new com.example.pdf.controller.GenerateRequest();
+        req4.setTemplateName("invoice-v2");
+        List<String> candidates = svc.buildCandidates(req4);
         assertEquals(1, candidates.size());
         assertEquals("mappings/templates/invoice-v2", candidates.get(0));
     }
@@ -90,7 +102,12 @@ class MappingServiceTest {
         props.setCandidateOrder(List.of());
         svc.setMappingProperties(props);
 
-        List<String> candidates = svc.buildCandidates("t1", "p1", "m1", "s1");
+        com.example.pdf.controller.GenerateRequest req5 = new com.example.pdf.controller.GenerateRequest();
+        req5.setTemplateName("t1");
+        req5.setProductType("p1");
+        req5.setMarketCategory("m1");
+        req5.setState("s1");
+        List<String> candidates = svc.buildCandidates(req5);
         assertTrue(candidates.contains("mappings/base-application"));
         assertTrue(candidates.contains("mappings/templates/t1"));
         assertTrue(candidates.contains("mappings/products/p1"));
@@ -107,7 +124,10 @@ class MappingServiceTest {
         svc.setMappingProperties(props);
 
         // template literally "null" should be treated as invalid and skipped by expandPattern
-        List<String> candidates = svc.buildCandidates("null", "p1", null, null);
+        com.example.pdf.controller.GenerateRequest req6 = new com.example.pdf.controller.GenerateRequest();
+        req6.setTemplateName("null");
+        req6.setProductType("p1");
+        List<String> candidates = svc.buildCandidates(req6);
         assertTrue(candidates.contains("mappings/base-application"));
         assertFalse(candidates.stream().anyMatch(s -> s.contains("templates/")));
     }
@@ -119,7 +139,12 @@ class MappingServiceTest {
         props.setCandidateOrder(List.of("mappings/custom/{unknown}"));
         svc.setMappingProperties(props);
 
-        List<String> candidates = svc.buildCandidates("t", "p", "m", "s");
+        com.example.pdf.controller.GenerateRequest req7 = new com.example.pdf.controller.GenerateRequest();
+        req7.setTemplateName("t");
+        req7.setProductType("p");
+        req7.setMarketCategory("m");
+        req7.setState("s");
+        List<String> candidates = svc.buildCandidates(req7);
         // unknown placeholder remains unexpanded but the pattern is non-empty and should be returned
         assertTrue(candidates.size() == 1);
         assertTrue(candidates.get(0).contains("{unknown}"));

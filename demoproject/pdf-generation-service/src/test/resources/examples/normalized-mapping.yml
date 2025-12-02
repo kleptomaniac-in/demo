@@ -1,0 +1,12 @@
+mapping:
+  pdf:
+    field:
+      primary_firstName: payload.primaryApplicant.demographic.firstName
+      primary_home_addressLine1: payload.primaryApplicant.homeAddress.addressLine1
+      primary_billing_addressLine1: payload.primaryApplicant.billingAddress.addressLine1
+      primary_priorMedical_insurer: payload.primaryApplicant.priorMedical.insurer
+      spouse_firstName: payload.spouseApplicant.demographic.firstName
+      child1_firstName: payload.child1.demographic.firstName
+      child2_firstName: payload.child2.demographic.firstName
+      child3_firstName: payload.child3.demographic.firstName
+      primary_medical_plan1_name: payload.primaryApplicant.products.MEDICAL.plans.0.planName

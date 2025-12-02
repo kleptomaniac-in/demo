@@ -1,0 +1,57 @@
+nohup: ignoring input
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.3.13)
+
+2025-12-01T18:36:09.940Z  INFO 90000 --- [pdf-generation-service] [           main] c.example.pdf.PdfGenerationApplication   : Starting PdfGenerationApplication v0.0.1-SNAPSHOT using Java 21.0.9 with PID 90000 (/workspaces/demo/demoproject/pdf-generation-service/target/pdf-generation-service-0.0.1-SNAPSHOT.jar started by codespace in /workspaces/demo/demoproject/pdf-generation-service)
+2025-12-01T18:36:09.955Z  INFO 90000 --- [pdf-generation-service] [           main] c.example.pdf.PdfGenerationApplication   : No active profile set, falling back to 1 default profile: "default"
+2025-12-01T18:36:10.065Z  INFO 90000 --- [pdf-generation-service] [           main] o.s.c.c.c.ConfigServerConfigDataLoader   : Fetching config from server at : http://localhost:8888
+2025-12-01T18:36:10.066Z  INFO 90000 --- [pdf-generation-service] [           main] o.s.c.c.c.ConfigServerConfigDataLoader   : Located environment: name=pdf-generation-service, profiles=[default], label=null, version=22ebb1c6e4a35b694deb58f941a06cdc32107416, state=
+2025-12-01T18:36:12.000Z  INFO 90000 --- [pdf-generation-service] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=ce3b5b56-d426-3e89-997a-9e21be5cf276
+2025-12-01T18:36:12.713Z  INFO 90000 --- [pdf-generation-service] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-12-01T18:36:12.729Z  INFO 90000 --- [pdf-generation-service] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-01T18:36:12.730Z  INFO 90000 --- [pdf-generation-service] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
+2025-12-01T18:36:12.769Z  INFO 90000 --- [pdf-generation-service] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-01T18:36:12.771Z  INFO 90000 --- [pdf-generation-service] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2700 ms
+2025-12-01T18:36:14.226Z  INFO 90000 --- [pdf-generation-service] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoints beneath base path '/actuator'
+2025-12-01T18:36:14.318Z  INFO 90000 --- [pdf-generation-service] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-12-01T18:36:14.354Z  INFO 90000 --- [pdf-generation-service] [           main] c.example.pdf.PdfGenerationApplication   : Started PdfGenerationApplication in 6.352 seconds (process running for 7.349)
+2025-12-01T18:36:32.197Z  INFO 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-01T18:36:32.197Z  INFO 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-12-01T18:36:32.200Z  INFO 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+Received generate request: {"templateName":"invoice-vw","clientService":"contoso","payload":{"invoice":{"date":"2025-12-01"},"order":{"id":"CONT-INV-001"},"customer":{"name":"Contoso Customer","loyaltyId":"L-12345","account":{"manager":"Jane Doe"},"address":{"shipping":"123 Contoso Way"}},"product":{"planName":"Contoso Plan A"},"applicant":{"beneficiaryId":"B-98765"},"group":{"employer":{"name":"Contoso Corp"}},"tax":{"caRate":"0.0875"}},"mappingOverride":null,"label":"main","productType":"contoso-special","marketCategory":"enterprise","state":"CA"}
+2025-12-01T18:36:33.004Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] c.e.pdf.service.ConfigServerClient       : HTTP error fetching file /application/default/main/mappings/products/contoso-special.yml: 404 Not Found from GET http://localhost:8888/application/default/main/mappings/products/contoso-special.yml
+2025-12-01T18:36:33.036Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] c.e.pdf.service.ConfigServerClient       : HTTP error fetching file /application/default/main/mappings/markets/enterprise.yml: 404 Not Found from GET http://localhost:8888/application/default/main/mappings/markets/enterprise.yml
+2025-12-01T18:36:33.137Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] c.e.pdf.service.ConfigServerClient       : HTTP error fetching file /application/default/main/mappings/templates/contoso-special/invoice-vw.yml: 404 Not Found from GET http://localhost:8888/application/default/main/mappings/templates/contoso-special/invoice-vw.yml
+Resolved mapping document: {"template":{"url":null,"type":"fillable"},"mapping":{"pdf":{"field":{"issuedDate":"invoiceDate","invoiceNumber":"payload.order.id","customerName":"payload.customer.name","stateTax":"tax.caRate"}}},"metadata":{"source":"base","state":"CA"}}
+Extracted field map: {"issuedDate":"invoiceDate","invoiceNumber":"order.id","customerName":"customer.name","stateTax":"tax.caRate"}
+Using payload: {"invoice":{"date":"2025-12-01"},"order":{"id":"CONT-INV-001"},"customer":{"name":"Contoso Customer","loyaltyId":"L-12345","account":{"manager":"Jane Doe"},"address":{"shipping":"123 Contoso Way"}},"product":{"planName":"Contoso Plan A"},"applicant":{"beneficiaryId":"B-98765"},"group":{"employer":{"name":"Contoso Corp"}},"tax":{"caRate":"0.0875"}}
+Mapping PDF field 'issuedDate' to payload path 'invoiceDate'
+  Resolved value: null
+Mapping PDF field 'invoiceNumber' to payload path 'order.id'
+  Resolved value: "CONT-INV-001"
+Mapping PDF field 'customerName' to payload path 'customer.name'
+  Resolved value: "Contoso Customer"
+Mapping PDF field 'stateTax' to payload path 'tax.caRate'
+  Resolved value: "0.0875"
+Final resolved PDF data: {"issuedDate":"","invoiceNumber":"CONT-INV-001","customerName":"Contoso Customer","stateTax":"0.0875"}
+2025-12-01T18:36:33.402Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font Times-Roman
+2025-12-01T18:36:33.413Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font Times-Bold
+2025-12-01T18:36:33.418Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font Times-Italic
+2025-12-01T18:36:33.426Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font Times-BoldItalic
+2025-12-01T18:36:33.431Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font Helvetica
+2025-12-01T18:36:33.436Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font Helvetica-Bold
+2025-12-01T18:36:33.445Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font Helvetica-Oblique
+2025-12-01T18:36:33.449Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font Helvetica-BoldOblique
+2025-12-01T18:36:33.453Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font Courier
+2025-12-01T18:36:33.457Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font Courier-Bold
+2025-12-01T18:36:33.461Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font Courier-Oblique
+2025-12-01T18:36:33.465Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font Courier-BoldOblique
+2025-12-01T18:36:33.468Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font Symbol
+2025-12-01T18:36:33.471Z  WARN 90000 --- [pdf-generation-service] [nio-8080-exec-1] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font ZapfDingbats

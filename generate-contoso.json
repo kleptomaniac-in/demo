@@ -1,0 +1,18 @@
+{
+  "templateName": "invoice-vw",
+  "clientService": "contoso",
+  "payload": {
+    "invoice": { "date": "2025-12-01" },
+    "order": { "id": "CONT-INV-001" },
+    "customer": { "name": "Contoso Customer", "loyaltyId": "L-12345", "account": { "manager": "Jane Doe" }, "address": { "shipping": "123 Contoso Way" } },
+    "product": { "planName": "Contoso Plan A" },
+    "applicant": { "beneficiaryId": "B-98765" },
+    "group": { "employer": { "name": "Contoso Corp" } },
+    "tax": { "caRate": "0.0875" }
+  },
+  "mappingOverride": null,
+  "label": "main",
+  "productType": "contoso-special",
+  "marketCategory": "enterprise",
+  "state": "CA"
+}
