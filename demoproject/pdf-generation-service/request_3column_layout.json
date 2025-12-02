@@ -1,0 +1,23 @@
+{
+  "templateName": "invoice",
+  "clientService": "demo",
+  "payload": {
+    "layout": "detailed",
+    "columns": "3",
+    "layoutMode": "grid",
+    "gap": "15px",
+    "customer": { "name": "Tech Solutions Inc" },
+    "invoice": {
+      "number": "INV-401",
+      "date": "2025-12-02",
+      "total": "$450.00",
+      "items": [
+        {"description": "Web Development", "price": "$200.00", "quantity": 1},
+        {"description": "API Integration", "price": "$150.00", "quantity": 1},
+        {"description": "Testing", "price": "$50.00", "quantity": 2},
+        {"description": "Documentation", "price": "$50.00", "quantity": 1}
+      ]
+    }
+  },
+  "mappingOverride": "template:\n  url: /templates/invoice_dynamic_layout.ftl\n  type: freemarker\nmapping:\n  pdf:\n    field:\n      layoutName: payload.layout\n      customer: payload.customer\n      invoice: payload.invoice\n      payload: payload"
+}

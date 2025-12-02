@@ -1,0 +1,21 @@
+{
+  "templateName": "invoice",
+  "clientService": "demo",
+  "payload": {
+    "layout": "compact",
+    "columns": "1",
+    "layoutMode": "grid",
+    "gap": "5px",
+    "customer": { "name": "Small Business Co" },
+    "invoice": {
+      "number": "INV-402",
+      "date": "2025-12-02",
+      "total": "$75.00",
+      "items": [
+        {"description": "Basic Service", "price": "$50.00"},
+        {"description": "Support Fee", "price": "$25.00"}
+      ]
+    }
+  },
+  "mappingOverride": "template:\n  url: /templates/invoice_dynamic_layout.ftl\n  type: freemarker\nmapping:\n  pdf:\n    field:\n      layoutName: payload.layout\n      customer: payload.customer\n      invoice: payload.invoice\n      payload: payload"
+}

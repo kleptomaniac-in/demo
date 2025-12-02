@@ -1,0 +1,17 @@
+{
+  "templateName": "invoice",
+  "clientService": "demo",
+  "payload": {
+    "customer": { "name": "ACME Corp" },
+    "invoice": {
+      "number": "INV-300",
+      "date": "2025-12-02",
+      "total": "$350.00",
+      "items": [
+        {"description": "Consulting", "price": "$300.00"},
+        {"description": "Support", "price": "$50.00"}
+      ]
+    }
+  },
+  "mappingOverride": "template:\n  url: /templates/invoice_page.ftl\n  type: freemarker\nmapping:\n  pdf:\n    field:\n      customer: payload.customer\n      invoice: payload.invoice"
+}

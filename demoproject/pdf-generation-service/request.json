@@ -1,0 +1,14 @@
+{
+  "templateName": "invoice",
+  "clientService": "demo",
+  "payload": {
+    "customer": { "name": "ACME Corp" },
+    "invoice": {
+      "number": "INV-100",
+      "date": "2025-12-02",
+      "total": "$123.45",
+      "itemsHtml": "<tr><td>Consulting</td><td>$123.45</td></tr>"
+    }
+  },
+  "mappingOverride": "template:\n  url: /templates/invoice.html\n  type: html\nmapping:\n  pdf:\n    field:\n      customerName: payload.customer.name\n      invoiceNumber: payload.invoice.number\n      invoiceDate: payload.invoice.date\n      itemsHtml: payload.invoice.itemsHtml\n      amount: payload.invoice.total"
+}

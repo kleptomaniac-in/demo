@@ -1,3 +1,43 @@
+# PDF Generation Service — HTML Template Example
+
+This tiny README shows how to run the `pdf-generation-service` locally and exercise the HTML-to-PDF path using the provided sample template and mapping.
+
+Files added for example:
+
+- `src/main/resources/templates/invoice.html` — sample invoice HTML template
+- `src/main/resources/mappings/sample-invoice-mapping.yml` — YAML mapping pointing at the template
+- `src/main/resources/mappings/sample-invoice-mapping.json` — same mapping as JSON
+- `request.json` — sample POST body you can use to generate a PDF (uses `mappingOverride`)
+
+Run the service (from repository root):
+
+```bash
+cd demoproject/pdf-generation-service
+mvn -f pom.xml spring-boot:run
+```
+
+Or build the jar and run:
+
+```bash
+mvn -f pom.xml clean package -DskipTests
+java -jar target/pdf-generation-service-0.0.1-SNAPSHOT.jar
+```
+
+Generate a PDF using the sample request (saves as `invoice.pdf`):
+
+```bash
+curl -s -X POST http://localhost:8080/generate \
+  -H 'Content-Type: application/json' \
+  --data-binary @request.json \
+  --output invoice.pdf
+
+# open invoice.pdf with a PDF viewer
+```
+
+Notes and next steps:
+
+- The example uses a simple placeholder replacer; the template expects a pre-rendered `itemsHtml` fragment for table rows. If you need loops/conditionals, consider integrating a proper template engine (Thymeleaf or Mustache).
+- If you want the template to be fetched from an HTTP URL or a filesystem path, update the `mappingOverride.template.url` accordingly.
 # PDF Generation Service
 
 Overview

@@ -1,0 +1,21 @@
+{
+  "templateName": "invoice",
+  "clientService": "demo",
+  "payload": {
+    "layout": "detailed",
+    "customer": { "name": "Tech Innovations Inc" },
+    "invoice": {
+      "number": "INV-700",
+      "date": "2025-12-02",
+      "total": "$450.00",
+      "projectName": "Cloud Migration Project",
+      "items": [
+        {"description": "Cloud Infrastructure Setup and Configuration", "price": "$200.00", "quantity": 1},
+        {"description": "API Integration Services", "price": "$150.00", "quantity": 1},
+        {"description": "Quality Assurance Testing", "price": "$50.00", "quantity": 2},
+        {"description": "Technical Documentation", "price": "$50.00", "quantity": 1}
+      ]
+    }
+  },
+  "mappingOverride": "template:\n  url: /templates/invoice_functions_demo.ftl\n  type: freemarker\nmapping:\n  pdf:\n    field:\n      layoutName: payload.layout\n      customer: payload.customer\n      invoice: payload.invoice\n      payload: payload"
+}

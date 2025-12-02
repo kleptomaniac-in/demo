@@ -1,0 +1,31 @@
+{
+  "templateName": "invoice",
+  "clientService": "demo",
+  "payload": {
+    "layout": "detailed",
+    "itemsColumns": "2",
+    "detailsColumns": "3",
+    "customer": { "name": "Enterprise Corp" },
+    "invoice": {
+      "number": "INV-403",
+      "date": "2025-12-02",
+      "total": "$1,250.00",
+      "items": [
+        {"description": "Cloud Infrastructure", "price": "$500.00"},
+        {"description": "DevOps Services", "price": "$400.00"},
+        {"description": "Monitoring", "price": "$200.00"},
+        {"description": "Support Package", "price": "$150.00"}
+      ],
+      "additionalDetails": [
+        {"label": "Project", "value": "Migration"},
+        {"label": "Duration", "value": "3 months"},
+        {"label": "Team Size", "value": "5"},
+        {"label": "Status", "value": "Active"},
+        {"label": "Priority", "value": "High"},
+        {"label": "Manager", "value": "John Doe"}
+      ],
+      "notes": "Payment terms: Net 30 days. Late fees apply after due date."
+    }
+  },
+  "mappingOverride": "template:\n  url: /templates/invoice_multi_section.ftl\n  type: freemarker\nmapping:\n  pdf:\n    field:\n      layoutName: payload.layout\n      customer: payload.customer\n      invoice: payload.invoice\n      payload: payload"
+}

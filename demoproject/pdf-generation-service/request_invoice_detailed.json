@@ -1,0 +1,19 @@
+{
+  "templateName": "invoice",
+  "clientService": "demo",
+  "payload": {
+    "layout": "detailed",
+    "columns": "2",
+    "customer": { "name": "ACME Corp" },
+    "invoice": {
+      "number": "INV-301",
+      "date": "2025-12-02",
+      "total": "$120.00",
+      "items": [
+        {"description": "Consulting", "price": "$100.00"},
+        {"description": "Support", "price": "$20.00"}
+      ]
+    }
+  },
+  "mappingOverride": "template:\n  url: /templates/invoice_page_grid.ftl\n  type: freemarker\nmapping:\n  pdf:\n    field:\n      layoutName: payload.layout\n      customer: payload.customer\n      invoice: payload.invoice"
+}

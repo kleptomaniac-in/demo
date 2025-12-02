@@ -18,3 +18,15 @@ curl -v -X POST \
   -d @generate-composed.json \
   http://localhost:8080/generate \
   --output generated_composed.pdf
+
+
+
+curl -v -X POST http://localhost:8080/generate \
+  -H 'Content-Type: application/json' \
+  --data-binary @request_invoice_page.json \
+  --output invoice_page.pdf
+
+curl -v -X POST http://localhost:8080/generate \
+  -H 'Content-Type: application/json' \
+  --data-binary @request_invoice_detailed.json \
+  --output invoice_page_detailed_grid.pdf

@@ -1,0 +1,11 @@
+template:
+  url: "/templates/invoice.html"
+  type: html
+mapping:
+  pdf:
+    field:
+      customerName: payload.customer.name
+      invoiceNumber: payload.invoice.number
+      invoiceDate: payload.invoice.date
+      itemsHtml: payload.invoice.itemsHtml
+      amount: payload.invoice.total

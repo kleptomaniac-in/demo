@@ -1,0 +1,68 @@
+Short answer: stop the running process, then start it again (or restart in foreground to see logs). Here are safe, copy-paste commands you can run from the workspace root to find, stop, and restart the `pdf-generation-service`, plus how to view logs.
+
+1) Find the running service
+- If we saved a PID when starting earlier, check `app.pid`:
+  - `cat app.pid || true`
+- Otherwise find the Java process listening on port 8080 (common for this service):
+  - `lsof -n -iTCP:8080 -sTCP:LISTEN`  
+  or
+  - `ps aux | grep pdf-generation-service | grep -v grep`
+
+2) Stop the running process (graceful)
+- If you have the PID (e.g. `PID=31753`), run:
+  - `kill PID`
+  - wait a few seconds, then confirm it stopped:
+    - `ps -p PID -o pid,cmd || echo \"not running\"`
+- If it refuses to stop after a few seconds, force:
+  - `kill -9 PID`
+
+3) Start the service (background, log to file)
+- Start the packaged jar in background and save the PID and logs:
+  - ```
+    cd demoproject/pdf-generation-service
+    nohup java -jar target/pdf-generation-service-0.0.1-SNAPSHOT.jar > app.log 2>&1 & echo $! > app.pid
+    ```
+- Or start from source with Maven (foreground; this prints logs to the terminal):
+  - ```
+    cd demoproject/pdf-generation-service
+    mvn -f pom.xml spring-boot:run
+    ```
+  - (Use CTRL+C to stop when running in foreground.)
+
+4) Tail the logs
+- If you started with `nohup` (background), view live logs:
+  - `tail -f demoproject/pdf-generation-service/app.log`
+- If you used `mvn spring-boot:run` in a terminal, logs are the console output in that terminal.
+- To see recent log lines:
+  - `tail -n 200 demoproject/pdf-generation-service/app.log`
+
+5) Quick “restart” one-liner (stop if running, then start)
+- Be careful — this kills any process listening on 8080:
+  - ```
+    # from repo root
+    pids=$(lsof -t -iTCP:8080 -sTCP:LISTEN || true)
+    if [ -n "$pids" ]; then echo killing $pids; kill $pids || true; fi
+    cd demoproject/pdf-generation-service
+    nohup java -jar target/pdf-generation-service-0.0.1-SNAPSHOT.jar > app.log 2>&1 & echo $! > app.pid
+    tail -n 50 app.log
+    ```
+
+6) If you still don’t see logs
+- Confirm the process is running: `ps -p $(cat demoproject/pdf-generation-service/app.pid) -o pid,cmd || true`
+- Confirm the log file exists and is being written: `ls -l demoproject/pdf-generation-service/app.log` and `tail -n 50 demoproject/pdf-generation-service/app.log`
+- Check there are no other instances bound to port 8080: `lsof -n -iTCP:8080 -sTCP:LISTEN`
+
+Would you like me to restart the service now for you and paste the recent log tail? If yes, I’ll stop any running instance on 8080, start the jar in background, and show the last 200 lines of the log.    # from repo root
+    pids=$(lsof -t -iTCP:8080 -sTCP:LISTEN || true)
+    if [ -n "$pids" ]; then echo killing $pids; kill $pids || true; fi
+    cd demoproject/pdf-generation-service
+    nohup java -jar target/pdf-generation-service-0.0.1-SNAPSHOT.jar > app.log 2>&1 & echo $! > app.pid
+    tail -n 50 app.log
+    ```
+
+6) If you still don’t see logs
+- Confirm the process is running: `ps -p $(cat demoproject/pdf-generation-service/app.pid) -o pid,cmd || true`
+- Confirm the log file exists and is being written: `ls -l demoproject/pdf-generation-service/app.log` and `tail -n 50 demoproject/pdf-generation-service/app.log`
+- Check there are no other instances bound to port 8080: `lsof -n -iTCP:8080 -sTCP:LISTEN`
+
+Would you like me to restart the service now for you and paste the recent log tail? If yes, I’ll stop any running instance on 8080, start the jar in background, and show the last 200 lines of the log.

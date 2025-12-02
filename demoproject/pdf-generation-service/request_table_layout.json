@@ -1,0 +1,21 @@
+{
+  "templateName": "invoice",
+  "clientService": "demo",
+  "payload": {
+    "layout": "compact",
+    "columns": "2",
+    "layoutMode": "table",
+    "customer": { "name": "Traditional Business Ltd" },
+    "invoice": {
+      "number": "INV-404",
+      "date": "2025-12-02",
+      "total": "$300.00",
+      "items": [
+        {"description": "Product A", "price": "$100.00"},
+        {"description": "Product B", "price": "$100.00"},
+        {"description": "Product C", "price": "$100.00"}
+      ]
+    }
+  },
+  "mappingOverride": "template:\n  url: /templates/invoice_dynamic_layout.ftl\n  type: freemarker\nmapping:\n  pdf:\n    field:\n      layoutName: payload.layout\n      customer: payload.customer\n      invoice: payload.invoice\n      payload: payload"
+}
