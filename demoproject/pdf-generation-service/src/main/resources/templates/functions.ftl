@@ -35,7 +35,16 @@
 </#function>
 
 <#function formatPercentage value decimals=1>
-  <#return value?string("0." + "0"?repeat(decimals)) + "%">
+  <#-- Build format string manually since ?repeat doesn't exist -->
+  <#if decimals == 0>
+    <#return value?string("0") + "%">
+  <#elseif decimals == 1>
+    <#return value?string("0.0") + "%">
+  <#elseif decimals == 2>
+    <#return value?string("0.00") + "%">
+  <#else>
+    <#return value?string("0.00") + "%">
+  </#if>
 </#function>
 
 <#function formatDate dateString format="MM/dd/yyyy">
@@ -55,7 +64,13 @@
   <#if text?length >= width>
     <#return text>
   <#else>
-    <#return (padChar?repeat(width - text?length)) + text>
+    <#-- Build padding manually -->
+    <#assign padding = "" />
+    <#assign needed = width - text?length />
+    <#list 1..needed as i>
+      <#assign padding = padding + padChar />
+    </#list>
+    <#return padding + text>
   </#if>
 </#function>
 
@@ -216,8 +231,21 @@
      MATH FUNCTIONS
      ============================================ -->
 
+<#function pow base exponent>
+  <#-- Manual power calculation since ?pow doesn't exist -->
+  <#if exponent == 0>
+    <#return 1>
+  </#if>
+  <#assign result = 1 />
+  <#list 1..exponent as i>
+    <#assign result = result * base />
+  </#list>
+  <#return result>
+</#function>
+
 <#function round value decimals=2>
-  <#return (value * (10?pow(decimals)))?round / (10?pow(decimals))>
+  <#assign multiplier = pow(10, decimals) />
+  <#return (value * multiplier)?round / multiplier>
 </#function>
 
 <#function min a b>
