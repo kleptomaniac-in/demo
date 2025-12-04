@@ -1,0 +1,14 @@
+# Local development configuration
+# This file is used when running with spring.profiles.active=dev
+
+# Add your local development properties here
+# These will override any properties in application.yml
+
+# Example properties:
+logging:
+  level:
+    root: INFO
+    com.example: DEBUG
+
+# You can add all your service-specific configuration here
+# that would normally come from the config server

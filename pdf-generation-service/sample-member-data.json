@@ -1,0 +1,98 @@
+{
+  "members": [
+    {
+      "name": "John Smith",
+      "medicalPlans": [
+        {
+          "planName": "PPO Gold Plan",
+          "basePremium": 450.00,
+          "bundledPremium": 425.00
+        },
+        {
+          "planName": "HSA Plus",
+          "basePremium": 380.00,
+          "bundledPremium": 360.00
+        }
+      ],
+      "dentalPlans": [
+        {
+          "planName": "Dental Complete",
+          "basePremium": 45.00,
+          "bundledPremium": 40.00
+        }
+      ],
+      "visionPlans": [
+        {
+          "planName": "Vision Essentials",
+          "basePremium": 25.00,
+          "bundledPremium": 22.00
+        }
+      ]
+    },
+    {
+      "name": "Sarah Johnson",
+      "medicalPlans": [
+        {
+          "planName": "HMO Standard",
+          "basePremium": 320.00,
+          "bundledPremium": 300.00
+        }
+      ],
+      "dentalPlans": [
+        {
+          "planName": "Dental Basic",
+          "basePremium": 30.00,
+          "bundledPremium": 28.00
+        },
+        {
+          "planName": "Dental Premium",
+          "basePremium": 55.00,
+          "bundledPremium": 50.00
+        }
+      ],
+      "visionPlans": []
+    },
+    {
+      "name": "Michael Chen",
+      "medicalPlans": [
+        {
+          "planName": "PPO Silver",
+          "basePremium": 390.00,
+          "bundledPremium": 370.00
+        }
+      ],
+      "dentalPlans": [
+        {
+          "planName": "Dental Plus",
+          "basePremium": 42.00,
+          "bundledPremium": 38.00
+        }
+      ],
+      "visionPlans": [
+        {
+          "planName": "Vision Premium",
+          "basePremium": 35.00,
+          "bundledPremium": 32.00
+        }
+      ]
+    },
+    {
+      "name": "Emily Rodriguez",
+      "medicalPlans": [],
+      "dentalPlans": [
+        {
+          "planName": "Dental Family",
+          "basePremium": 65.00,
+          "bundledPremium": 60.00
+        }
+      ],
+      "visionPlans": [
+        {
+          "planName": "Vision Basic",
+          "basePremium": 20.00,
+          "bundledPremium": 18.00
+        }
+      ]
+    }
+  ]
+}

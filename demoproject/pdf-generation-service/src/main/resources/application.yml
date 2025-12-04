@@ -5,12 +5,16 @@ server:
 config-server:
   url: http://localhost:8888
 
-# Import properties from Spring Cloud Config Server (optional)
 spring:
-  config:
-    import: optional:configserver:${config-server.url}
   application:
     name: pdf-generation-service
+  # Config server is optional - falls back to local application.yml if not available
+  config:
+    import: optional:configserver:${config-server.url}
+  cloud:
+    config:
+      enabled: ${CONFIG_SERVER_ENABLED:false}  # Disabled by default for local dev
+      fail-fast: false  # Don't fail if config server is unavailable
 
 management:
   endpoints:

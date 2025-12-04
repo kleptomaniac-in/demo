@@ -1,0 +1,50 @@
+{
+  "templateName": "member-healthcare-plans",
+  "clientService": "healthcare-service",
+  "payload": {
+    "members": [
+      {
+        "name": "John Smith",
+        "medicalPlans": [
+          {
+            "planName": "PPO Gold Plan",
+            "basePremium": 450.00,
+            "bundledPremium": 425.00
+          }
+        ],
+        "dentalPlans": [
+          {
+            "planName": "Dental Complete",
+            "basePremium": 45.00,
+            "bundledPremium": 40.00
+          }
+        ],
+        "visionPlans": [
+          {
+            "planName": "Vision Essentials",
+            "basePremium": 25.00,
+            "bundledPremium": 22.00
+          }
+        ]
+      },
+      {
+        "name": "Sarah Johnson",
+        "medicalPlans": [
+          {
+            "planName": "HMO Standard",
+            "basePremium": 320.00,
+            "bundledPremium": 300.00
+          }
+        ],
+        "dentalPlans": [
+          {
+            "planName": "Dental Basic",
+            "basePremium": 30.00,
+            "bundledPremium": 28.00
+          }
+        ],
+        "visionPlans": []
+      }
+    ]
+  }
+}
