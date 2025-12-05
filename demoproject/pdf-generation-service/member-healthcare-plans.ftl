@@ -203,6 +203,55 @@
     <#-- Calculate total number of tables needed -->
     <#assign totalTables = [medicalGroups?size, dentalGroups?size, visionGroups?size]?max>
     
+    <#-- Macro: Render product header cell -->
+    <#macro productHeader planList productName>
+        <#if (planList?size > 0)>
+            <th colspan="${planList?size * 2}" class="product-header">${productName}</th>
+        </#if>
+    </#macro>
+    
+    <#-- Macro: Render plan name headers -->
+    <#macro planHeaders planList>
+        <#if (planList?size > 0)>
+            <#list planList as planName>
+                <th colspan="2" class="plan-header">${planName}</th>
+            </#list>
+        </#if>
+    </#macro>
+    
+    <#-- Macro: Render premium type headers -->
+    <#macro premiumHeaders planList>
+        <#if (planList?size > 0)>
+            <#list planList as planName>
+                <th class="premium-header">Base</th>
+                <th class="premium-header">Bundled</th>
+            </#list>
+        </#if>
+    </#macro>
+    
+    <#-- Macro: Render member plan data cells -->
+    <#macro memberPlanData member planList>
+        <#if (planList?size > 0)>
+            <#list planList as expectedPlanName>
+                <#assign foundPlan = false>
+                <#if member??>
+                    <#list member as plan>
+                        <#if plan.planName == expectedPlanName>
+                            <td class="premium-value">$${plan.basePremium?string["0.00"]}</td>
+                            <td class="premium-value">$${plan.bundledPremium?string["0.00"]}</td>
+                            <#assign foundPlan = true>
+                            <#break>
+                        </#if>
+                    </#list>
+                </#if>
+                <#if !foundPlan>
+                    <td class="no-plan">-</td>
+                    <td class="no-plan">-</td>
+                </#if>
+            </#list>
+        </#if>
+    </#macro>
+    
     <#-- Render tables for each group -->
     <#list 0..<totalTables as tableIndex>
     
@@ -221,56 +270,23 @@
             <!-- Row 1: Product Type Headers -->
             <tr>
                 <th rowspan="3">Member Name</th>
-                <#if (currentMedicalPlans?size > 0)>
-                    <th colspan="${currentMedicalPlans?size * 2}" class="product-header">Medical</th>
-                </#if>
-                <#if (currentDentalPlans?size > 0)>
-                    <th colspan="${currentDentalPlans?size * 2}" class="product-header">Dental</th>
-                </#if>
-                <#if (currentVisionPlans?size > 0)>
-                    <th colspan="${currentVisionPlans?size * 2}" class="product-header">Vision</th>
-                </#if>
+                <@productHeader currentMedicalPlans "Medical" />
+                <@productHeader currentDentalPlans "Dental" />
+                <@productHeader currentVisionPlans "Vision" />
             </tr>
             
             <!-- Row 2: Plan Name Headers -->
             <tr>
-                <#if (currentMedicalPlans?size > 0)>
-                    <#list currentMedicalPlans as planName>
-                        <th colspan="2" class="plan-header">${planName}</th>
-                    </#list>
-                </#if>
-                <#if (currentDentalPlans?size > 0)>
-                    <#list currentDentalPlans as planName>
-                        <th colspan="2" class="plan-header">${planName}</th>
-                    </#list>
-                </#if>
-                <#if (currentVisionPlans?size > 0)>
-                    <#list currentVisionPlans as planName>
-                        <th colspan="2" class="plan-header">${planName}</th>
-                    </#list>
-                </#if>
+                <@planHeaders currentMedicalPlans />
+                <@planHeaders currentDentalPlans />
+                <@planHeaders currentVisionPlans />
             </tr>
             
             <!-- Row 3: Premium Type Headers -->
             <tr>
-                <#if (currentMedicalPlans?size > 0)>
-                    <#list currentMedicalPlans as planName>
-                        <th class="premium-header">Base</th>
-                        <th class="premium-header">Bundled</th>
-                    </#list>
-                </#if>
-                <#if (currentDentalPlans?size > 0)>
-                    <#list currentDentalPlans as planName>
-                        <th class="premium-header">Base</th>
-                        <th class="premium-header">Bundled</th>
-                    </#list>
-                </#if>
-                <#if (currentVisionPlans?size > 0)>
-                    <#list currentVisionPlans as planName>
-                        <th class="premium-header">Base</th>
-                        <th class="premium-header">Bundled</th>
-                    </#list>
-                </#if>
+                <@premiumHeaders currentMedicalPlans />
+                <@premiumHeaders currentDentalPlans />
+                <@premiumHeaders currentVisionPlans />
             </tr>
         </thead>
         <tbody>
@@ -278,68 +294,10 @@
             <tr>
                 <td class="member-name">${member.name}</td>
                 
-                <!-- Medical Plans -->
-                <#if (currentMedicalPlans?size > 0)>
-                    <#list currentMedicalPlans as expectedPlanName>
-                        <#assign foundPlan = false>
-                        <#if member.medicalPlans??>
-                            <#list member.medicalPlans as plan>
-                                <#if plan.planName == expectedPlanName>
-                                    <td class="premium-value">$${plan.basePremium?string["0.00"]}</td>
-                                    <td class="premium-value">$${plan.bundledPremium?string["0.00"]}</td>
-                                    <#assign foundPlan = true>
-                                    <#break>
-                                </#if>
-                            </#list>
-                        </#if>
-                        <#if !foundPlan>
-                            <td class="no-plan">-</td>
-                            <td class="no-plan">-</td>
-                        </#if>
-                    </#list>
-                </#if>
-                
-                <!-- Dental Plans -->
-                <#if (currentDentalPlans?size > 0)>
-                    <#list currentDentalPlans as expectedPlanName>
-                        <#assign foundPlan = false>
-                        <#if member.dentalPlans??>
-                            <#list member.dentalPlans as plan>
-                                <#if plan.planName == expectedPlanName>
-                                    <td class="premium-value">$${plan.basePremium?string["0.00"]}</td>
-                                    <td class="premium-value">$${plan.bundledPremium?string["0.00"]}</td>
-                                    <#assign foundPlan = true>
-                                    <#break>
-                                </#if>
-                            </#list>
-                        </#if>
-                        <#if !foundPlan>
-                            <td class="no-plan">-</td>
-                            <td class="no-plan">-</td>
-                        </#if>
-                    </#list>
-                </#if>
-                
-                <!-- Vision Plans -->
-                <#if (currentVisionPlans?size > 0)>
-                    <#list currentVisionPlans as expectedPlanName>
-                        <#assign foundPlan = false>
-                        <#if member.visionPlans??>
-                            <#list member.visionPlans as plan>
-                                <#if plan.planName == expectedPlanName>
-                                    <td class="premium-value">$${plan.basePremium?string["0.00"]}</td>
-                                    <td class="premium-value">$${plan.bundledPremium?string["0.00"]}</td>
-                                    <#assign foundPlan = true>
-                                    <#break>
-                                </#if>
-                            </#list>
-                        </#if>
-                        <#if !foundPlan>
-                            <td class="no-plan">-</td>
-                            <td class="no-plan">-</td>
-                        </#if>
-                    </#list>
-                </#if>
+                <!-- Product Plan Data -->
+                <@memberPlanData member.medicalPlans currentMedicalPlans />
+                <@memberPlanData member.dentalPlans currentDentalPlans />
+                <@memberPlanData member.visionPlans currentVisionPlans />
             </tr>
             </#list>
         </tbody>
