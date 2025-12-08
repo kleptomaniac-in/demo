@@ -1,0 +1,38 @@
+{
+  "templateName": "pdf-merge-config",
+  "clientService": "healthcare-reports",
+  "mergeConfig": "pdf-merge-config.yml",
+  "payload": {
+    "title": "2025 Healthcare Plan Report",
+    "companyName": "Acme Corporation",
+    "includeDetailedBreakdown": true,
+    "includeLegalDisclosures": false,
+    "members": [
+      {
+        "name": "John Doe",
+        "medicalPlans": [
+          {"planName": "Gold PPO", "basePremium": 450.00, "bundledPremium": 425.00},
+          {"planName": "Silver HMO", "basePremium": 350.00, "bundledPremium": 330.00}
+        ],
+        "dentalPlans": [
+          {"planName": "Basic Dental", "basePremium": 45.00, "bundledPremium": 40.00}
+        ],
+        "visionPlans": [
+          {"planName": "Standard Vision", "basePremium": 15.00, "bundledPremium": 12.00}
+        ]
+      },
+      {
+        "name": "Jane Smith",
+        "medicalPlans": [
+          {"planName": "Platinum EPO", "basePremium": 550.00, "bundledPremium": 520.00}
+        ],
+        "dentalPlans": [
+          {"planName": "Premium Dental", "basePremium": 65.00, "bundledPremium": 60.00}
+        ],
+        "visionPlans": [
+          {"planName": "Enhanced Vision", "basePremium": 25.00, "bundledPremium": 22.00}
+        ]
+      }
+    ]
+  }
+}

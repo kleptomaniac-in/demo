@@ -1,0 +1,17 @@
+mapping:
+  pdf:
+    field:
+      issuedDate: "payload.invoice.date"
+      invoiceNumber: "payload.order.id"
+      customerName: "payload.customer.name"
+      planName: "payload.product.planName"
+      beneficiaryId: "payload.applicant.beneficiaryId"
+      employerName: "payload.group.employer.name"
+      stateTax: "payload.tax.caRate"
+      loyaltyNumber: "payload.customer.loyaltyId"
+      accountManager: "payload.customer.account.manager"
+      shippingAddress: "payload.customer.address.shipping"
+
+metadata:
+  product: contoso-special
+  market: enterprise

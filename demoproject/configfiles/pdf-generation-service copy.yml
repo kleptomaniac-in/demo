@@ -1,0 +1,8 @@
+mapping:
+  candidate-order:
+    - file:mappings/base-application.yml
+    - file:mappings/templates/{template}.yml
+    - file:mappings/products/{product}.yml
+    - file:mappings/markets/{market}.yml
+    - file:mappings/states/{state}.yml
+    - file:mappings/templates/{product}/{template}.yml
