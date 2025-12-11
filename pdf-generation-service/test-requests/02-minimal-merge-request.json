@@ -1,0 +1,24 @@
+{
+  "configName": "pdf-merge-config.yml",
+  "outputFileName": "simple-report.pdf",
+  "payload": {
+    "companyName": "Test Company",
+    "title": "Simple Report",
+    "includeDetailedBreakdown": false,
+    "includeLegalDisclosures": false,
+    "members": [
+      {
+        "name": "Alice Williams",
+        "medicalPlans": [
+          {
+            "planName": "Basic Plan",
+            "basePremium": 300.00,
+            "bundledPremium": 280.00
+          }
+        ],
+        "dentalPlans": [],
+        "visionPlans": []
+      }
+    ]
+  }
+}

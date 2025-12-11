@@ -1,29 +1,63 @@
 package com.example.service;
 
+import com.example.pdf.service.ConfigServerClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
+import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Logger;
 
 @Service
 public class PdfMergeConfigService {
 
-    @Autowired
+
+    @Autowired(required = false)
     private ConfigServerClient configServerClient;
+    
+    @Value("${config.repo.path:../config-repo}")
+    private String configRepoPath;
 
     public PdfMergeConfig loadConfig(String configName) {
         try {
-            // Load from config server or local file
-            String yamlContent = configServerClient.getConfig(configName);
+            String yamlContent;
             
-            Yaml yaml = new Yaml();
-            Map<String, Object> data = yaml.load(yamlContent);
+            // Try to load from config server first (if available)
+            if (configServerClient != null) {
+                System.out.println("Attempting to load config from config server: " + configName);
+                Optional<Map<String, Object>> configOpt = configServerClient.getFileSource(
+                    "default", "master", configName
+                );
+                if (configOpt.isPresent()) {
+                    System.out.println("Config loaded from config server: " + configName);
+                    Yaml yaml = new Yaml();
+                    return parsePdfMergeConfig(configOpt.get());
+                }
+            }
+
+            System.out.println("Config server not available or config not found, falling back to file system.");
             
-            return parsePdfMergeConfig(data);
+            // Fallback to loading from file system
+            String configPath = configRepoPath + "/" + configName;
+            if (!Files.exists(Paths.get(configPath))) {
+                // Try current working directory
+                configPath = configName;
+            }
+            
+            try (InputStream inputStream = new FileInputStream(configPath)) {
+                Yaml yaml = new Yaml();
+                Map<String, Object> data = yaml.load(inputStream);
+                return parsePdfMergeConfig(data);
+            }
+            
         } catch (Exception e) {
             throw new RuntimeException("Failed to load PDF merge config: " + configName, e);
         }

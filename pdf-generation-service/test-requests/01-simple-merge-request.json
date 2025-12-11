@@ -1,0 +1,95 @@
+{
+  "configName": "pdf-merge-config.yml",
+  "outputFileName": "healthcare-report.pdf",
+  "payload": {
+    "companyName": "Acme Corporation",
+    "reportTitle": "2025 Healthcare Plan Report",
+    "title": "2025 Healthcare Plan Report",
+    "includeDetailedBreakdown": true,
+    "includeLegalDisclosures": false,
+    "members": [
+      {
+        "name": "John Doe",
+        "medicalPlans": [
+          {
+            "planName": "Gold PPO",
+            "basePremium": 450.00,
+            "bundledPremium": 425.00
+          },
+          {
+            "planName": "Silver HMO",
+            "basePremium": 350.00,
+            "bundledPremium": 330.00
+          }
+        ],
+        "dentalPlans": [
+          {
+            "planName": "Basic Dental",
+            "basePremium": 45.00,
+            "bundledPremium": 40.00
+          }
+        ],
+        "visionPlans": [
+          {
+            "planName": "Standard Vision",
+            "basePremium": 15.00,
+            "bundledPremium": 12.00
+          }
+        ]
+      },
+      {
+        "name": "Jane Smith",
+        "medicalPlans": [
+          {
+            "planName": "Platinum EPO",
+            "basePremium": 550.00,
+            "bundledPremium": 520.00
+          }
+        ],
+        "dentalPlans": [
+          {
+            "planName": "Premium Dental",
+            "basePremium": 65.00,
+            "bundledPremium": 60.00
+          }
+        ],
+        "visionPlans": [
+          {
+            "planName": "Enhanced Vision",
+            "basePremium": 25.00,
+            "bundledPremium": 22.00
+          }
+        ]
+      },
+      {
+        "name": "Bob Johnson",
+        "medicalPlans": [
+          {
+            "planName": "Gold PPO",
+            "basePremium": 450.00,
+            "bundledPremium": 425.00
+          }
+        ],
+        "dentalPlans": [
+          {
+            "planName": "Basic Dental",
+            "basePremium": 45.00,
+            "bundledPremium": 40.00
+          },
+          {
+            "planName": "Premium Dental",
+            "basePremium": 65.00,
+            "bundledPremium": 60.00
+          }
+        ],
+        "visionPlans": [
+          {
+            "planName": "Standard Vision",
+            "basePremium": 15.00,
+            "bundledPremium": 12.00
+          }
+        ]
+      }
+    ]
+  }
+}

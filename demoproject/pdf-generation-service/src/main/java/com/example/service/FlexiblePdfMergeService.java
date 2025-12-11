@@ -1,5 +1,7 @@
 package com.example.service;
 
+import com.example.pdf.service.FreemarkerService;
+import com.example.pdf.service.HtmlPdfService;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -146,7 +148,11 @@ public class FlexiblePdfMergeService {
     private PDDocument generateSectionPdf(SectionConfig section, Map<String, Object> payload) throws IOException {
         if ("freemarker".equals(section.getType())) {
             // Generate HTML via FreeMarker
-            String html = freemarkerService.processTemplateFromLocation(section.getTemplate(), payload);
+            // FreeMarker templates expect payload to be nested under "payload" key
+            Map<String, Object> model = new java.util.HashMap<>();
+            model.put("payload", payload);
+            
+            String html = freemarkerService.processTemplateFromLocation(section.getTemplate(), model);
             byte[] pdfBytes = htmlPdfService.renderHtmlToPdf(html);
             return PDDocument.load(new ByteArrayInputStream(pdfBytes));
             

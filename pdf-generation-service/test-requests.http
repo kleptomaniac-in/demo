@@ -1,0 +1,199 @@
+# PDF Merge Service - REST Client Tests
+# Use VS Code REST Client extension to run these tests
+# Click "Send Request" above each test
+
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+### Health Check
+GET {{baseUrl}}/api/pdf/health
+
+### Test 1: Simple Merge Request
+# @name simpleMerge
+POST {{baseUrl}}/api/pdf/merge
+Content-Type: {{contentType}}
+
+{
+  "configName": "pdf-merge-config.yml",
+  "outputFileName": "healthcare-report.pdf",
+  "payload": {
+    "companyName": "Acme Corporation",
+    "reportTitle": "2025 Healthcare Plan Report",
+    "title": "2025 Healthcare Plan Report",
+    "includeDetailedBreakdown": true,
+    "includeLegalDisclosures": false,
+    "members": [
+      {
+        "name": "John Doe",
+        "medicalPlans": [
+          {
+            "planName": "Gold PPO",
+            "basePremium": 450.00,
+            "bundledPremium": 425.00
+          },
+          {
+            "planName": "Silver HMO",
+            "basePremium": 350.00,
+            "bundledPremium": 330.00
+          }
+        ],
+        "dentalPlans": [
+          {
+            "planName": "Basic Dental",
+            "basePremium": 45.00,
+            "bundledPremium": 40.00
+          }
+        ],
+        "visionPlans": [
+          {
+            "planName": "Standard Vision",
+            "basePremium": 15.00,
+            "bundledPremium": 12.00
+          }
+        ]
+      },
+      {
+        "name": "Jane Smith",
+        "medicalPlans": [
+          {
+            "planName": "Platinum EPO",
+            "basePremium": 550.00,
+            "bundledPremium": 520.00
+          }
+        ],
+        "dentalPlans": [
+          {
+            "planName": "Premium Dental",
+            "basePremium": 65.00,
+            "bundledPremium": 60.00
+          }
+        ],
+        "visionPlans": [
+          {
+            "planName": "Enhanced Vision",
+            "basePremium": 25.00,
+            "bundledPremium": 22.00
+          }
+        ]
+      }
+    ]
+  }
+}
+
+### Test 2: Minimal Merge Request
+# @name minimalMerge
+POST {{baseUrl}}/api/pdf/merge
+Content-Type: {{contentType}}
+
+{
+  "configName": "pdf-merge-config.yml",
+  "outputFileName": "simple-report.pdf",
+  "payload": {
+    "companyName": "Test Company",
+    "title": "Simple Report",
+    "includeDetailedBreakdown": false,
+    "includeLegalDisclosures": false,
+    "members": [
+      {
+        "name": "Alice Williams",
+        "medicalPlans": [
+          {
+            "planName": "Basic Plan",
+            "basePremium": 300.00,
+            "bundledPremium": 280.00
+          }
+        ],
+        "dentalPlans": [],
+        "visionPlans": []
+      }
+    ]
+  }
+}
+
+### Test 3: With Conditionals Request
+# @name conditionalsMerge
+POST {{baseUrl}}/api/pdf/merge
+Content-Type: {{contentType}}
+
+{
+  "configName": "pdf-merge-config.yml",
+  "outputFileName": "detailed-report.pdf",
+  "payload": {
+    "companyName": "Healthcare Solutions Inc.",
+    "reportTitle": "Comprehensive Benefits Analysis",
+    "title": "Comprehensive Benefits Analysis 2025",
+    "reportId": "RPT-2025-Q4-001",
+    "includeDetailedBreakdown": true,
+    "includeLegalDisclosures": true,
+    "members": [
+      {
+        "name": "Michael Chen",
+        "medicalPlans": [
+          {
+            "planName": "Gold PPO",
+            "basePremium": 450.00,
+            "bundledPremium": 425.00
+          },
+          {
+            "planName": "Silver HMO",
+            "basePremium": 350.00,
+            "bundledPremium": 330.00
+          },
+          {
+            "planName": "Platinum EPO",
+            "basePremium": 550.00,
+            "bundledPremium": 520.00
+          }
+        ],
+        "dentalPlans": [
+          {
+            "planName": "Basic Dental",
+            "basePremium": 45.00,
+            "bundledPremium": 40.00
+          },
+          {
+            "planName": "Premium Dental",
+            "basePremium": 65.00,
+            "bundledPremium": 60.00
+          }
+        ],
+        "visionPlans": [
+          {
+            "planName": "Standard Vision",
+            "basePremium": 15.00,
+            "bundledPremium": 12.00
+          },
+          {
+            "planName": "Enhanced Vision",
+            "basePremium": 25.00,
+            "bundledPremium": 22.00
+          }
+        ]
+      },
+      {
+        "name": "Sarah Martinez",
+        "medicalPlans": [
+          {
+            "planName": "Gold PPO",
+            "basePremium": 450.00,
+            "bundledPremium": 425.00
+          }
+        ],
+        "dentalPlans": [
+          {
+            "planName": "Basic Dental",
+            "basePremium": 45.00,
+            "bundledPremium": 40.00
+          }
+        ],
+        "visionPlans": [
+          {
+            "planName": "Standard Vision",
+            "basePremium": 15.00,
+            "bundledPremium": 12.00
+          }
+        ]
+      }
+    ]
+  }
+}
