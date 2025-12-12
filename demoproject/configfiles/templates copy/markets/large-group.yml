@@ -1,0 +1,30 @@
+# Large Group market-specific configurations
+
+pdfMerge:
+  sections:
+    # Large group provisions
+    - name: group-provisions
+      type: freemarker
+      template: markets/large-group-provisions.ftl
+      enabled: true
+    
+    # Self-funded options (for large groups)
+    - name: self-funded-options
+      type: freemarker
+      template: markets/self-funded-options.ftl
+      enabled: true
+  
+  # Override header for large group market
+  header:
+    content:
+      left:
+        text: "Large Group Plan | {companyName}"
+        fontSize: 10
+  
+  bookmarks:
+    - section: group-provisions
+      title: "Group Plan Provisions"
+      level: 1
+    - section: self-funded-options
+      title: "Self-Funded Options"
+      level: 1

@@ -213,6 +213,13 @@ public class PdfMergeConfigService {
                 sectionConfig.setType((String) section.get("type"));
                 sectionConfig.setTemplate((String) section.get("template"));
                 sectionConfig.setEnabled((Boolean) section.getOrDefault("enabled", true));
+                
+                // Parse field mapping for AcroForm sections
+                if ("acroform".equals(section.get("type")) && section.containsKey("fieldMapping")) {
+                    Map<String, String> fieldMapping = (Map<String, String>) section.get("fieldMapping");
+                    sectionConfig.setFieldMapping(fieldMapping);
+                }
+                
                 sectionConfigs.add(sectionConfig);
             }
             

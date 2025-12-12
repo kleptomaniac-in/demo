@@ -34,6 +34,9 @@ public class FlexiblePdfMergeService {
     
     @Autowired
     private PdfBoxGeneratorRegistry pdfBoxRegistry;
+    
+    @Autowired
+    private AcroFormFillService acroFormFillService;
 
     public byte[] generateMergedPdf(String configName, Map<String, Object> payload) throws IOException {
         // Load merge configuration
@@ -160,6 +163,19 @@ public class FlexiblePdfMergeService {
             // Generate via PDFBox generator
             PdfBoxGenerator generator = pdfBoxRegistry.getGenerator(section.getTemplate());
             return generator.generate(payload);
+            
+        } else if ("acroform".equals(section.getType())) {
+            // Fill AcroForm PDF using field mappings
+            if (section.getFieldMapping() == null || section.getFieldMapping().isEmpty()) {
+                throw new IllegalArgumentException("AcroForm section must have fieldMapping: " + section.getName());
+            }
+            
+            byte[] filledPdf = acroFormFillService.fillAcroForm(
+                section.getTemplate(), 
+                section.getFieldMapping(), 
+                payload
+            );
+            return PDDocument.load(new ByteArrayInputStream(filledPdf));
             
         } else {
             throw new IllegalArgumentException("Unknown section type: " + section.getType());

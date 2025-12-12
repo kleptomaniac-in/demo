@@ -1,0 +1,30 @@
+{
+  "configName": "acroform-enrollment-ca.yml",
+  "outputFileName": "enrollment-application-filled.pdf",
+  "payload": {
+    "member": {
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "dateOfBirth": "05/15/1985",
+      "ssn": "123-45-6789",
+      "gender": "Female",
+      "address": {
+        "street": "123 Main Street",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90001"
+      },
+      "phone": "(555) 123-4567",
+      "email": "jane.doe@example.com"
+    },
+    "selectedPlans": {
+      "medical": "Gold PPO",
+      "dental": "Premium Dental",
+      "vision": "Vision Plan A"
+    },
+    "enrollment": {
+      "effectiveDate": "01/01/2026",
+      "signedDate": "12/12/2025"
+    }
+  }
+}

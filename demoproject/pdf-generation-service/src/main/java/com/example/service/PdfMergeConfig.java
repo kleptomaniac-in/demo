@@ -59,10 +59,11 @@ public class PdfMergeConfig {
 
 class SectionConfig {
     private String name;
-    private String type; // "freemarker" or "pdfbox"
+    private String type; // "freemarker", "pdfbox", or "acroform"
     private String template;
     private boolean enabled;
     private String insertAfter;
+    private Map<String, String> fieldMapping; // For acroform: PDF field → payload path
 
     // Getters and setters
     public String getName() { return name; }
@@ -79,6 +80,9 @@ class SectionConfig {
 
     public String getInsertAfter() { return insertAfter; }
     public void setInsertAfter(String insertAfter) { this.insertAfter = insertAfter; }
+    
+    public Map<String, String> getFieldMapping() { return fieldMapping; }
+    public void setFieldMapping(Map<String, String> fieldMapping) { this.fieldMapping = fieldMapping; }
 }
 
 class ConditionalSection {

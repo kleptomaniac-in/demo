@@ -1,0 +1,40 @@
+# AcroForm enrollment application template with field mappings
+
+pdfMerge:
+  settings:
+    pageNumbering: "bottom-center"
+    addBookmarks: false
+  
+  sections:
+    # AcroForm section with field mappings
+    - name: enrollment-application
+      type: acroform
+      template: enrollment-application.pdf
+      enabled: true
+      fieldMapping:
+        # PDF Field Name: Payload Path
+        # Basic member information
+        "MemberFirstName": "member.firstName"
+        "MemberLastName": "member.lastName"
+        "MemberDateOfBirth": "member.dateOfBirth"
+        "MemberSSN": "member.ssn"
+        "MemberGender": "member.gender"
+        
+        # Contact information
+        "StreetAddress": "member.address.street"
+        "City": "member.address.city"
+        "State": "member.address.state"
+        "ZipCode": "member.address.zip"
+        "PhoneNumber": "member.phone"
+        "Email": "member.email"
+        
+        # Plan selection
+        "MedicalPlan": "selectedPlans.medical"
+        "DentalPlan": "selectedPlans.dental"
+        "VisionPlan": "selectedPlans.vision"
+        
+        # Effective date
+        "EffectiveDate": "enrollment.effectiveDate"
+        
+        # Signature date
+        "SignatureDate": "enrollment.signedDate"
