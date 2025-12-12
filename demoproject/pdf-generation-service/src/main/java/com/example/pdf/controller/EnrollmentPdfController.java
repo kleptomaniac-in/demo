@@ -3,12 +3,14 @@ package com.example.pdf.controller;
 import com.example.service.ConfigSelectionService;
 import com.example.service.FlexiblePdfMergeService;
 import com.example.service.EnrollmentSubmission;
+import com.pdfgen.service.EnrollmentApplicationPreProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -20,10 +22,19 @@ public class EnrollmentPdfController {
     
     @Autowired
     private ConfigSelectionService configSelectionService;
+    
+    @Autowired
+    private EnrollmentApplicationPreProcessor preprocessor;
 
     /**
      * Generate enrollment PDF with automatic config selection
      * POST /api/enrollment/generate
+     * 
+     * Now supports complex applicant structures with automatic pre-processing:
+     * - Separates PRIMARY, SPOUSE, DEPENDENTs
+     * - Handles BILLING vs MAILING addresses
+     * - Separates MEDICAL, DENTAL, VISION products
+     * - Manages overflow for 4+ dependents
      */
     @PostMapping("/generate")
     public ResponseEntity<byte[]> generateEnrollmentPdf(@RequestBody EnrollmentPdfRequest request) {
@@ -36,8 +47,11 @@ public class EnrollmentPdfController {
             System.out.println("Market: " + request.getEnrollment().getMarketCategory());
             System.out.println("State: " + request.getEnrollment().getState());
             
+            // Prepare payload with optional pre-processing for complex structures
+            Map<String, Object> processedPayload = preparePayload(request.getPayload());
+            
             // Generate PDF
-            byte[] pdfBytes = pdfMergeService.generateMergedPdf(configName, request.getPayload());
+            byte[] pdfBytes = pdfMergeService.generateMergedPdf(configName, processedPayload);
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
@@ -67,7 +81,10 @@ public class EnrollmentPdfController {
             
             System.out.println("Rule-based config selection: " + configName);
             
-            byte[] pdfBytes = pdfMergeService.generateMergedPdf(configName, request.getPayload());
+            // Prepare payload with optional pre-processing
+            Map<String, Object> processedPayload = preparePayload(request.getPayload());
+            
+            byte[] pdfBytes = pdfMergeService.generateMergedPdf(configName, processedPayload);
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
@@ -107,6 +124,54 @@ public class EnrollmentPdfController {
     private String buildSummary(EnrollmentSubmission enrollment) {
         return String.format("Products: %s, Market: %s, State: %s", 
             String.join(", ", enrollment.getProducts()),
+    
+    /**
+     * Prepares payload with automatic pre-processing for complex structures.
+     * Detects if payload contains complex applicant arrays and flattens them.
+     * 
+     * @param originalPayload The original payload from the request
+     * @return Processed payload with flattened structure (if needed) + original for FreeMarker
+     */
+    private Map<String, Object> preparePayload(Map<String, Object> originalPayload) {
+        // Check if payload has complex application structure
+        boolean hasComplexStructure = originalPayload.containsKey("application") &&
+            originalPayload.get("application") instanceof Map;
+        
+        if (!hasComplexStructure) {
+            // Simple payload, return as-is
+            return originalPayload;
+        }
+        
+        Map<String, Object> applicationData = (Map<String, Object>) originalPayload.get("application");
+        
+        // Check if it has applicants array (complex structure indicator)
+        boolean hasApplicantsArray = applicationData.containsKey("applicants") &&
+            applicationData.get("applicants") instanceof java.util.List;
+        
+        if (!hasApplicantsArray) {
+            // No applicants array, return as-is
+            return originalPayload;
+        }
+        
+        System.out.println("Detected complex applicant structure - applying pre-processing");
+        
+        // Pre-process: Flatten nested arrays for simplified field mapping
+        Map<String, Object> flattenedPayload = preprocessor.prepareForPdfMapping(originalPayload);
+        
+        // Create combined payload:
+        // - Flattened structure for AcroForm field mapping (primary, spouse, dependent1-3, etc.)
+        // - Original structure for FreeMarker templates (addendum, dynamic sections)
+        Map<String, Object> fullPayload = new HashMap<>();
+        fullPayload.putAll(flattenedPayload);
+        fullPayload.put("application", applicationData);
+        
+        System.out.println("Pre-processing complete: " +
+            "hasPrimary=" + fullPayload.containsKey("primary") +
+            ", hasSpouse=" + fullPayload.getOrDefault("hasSpouse", false) +
+            ", dependents=" + fullPayload.getOrDefault("dependentCount", 0));
+        
+        return fullPayload;
+    }
             enrollment.getMarketCategory(),
             enrollment.getState());
     }
