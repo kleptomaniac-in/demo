@@ -15,7 +15,7 @@ Content-Type: {{contentType}}
 
 {
   "configName": "pdf-merge-config.yml",
-  "outputFileName": "healthcare-report.pdf",
+  "outputFileName": "1.healthcare-report.pdf",
   "payload": {
     "companyName": "Acme Corporation",
     "reportTitle": "2025 Healthcare Plan Report",

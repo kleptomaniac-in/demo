@@ -1,0 +1,11 @@
+{
+  "products": ["medical", "dental", "vision"],
+  "marketCategory": "small-group",
+  "state": "TX",
+  "groupSize": 50,
+  "plansByProduct": {
+    "medical": ["PPO_500"],
+    "dental": ["BASIC_DENTAL"],
+    "vision": ["VISION_PLAN"]
+  }
+}

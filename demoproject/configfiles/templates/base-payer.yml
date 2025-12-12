@@ -1,0 +1,69 @@
+# Base configuration for all healthcare payer documents
+# This serves as the foundation that all specific templates build upon
+
+pdfMerge:
+  settings:
+    pageNumbering: "bottom-center"
+    addBookmarks: true
+    addTableOfContents: false
+  
+  # Common header for all documents
+  header:
+    enabled: true
+    height: 40
+    startPage: 1
+    content:
+      left:
+        text: "{companyName}"
+        font: "Helvetica"
+        fontSize: 10
+      right:
+        text: "Page {current} of {total}"
+        font: "Helvetica"
+        fontSize: 10
+    border:
+      enabled: true
+      color: "#333333"
+      thickness: 1
+  
+  # Common footer for all documents
+  footer:
+    enabled: true
+    height: 30
+    startPage: 1
+    content:
+      center:
+        text: "© 2025 {companyName} | {date}"
+        font: "Helvetica"
+        fontSize: 8
+    border:
+      enabled: false
+  
+  # Base sections that all documents include
+  sections:
+    - name: cover-page
+      type: pdfbox
+      template: cover-page-generator
+      enabled: true
+    
+    - name: member-plans
+      type: freemarker
+      template: member-healthcare-plans.ftl
+      enabled: true
+  
+  # Page numbering configuration
+  pageNumbering:
+    startPage: 2
+    format: "Page {current} of {total}"
+    position: "bottom-center"
+    font: "Helvetica"
+    fontSize: 10
+  
+  # Base bookmarks
+  bookmarks:
+    - section: cover-page
+      title: "Cover Page"
+      level: 1
+    - section: member-plans
+      title: "Member Healthcare Plans"
+      level: 1

@@ -1,0 +1,95 @@
+### Test 1: Preview Config Selection
+# Shows which config would be selected without generating PDF
+
+POST http://localhost:8080/api/enrollment/preview-config
+Content-Type: application/json
+
+{
+  "products": ["medical", "dental"],
+  "marketCategory": "individual",
+  "state": "CA"
+}
+
+### Test 2: Generate Multi-Product Enrollment PDF
+# Automatically selects: dental-medical-individual-ca.yml
+
+POST http://localhost:8080/api/enrollment/generate
+Content-Type: application/json
+
+{
+  "enrollment": {
+    "products": ["medical", "dental"],
+    "marketCategory": "individual",
+    "state": "CA"
+  },
+  "outputFileName": "enrollment-ca.pdf",
+  "payload": {
+    "companyName": "HealthCorp",
+    "members": [
+      {
+        "memberId": "E001",
+        "name": "Test Member",
+        "medical": {
+          "planName": "Gold PPO",
+          "premium": 450.00
+        },
+        "dental": {
+          "planName": "Premium Dental",
+          "premium": 45.00
+        }
+      }
+    ]
+  }
+}
+
+### Test 3: Triple Product (Medical + Dental + Vision)
+# Automatically selects: dental-medical-vision-small-group-tx.yml
+
+POST http://localhost:8080/api/enrollment/preview-config
+Content-Type: application/json
+
+{
+  "products": ["dental", "medical", "vision"],
+  "marketCategory": "small-group",
+  "state": "TX",
+  "groupSize": 50
+}
+
+### Test 4: Single Product (Medical only)
+# Automatically selects: medical-individual-ca.yml
+
+POST http://localhost:8080/api/enrollment/preview-config
+Content-Type: application/json
+
+{
+  "products": ["medical"],
+  "marketCategory": "individual",
+  "state": "CA"
+}
+
+### Test 5: Medicare with Rule-Based Selection
+# Uses business rules for special Medicare handling
+
+POST http://localhost:8080/api/enrollment/generate-with-rules
+Content-Type: application/json
+
+{
+  "enrollment": {
+    "products": ["medical"],
+    "marketCategory": "medicare",
+    "state": "CA"
+  },
+  "payload": {
+    "companyName": "Medicare Plus",
+    "members": [
+      {
+        "memberId": "M001",
+        "name": "Senior Member",
+        "medical": {
+          "planName": "Medicare Advantage",
+          "premium": 150.00
+        }
+      }
+    ]
+  }
+}

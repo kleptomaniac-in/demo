@@ -28,39 +28,165 @@ public class PdfMergeConfigService {
 
     public PdfMergeConfig loadConfig(String configName) {
         try {
-            String yamlContent;
+            // Load the main configuration
+            Map<String, Object> data = loadYamlFile(configName);
             
-            // Try to load from config server first (if available)
-            if (configServerClient != null) {
-                System.out.println("Attempting to load config from config server: " + configName);
-                Optional<Map<String, Object>> configOpt = configServerClient.getFileSource(
-                    "default", "master", configName
-                );
-                if (configOpt.isPresent()) {
-                    System.out.println("Config loaded from config server: " + configName);
-                    Yaml yaml = new Yaml();
-                    return parsePdfMergeConfig(configOpt.get());
-                }
-            }
-
-            System.out.println("Config server not available or config not found, falling back to file system.");
-            
-            // Fallback to loading from file system
-            String configPath = configRepoPath + "/" + configName;
-            if (!Files.exists(Paths.get(configPath))) {
-                // Try current working directory
-                configPath = configName;
+            // Check if this is a composition
+            if (data.containsKey("composition")) {
+                Map<String, Object> composition = (Map<String, Object>) data.get("composition");
+                return loadComposedConfig(composition, data);
             }
             
-            try (InputStream inputStream = new FileInputStream(configPath)) {
-                Yaml yaml = new Yaml();
-                Map<String, Object> data = yaml.load(inputStream);
-                return parsePdfMergeConfig(data);
-            }
+            // Regular config without composition
+            return parsePdfMergeConfig(data);
             
         } catch (Exception e) {
             throw new RuntimeException("Failed to load PDF merge config: " + configName, e);
         }
+    }
+    
+    private Map<String, Object> loadYamlFile(String configName) throws Exception {
+        String yamlContent;
+        
+        // Try to load from config server first (if available)
+        if (configServerClient != null) {
+            System.out.println("Attempting to load config from config server: " + configName);
+            Optional<Map<String, Object>> configOpt = configServerClient.getFileSource(
+                "default", "master", configName
+            );
+            if (configOpt.isPresent()) {
+                System.out.println("Config loaded from config server: " + configName);
+                return configOpt.get();
+            }
+        }
+
+        System.out.println("Config server not available or config not found, falling back to file system.");
+        
+        // Fallback to loading from file system
+        String configPath = configRepoPath + "/" + configName;
+        if (!Files.exists(Paths.get(configPath))) {
+            // Try current working directory
+            configPath = configName;
+        }
+        
+        try (InputStream inputStream = new FileInputStream(configPath)) {
+            Yaml yaml = new Yaml();
+            return yaml.load(inputStream);
+        }
+    }
+    
+    private PdfMergeConfig loadComposedConfig(Map<String, Object> composition, Map<String, Object> overrides) throws Exception {
+        // Start with base config
+        String basePath = (String) composition.get("base");
+        Map<String, Object> merged = new java.util.HashMap<>();
+        
+        if (basePath != null) {
+            System.out.println("Loading base config: " + basePath);
+            Map<String, Object> baseData = loadYamlFile(basePath);
+            merged = deepMerge(merged, baseData);
+        }
+        
+        // Apply component configs in order
+        List<String> components = (List<String>) composition.get("components");
+        if (components != null) {
+            for (String componentPath : components) {
+                System.out.println("Loading component config: " + componentPath);
+                Map<String, Object> componentData = loadYamlFile(componentPath);
+                merged = deepMerge(merged, componentData);
+            }
+        }
+        
+        // Apply final overrides from the composed file itself
+        // Remove composition key and merge the rest
+        Map<String, Object> finalOverrides = new java.util.HashMap<>(overrides);
+        finalOverrides.remove("composition");
+        if (!finalOverrides.isEmpty()) {
+            merged = deepMerge(merged, finalOverrides);
+        }
+        
+        return parsePdfMergeConfig(merged);
+    }
+    
+    /**
+     * Deep merge two maps. Values from 'source' override values in 'target'.
+     * - For maps: recursively merge nested maps
+     * - For lists with 'name' field: merge by name, otherwise append
+     * - For primitives: source overrides target
+     */
+    private Map<String, Object> deepMerge(Map<String, Object> target, Map<String, Object> source) {
+        Map<String, Object> result = new java.util.HashMap<>(target);
+        
+        for (Map.Entry<String, Object> entry : source.entrySet()) {
+            String key = entry.getKey();
+            Object sourceValue = entry.getValue();
+            Object targetValue = result.get(key);
+            
+            if (sourceValue == null) {
+                continue;
+            }
+            
+            if (targetValue == null) {
+                result.put(key, sourceValue);
+            } else if (sourceValue instanceof Map && targetValue instanceof Map) {
+                // Recursively merge nested maps
+                result.put(key, deepMerge((Map<String, Object>) targetValue, (Map<String, Object>) sourceValue));
+            } else if (sourceValue instanceof List && targetValue instanceof List) {
+                // Merge lists intelligently
+                result.put(key, mergeLists((List<?>) targetValue, (List<?>) sourceValue, key));
+            } else {
+                // Primitive override
+                result.put(key, sourceValue);
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Merge two lists intelligently:
+     * - For 'sections': merge by 'name' field, preserving order
+     * - For other lists: append source to target
+     */
+    private List<?> mergeLists(List<?> target, List<?> source, String fieldName) {
+        List<Object> result = new ArrayList<>(target);
+        
+        // Check if this is a list of maps with 'name' field (like sections)
+        boolean hasNameField = !source.isEmpty() && source.get(0) instanceof Map && 
+                               ((Map<?, ?>) source.get(0)).containsKey("name");
+        
+        if (hasNameField && "sections".equals(fieldName)) {
+            // Merge sections by name
+            for (Object sourceItem : source) {
+                Map<String, Object> sourceMap = (Map<String, Object>) sourceItem;
+                String sourceName = (String) sourceMap.get("name");
+                
+                // Find matching item in result by name
+                boolean found = false;
+                for (int i = 0; i < result.size(); i++) {
+                    if (result.get(i) instanceof Map) {
+                        Map<String, Object> targetMap = (Map<String, Object>) result.get(i);
+                        String targetName = (String) targetMap.get("name");
+                        
+                        if (sourceName != null && sourceName.equals(targetName)) {
+                            // Merge the section
+                            result.set(i, deepMerge(targetMap, sourceMap));
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                
+                // If not found, append the new section
+                if (!found) {
+                    result.add(sourceMap);
+                }
+            }
+        } else {
+            // For other lists (bookmarks, conditionals, etc.), append
+            result.addAll(source);
+        }
+        
+        return result;
     }
     
     private PdfMergeConfig parsePdfMergeConfig(Map<String, Object> data) {

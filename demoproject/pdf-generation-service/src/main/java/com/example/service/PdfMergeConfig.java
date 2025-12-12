@@ -3,6 +3,10 @@ package com.example.service;
 import java.util.List;
 
 public class PdfMergeConfig {
+    // Composition support
+    private String base;
+    private List<String> components;
+    
     private String pageNumbering;
     private boolean addBookmarks;
     private boolean addTableOfContents;
@@ -12,6 +16,13 @@ public class PdfMergeConfig {
     private List<BookmarkConfig> bookmarks;
     private HeaderFooterConfig header;
     private HeaderFooterConfig footer;
+
+    // Getters and setters for composition
+    public String getBase() { return base; }
+    public void setBase(String base) { this.base = base; }
+    
+    public List<String> getComponents() { return components; }
+    public void setComponents(List<String> components) { this.components = components; }
 
     // Getters and setters
     public String getPageNumbering() { return pageNumbering; }

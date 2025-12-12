@@ -1,0 +1,36 @@
+{
+  "configName": "medical-individual-ca.yml",
+  "outputFileName": "medical-individual-ca-plan.pdf",
+  "payload": {
+    "companyName": "HealthCorp Insurance",
+    "planType": "Medical Individual",
+    "state": "California",
+    "marketCategory": "Individual",
+    "members": [
+      {
+        "memberId": "M001",
+        "name": "John Doe",
+        "medical": {
+          "planName": "Gold PPO",
+          "premium": 450.00,
+          "deductible": 2000,
+          "oopMax": 6000,
+          "primaryCare": 25,
+          "specialist": 50
+        }
+      },
+      {
+        "memberId": "M002",
+        "name": "Jane Smith",
+        "medical": {
+          "planName": "Silver HMO",
+          "premium": 350.00,
+          "deductible": 3500,
+          "oopMax": 7500,
+          "primaryCare": 30,
+          "specialist": 60
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+# Small Group market-specific configurations
+
+pdfMerge:
+  sections:
+    # Small group eligibility
+    - name: group-eligibility
+      type: freemarker
+      template: markets/small-group-eligibility.ftl
+      enabled: true
+    
+    # Employer contribution information
+    - name: employer-contribution
+      type: freemarker
+      template: markets/employer-contribution.ftl
+      enabled: true
+  
+  # Override header for small group market
+  header:
+    content:
+      left:
+        text: "Small Group Plan | {companyName}"
+        fontSize: 10
+  
+  bookmarks:
+    - section: group-eligibility
+      title: "Group Eligibility Requirements"
+      level: 1
+    - section: employer-contribution
+      title: "Employer Contribution"
+      level: 1

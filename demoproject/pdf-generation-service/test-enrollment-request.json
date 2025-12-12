@@ -1,0 +1,37 @@
+{
+  "enrollment": {
+    "products": ["medical", "dental"],
+    "marketCategory": "individual",
+    "state": "CA",
+    "plansByProduct": {
+      "medical": ["GOLD_PPO", "SILVER_HMO"],
+      "dental": ["PREMIUM_DENTAL"]
+    }
+  },
+  "outputFileName": "enrollment-multi-product.pdf",
+  "payload": {
+    "companyName": "HealthCorp Insurance",
+    "enrollmentDate": "2025-12-12",
+    "memberName": "Jane Doe",
+    "memberId": "E12345",
+    "members": [
+      {
+        "memberId": "E12345",
+        "name": "Jane Doe",
+        "medical": {
+          "planName": "Gold PPO",
+          "planId": "GOLD_PPO",
+          "premium": 450.00,
+          "deductible": 2000,
+          "oopMax": 6000
+        },
+        "dental": {
+          "planName": "Premium Dental",
+          "planId": "PREMIUM_DENTAL",
+          "premium": 45.00,
+          "annualMax": 2000
+        }
+      }
+    ]
+  }
+}

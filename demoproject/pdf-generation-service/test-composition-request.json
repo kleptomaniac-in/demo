@@ -1,0 +1,17 @@
+{
+  "configName": "test-composition-simple.yml",
+  "outputFileName": "test-composition.pdf",
+  "payload": {
+    "companyName": "TestCorp Insurance",
+    "members": [
+      {
+        "memberId": "T001",
+        "name": "Test User",
+        "medical": {
+          "planName": "Test Plan",
+          "premium": 100.00
+        }
+      }
+    ]
+  }
+}
