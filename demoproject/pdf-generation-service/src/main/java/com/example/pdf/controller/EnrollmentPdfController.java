@@ -3,8 +3,9 @@ package com.example.pdf.controller;
 import com.example.service.ConfigSelectionService;
 import com.example.service.FlexiblePdfMergeService;
 import com.example.service.EnrollmentSubmission;
-import com.pdfgen.service.EnrollmentApplicationPreProcessor;
+import com.pdfgen.service.ConfigurablePayloadPreProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,10 @@ public class EnrollmentPdfController {
     private ConfigSelectionService configSelectionService;
     
     @Autowired
-    private EnrollmentApplicationPreProcessor preprocessor;
+    private ConfigurablePayloadPreProcessor preprocessor;
+    
+    @Value("${preprocessing.rules.default:preprocessing/standard-enrollment-rules.yml}")
+    private String defaultPreprocessingRules;
 
     /**
      * Generate enrollment PDF with automatic config selection
@@ -124,56 +128,93 @@ public class EnrollmentPdfController {
     private String buildSummary(EnrollmentSubmission enrollment) {
         return String.format("Products: %s, Market: %s, State: %s", 
             String.join(", ", enrollment.getProducts()),
+            enrollment.getMarketCategory(),
+            enrollment.getState());
+    }
     
     /**
-     * Prepares payload with automatic pre-processing for complex structures.
-     * Detects if payload contains complex applicant arrays and flattens them.
+     * Prepares payload with configuration-driven pre-processing.
+     * Uses YAML rules to flatten complex structures without code changes.
      * 
      * @param originalPayload The original payload from the request
      * @return Processed payload with flattened structure (if needed) + original for FreeMarker
      */
     private Map<String, Object> preparePayload(Map<String, Object> originalPayload) {
-        // Check if payload has complex application structure
-        boolean hasComplexStructure = originalPayload.containsKey("application") &&
-            originalPayload.get("application") instanceof Map;
+        // Check if payload needs preprocessing (has nested arrays)
+        boolean hasComplexStructure = hasNestedArrays(originalPayload);
         
         if (!hasComplexStructure) {
             // Simple payload, return as-is
             return originalPayload;
         }
         
-        Map<String, Object> applicationData = (Map<String, Object>) originalPayload.get("application");
+        System.out.println("Detected complex structure - applying configuration-driven pre-processing");
         
-        // Check if it has applicants array (complex structure indicator)
-        boolean hasApplicantsArray = applicationData.containsKey("applicants") &&
-            applicationData.get("applicants") instanceof java.util.List;
+        // Get preprocessing rules (can be overridden per client via config)
+        String rulesConfig = determinePreprocessingRules(originalPayload);
         
-        if (!hasApplicantsArray) {
-            // No applicants array, return as-is
-            return originalPayload;
-        }
-        
-        System.out.println("Detected complex applicant structure - applying pre-processing");
-        
-        // Pre-process: Flatten nested arrays for simplified field mapping
-        Map<String, Object> flattenedPayload = preprocessor.prepareForPdfMapping(originalPayload);
+        // Pre-process using configuration rules
+        Map<String, Object> flattenedPayload = preprocessor.preProcess(originalPayload, rulesConfig);
         
         // Create combined payload:
         // - Flattened structure for AcroForm field mapping (primary, spouse, dependent1-3, etc.)
         // - Original structure for FreeMarker templates (addendum, dynamic sections)
         Map<String, Object> fullPayload = new HashMap<>();
         fullPayload.putAll(flattenedPayload);
-        fullPayload.put("application", applicationData);
+        fullPayload.putAll(originalPayload); // Keep original nested structure
         
-        System.out.println("Pre-processing complete: " +
-            "hasPrimary=" + fullPayload.containsKey("primary") +
+        System.out.println("Pre-processing complete using rules: " + rulesConfig +
+            " | hasPrimary=" + fullPayload.containsKey("primary") +
             ", hasSpouse=" + fullPayload.getOrDefault("hasSpouse", false) +
             ", dependents=" + fullPayload.getOrDefault("dependentCount", 0));
         
         return fullPayload;
     }
-            enrollment.getMarketCategory(),
-            enrollment.getState());
+    
+    /**
+     * Determines which preprocessing rules to use based on payload structure.
+     * Can be extended to use client ID, tenant context, etc.
+     */
+    private String determinePreprocessingRules(Map<String, Object> payload) {
+        // Strategy 1: Check for client identifier in payload
+        if (payload.containsKey("clientId")) {
+            String clientId = payload.get("clientId").toString();
+            return "preprocessing/" + clientId + "-rules.yml";
+        }
+        
+        // Strategy 2: Detect structure pattern
+        if (payload.containsKey("enrollment") && 
+            payload.get("enrollment") instanceof Map) {
+            Map<String, Object> enrollment = (Map<String, Object>) payload.get("enrollment");
+            if (enrollment.containsKey("members")) {
+                return "preprocessing/client-b-rules.yml"; // Different structure
+            }
+        }
+        
+        // Strategy 3: Use default
+        return defaultPreprocessingRules;
+    }
+    
+    /**
+     * Checks if payload has nested arrays that need preprocessing.
+     */
+    private boolean hasNestedArrays(Map<String, Object> payload) {
+        // Check common patterns
+        if (payload.containsKey("application")) {
+            Map<String, Object> app = (Map<String, Object>) payload.get("application");
+            if (app.containsKey("applicants") && app.get("applicants") instanceof java.util.List) {
+                return true;
+            }
+        }
+        
+        if (payload.containsKey("enrollment")) {
+            Map<String, Object> enrollment = (Map<String, Object>) payload.get("enrollment");
+            if (enrollment.containsKey("members") && enrollment.get("members") instanceof java.util.List) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }
 

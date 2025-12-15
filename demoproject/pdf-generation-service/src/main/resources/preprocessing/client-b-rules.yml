@@ -1,0 +1,61 @@
+# Client B Pre-Processing Rules
+# Different payload structure: members[memberType=SUBSCRIBER/SPOUSE/CHILD]
+
+simpleExtractors:
+  - sourcePath: "enrollment.enrollmentId"
+    targetKey: "applicationId"
+  
+  - sourcePath: "enrollment.effectiveDate"
+    targetKey: "effectiveDate"
+
+arrayFilters:
+  # SUBSCRIBER = PRIMARY
+  - sourcePath: "enrollment.members"
+    filterField: "memberType"
+    filterValue: "SUBSCRIBER"
+    targetKey: "primary"
+    mode: "first"
+  
+  # SPOUSE
+  - sourcePath: "enrollment.members"
+    filterField: "memberType"
+    filterValue: "SPOUSE"
+    targetKey: "spouse"
+    mode: "first"
+  
+  # CHILD = DEPENDENT
+  - sourcePath: "enrollment.members"
+    filterField: "memberType"
+    filterValue: "CHILD"
+    targetKey: "dependent"
+    mode: "indexed"
+    maxItems: 3
+  
+  # Different address structure
+  - sourcePath: "enrollment.contactInfo.addresses"
+    filterField: "addressType"
+    filterValue: "HOME"
+    targetKey: "billing"
+    mode: "first"
+  
+  # Products in different location
+  - sourcePath: "enrollment.selectedPlans"
+    filterField: "category"
+    filterValue: "HEALTH"
+    targetKey: "medical"
+    mode: "first"
+  
+  - sourcePath: "enrollment.selectedPlans"
+    filterField: "category"
+    filterValue: "DENTAL"
+    targetKey: "dental"
+    mode: "first"
+
+calculatedFields:
+  - type: "exists"
+    checkKey: "spouse"
+    targetKey: "hasSpouse"
+  
+  - type: "exists"
+    checkKey: "medical"
+    targetKey: "hasMedical"

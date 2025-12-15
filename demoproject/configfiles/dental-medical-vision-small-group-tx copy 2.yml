@@ -1,0 +1,12 @@
+# Triple product template: Dental + Medical + Vision
+
+composition:
+  base: templates/base-payer.yml
+  components:
+    - templates/products/dental.yml
+    - templates/products/medical.yml
+    - templates/products/vision.yml
+    - templates/markets/small-group.yml
+    - templates/states/texas.yml
+
+# Complete benefits package for small groups in Texas

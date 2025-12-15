@@ -1,0 +1,46 @@
+# California state-specific configurations and requirements
+
+pdfMerge:
+  sections:
+    # California DMHC disclosure (required by law)
+    - name: ca-dmhc-disclosure
+      type: freemarker
+      template: states/california-dmhc-disclosure.ftl
+      enabled: true
+    
+    # California-specific benefit mandates
+    - name: ca-benefit-mandates
+      type: freemarker
+      template: states/california-benefit-mandates.ftl
+      enabled: true
+  
+  # Override header with CA license number
+  header:
+    content:
+      left:
+        text: "CA License #12345 | {companyName}"
+        fontSize: 8
+  
+  # Override footer with CA-specific disclaimer
+  footer:
+    content:
+      center:
+        text: "© 2025 {companyName} | Licensed by California DMHC | {date}"
+        fontSize: 8
+  
+  # CA-specific conditional section for Individual market
+  conditionalSections:
+    - condition: "payload.marketCategory"
+      sections:
+        - name: ca-individual-premium-disclosure
+          type: freemarker
+          template: states/california-individual-premium.ftl
+          insertAfter: cost-sharing
+  
+  bookmarks:
+    - section: ca-dmhc-disclosure
+      title: "California DMHC Disclosure"
+      level: 1
+    - section: ca-benefit-mandates
+      title: "California Benefit Mandates"
+      level: 1

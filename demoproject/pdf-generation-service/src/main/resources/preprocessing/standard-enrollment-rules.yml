@@ -1,0 +1,106 @@
+# Standard Enrollment Pre-Processing Rules
+# For payloads with structure: application.applicants[relationship=PRIMARY/SPOUSE/DEPENDENT]
+
+# Extract simple top-level fields
+simpleExtractors:
+  - sourcePath: "application.applicationId"
+    targetKey: "applicationId"
+  
+  - sourcePath: "application.submittedDate"
+    targetKey: "submittedDate"
+  
+  - sourcePath: "application.effectiveDate"
+    targetKey: "effectiveDate"
+
+# Extract items from arrays using filters
+arrayFilters:
+  # PRIMARY applicant
+  - sourcePath: "application.applicants"
+    filterField: "relationship"
+    filterValue: "PRIMARY"
+    targetKey: "primary"
+    mode: "first"
+  
+  # SPOUSE applicant
+  - sourcePath: "application.applicants"
+    filterField: "relationship"
+    filterValue: "SPOUSE"
+    targetKey: "spouse"
+    mode: "first"
+  
+  # DEPENDENT applicants (first 3 with overflow)
+  - sourcePath: "application.applicants"
+    filterField: "relationship"
+    filterValue: "DEPENDENT"
+    targetKey: "dependent"
+    mode: "indexed"
+    maxItems: 3
+  
+  # BILLING address
+  - sourcePath: "application.addresses"
+    filterField: "type"
+    filterValue: "BILLING"
+    targetKey: "billing"
+    mode: "first"
+  
+  # MAILING address
+  - sourcePath: "application.addresses"
+    filterField: "type"
+    filterValue: "MAILING"
+    targetKey: "mailing"
+    mode: "first"
+  
+  # MEDICAL product
+  - sourcePath: "application.proposedProducts"
+    filterField: "productType"
+    filterValue: "MEDICAL"
+    targetKey: "medical"
+    mode: "first"
+  
+  # DENTAL product
+  - sourcePath: "application.proposedProducts"
+    filterField: "productType"
+    filterValue: "DENTAL"
+    targetKey: "dental"
+    mode: "first"
+  
+  # VISION product
+  - sourcePath: "application.proposedProducts"
+    filterField: "productType"
+    filterValue: "VISION"
+    targetKey: "vision"
+    mode: "first"
+  
+  # All dependents (for addendum template)
+  - sourcePath: "application.applicants"
+    filterField: "relationship"
+    filterValue: "DEPENDENT"
+    targetKey: "allDependents"
+    mode: "all"
+
+# Calculated/derived fields
+calculatedFields:
+  - type: "exists"
+    checkKey: "spouse"
+    targetKey: "hasSpouse"
+  
+  - type: "exists"
+    checkKey: "medical"
+    targetKey: "hasMedical"
+  
+  - type: "exists"
+    checkKey: "dental"
+    targetKey: "hasDental"
+  
+  - type: "exists"
+    checkKey: "vision"
+    targetKey: "hasVision"
+  
+  - type: "count"
+    sourceKey: "allDependents"
+    targetKey: "dependentCount"
+  
+  - type: "subtract"
+    minuend: "dependentCount"
+    subtrahend: 3
+    targetKey: "additionalDependentCount"
