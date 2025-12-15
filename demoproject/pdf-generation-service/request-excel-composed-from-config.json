@@ -1,0 +1,64 @@
+{
+  "configName": "excel/enrollment-summary-composed-excel.yml",
+  "payload": {
+    "application": {
+      "applicationId": "APP-COMPOSED-789",
+      "submittedDate": "2025-12-15",
+      "effectiveDate": "2026-01-01",
+      "applicants": [
+        {
+          "relationship": "PRIMARY",
+          "firstName": "Alice",
+          "lastName": "Smith",
+          "dateOfBirth": "1985-03-20",
+          "ssn": "111-22-3333"
+        },
+        {
+          "relationship": "SPOUSE",
+          "firstName": "Bob",
+          "lastName": "Smith",
+          "dateOfBirth": "1983-07-15",
+          "ssn": "222-33-4444"
+        },
+        {
+          "relationship": "DEPENDENT",
+          "firstName": "Charlie",
+          "lastName": "Smith",
+          "dateOfBirth": "2010-01-10",
+          "ssn": "333-44-5555",
+          "age": 15
+        },
+        {
+          "relationship": "DEPENDENT",
+          "firstName": "Diana",
+          "lastName": "Smith",
+          "dateOfBirth": "2012-05-25",
+          "ssn": "444-55-6666",
+          "age": 13
+        }
+      ],
+      "proposedProducts": [
+        {
+          "productType": "MEDICAL",
+          "planName": "Gold HMO",
+          "planId": "MED-002",
+          "monthlyPremium": 550.00,
+          "deductible": 2000.00,
+          "copay": 25.00
+        },
+        {
+          "productType": "DENTAL",
+          "planName": "Basic Dental",
+          "planId": "DEN-001",
+          "monthlyPremium": 30.00
+        },
+        {
+          "productType": "VISION",
+          "planName": "Premium Vision",
+          "planId": "VIS-002",
+          "monthlyPremium": 20.00
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "templatePath": "dependent-list.xlsx",
+  "tableMappings": [
+    {
+      "sheetName": "Dependents",
+      "startRow": 1,
+      "sourcePath": "allDependents",
+      "columnMappings": {
+        "0": "firstName",
+        "1": "lastName",
+        "2": "dateOfBirth",
+        "3": "ssn",
+        "4": "age",
+        "5": "gender"
+      }
+    }
+  ],
+  "payload": {
+    "allDependents": [
+      {
+        "firstName": "Child1",
+        "lastName": "Doe",
+        "dateOfBirth": "2010-03-15",
+        "ssn": "123-45-6789",
+        "age": 15,
+        "gender": "M"
+      },
+      {
+        "firstName": "Child2",
+        "lastName": "Doe",
+        "dateOfBirth": "2012-07-20",
+        "ssn": "234-56-7890",
+        "age": 13,
+        "gender": "F"
+      },
+      {
+        "firstName": "Child3",
+        "lastName": "Doe",
+        "dateOfBirth": "2015-11-10",
+        "ssn": "345-67-8901",
+        "age": 10,
+        "gender": "M"
+      },
+      {
+        "firstName": "Child4",
+        "lastName": "Doe",
+        "dateOfBirth": "2018-02-28",
+        "ssn": "456-78-9012",
+        "age": 7,
+        "gender": "F"
+      },
+      {
+        "firstName": "Child5",
+        "lastName": "Doe",
+        "dateOfBirth": "2020-06-05",
+        "ssn": "567-89-0123",
+        "age": 5,
+        "gender": "M"
+      }
+    ]
+  }
+}

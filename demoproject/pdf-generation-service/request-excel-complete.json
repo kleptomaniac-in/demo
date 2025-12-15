@@ -1,0 +1,126 @@
+{
+  "templatePath": "enrollment-complete.xlsx",
+  "preprocessingRules": "standard-enrollment-rules.yml",
+  "tableMappings": [
+    {
+      "sheetName": "All Dependents",
+      "startRow": 1,
+      "sourcePath": "allDependents",
+      "columnMappings": {
+        "0": "firstName",
+        "1": "lastName",
+        "2": "dateOfBirth",
+        "3": "ssn",
+        "4": "relationship"
+      }
+    }
+  ],
+  "payload": {
+    "application": {
+      "applicationId": "APP-98765",
+      "submittedDate": "2025-12-15",
+      "effectiveDate": "2026-01-01",
+      "applicants": [
+        {
+          "applicantId": "A001",
+          "relationship": "PRIMARY",
+          "firstName": "John",
+          "lastName": "Doe",
+          "dateOfBirth": "1980-05-15",
+          "ssn": "123-45-6789",
+          "email": "john.doe@example.com",
+          "phone": "555-1234"
+        },
+        {
+          "applicantId": "A002",
+          "relationship": "SPOUSE",
+          "firstName": "Jane",
+          "lastName": "Doe",
+          "dateOfBirth": "1982-08-20",
+          "email": "jane.doe@example.com"
+        },
+        {
+          "applicantId": "A003",
+          "relationship": "DEPENDENT",
+          "firstName": "Child1",
+          "lastName": "Doe",
+          "dateOfBirth": "2010-03-15",
+          "ssn": "123-45-6789"
+        },
+        {
+          "applicantId": "A004",
+          "relationship": "DEPENDENT",
+          "firstName": "Child2",
+          "lastName": "Doe",
+          "dateOfBirth": "2012-07-20",
+          "ssn": "234-56-7890"
+        },
+        {
+          "applicantId": "A005",
+          "relationship": "DEPENDENT",
+          "firstName": "Child3",
+          "lastName": "Doe",
+          "dateOfBirth": "2015-11-10",
+          "ssn": "345-67-8901"
+        },
+        {
+          "applicantId": "A006",
+          "relationship": "DEPENDENT",
+          "firstName": "Child4",
+          "lastName": "Doe",
+          "dateOfBirth": "2018-02-28",
+          "ssn": "456-78-9012"
+        },
+        {
+          "applicantId": "A007",
+          "relationship": "DEPENDENT",
+          "firstName": "Child5",
+          "lastName": "Doe",
+          "dateOfBirth": "2020-06-05",
+          "ssn": "567-89-0123"
+        }
+      ],
+      "addresses": [
+        {
+          "type": "BILLING",
+          "street": "123 Main Street",
+          "street2": "Apt 4B",
+          "city": "Los Angeles",
+          "state": "CA",
+          "zipCode": "90001",
+          "county": "Los Angeles"
+        },
+        {
+          "type": "MAILING",
+          "street": "456 Oak Avenue",
+          "city": "Los Angeles",
+          "state": "CA",
+          "zipCode": "90002"
+        }
+      ],
+      "proposedProducts": [
+        {
+          "productType": "MEDICAL",
+          "planName": "Platinum PPO",
+          "planId": "MED-001",
+          "monthlyPremium": 650.00,
+          "deductible": 1000.00
+        },
+        {
+          "productType": "DENTAL",
+          "planName": "Gold Dental",
+          "planId": "DEN-002",
+          "monthlyPremium": 45.00,
+          "deductible": 50.00
+        },
+        {
+          "productType": "VISION",
+          "planName": "Standard Vision",
+          "planId": "VIS-003",
+          "monthlyPremium": 15.00,
+          "deductible": 0.00
+        }
+      ]
+    }
+  }
+}

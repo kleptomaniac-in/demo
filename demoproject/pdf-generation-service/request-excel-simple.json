@@ -1,0 +1,69 @@
+{
+  "templatePath": "enrollment-summary.xlsx",
+  "cellMappings": {
+    "ApplicationId": "applicationId",
+    "SubmittedDate": "submittedDate",
+    "PrimaryFirstName": "primary.firstName",
+    "PrimaryLastName": "primary.lastName",
+    "PrimaryDOB": "primary.dateOfBirth",
+    "PrimarySSN": "primary.ssn",
+    "SpouseFirstName": "spouse.firstName",
+    "SpouseLastName": "spouse.lastName",
+    "Dependent1FirstName": "dependent1.firstName",
+    "Dependent1LastName": "dependent1.lastName",
+    "Dependent1Age": "dependent1.age",
+    "Dependent2FirstName": "dependent2.firstName",
+    "Dependent2LastName": "dependent2.lastName",
+    "Dependent2Age": "dependent2.age",
+    "Dependent3FirstName": "dependent3.firstName",
+    "Dependent3LastName": "dependent3.lastName",
+    "Dependent3Age": "dependent3.age",
+    "MedicalPlanName": "medical.planName",
+    "MedicalPremium": "medical.monthlyPremium",
+    "DentalPlanName": "dental.planName",
+    "DentalPremium": "dental.monthlyPremium",
+    "TotalPremium": "totalMonthlyPremium",
+    "DependentCount": "dependentCount",
+    "AdditionalDependents": "additionalDependentCount"
+  },
+  "payload": {
+    "applicationId": "APP-12345",
+    "submittedDate": "2025-12-15",
+    "primary": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "dateOfBirth": "1980-05-15",
+      "ssn": "123-45-6789"
+    },
+    "spouse": {
+      "firstName": "Jane",
+      "lastName": "Doe"
+    },
+    "dependent1": {
+      "firstName": "Child1",
+      "lastName": "Doe",
+      "age": 15
+    },
+    "dependent2": {
+      "firstName": "Child2",
+      "lastName": "Doe",
+      "age": 13
+    },
+    "dependent3": {
+      "firstName": "Child3",
+      "lastName": "Doe",
+      "age": 11
+    },
+    "medical": {
+      "planName": "Platinum PPO",
+      "monthlyPremium": 650.00
+    },
+    "dental": {
+      "planName": "Gold Dental",
+      "monthlyPremium": 45.00
+    },
+    "totalMonthlyPremium": 695.00,
+    "dependentCount": 5,
+    "additionalDependentCount": 2
+  }
+}

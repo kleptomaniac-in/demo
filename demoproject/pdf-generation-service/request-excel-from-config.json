@@ -1,0 +1,103 @@
+{
+  "configName": "excel/enrollment-summary-excel.yml",
+  "payload": {
+    "application": {
+      "applicationId": "APP-12345",
+      "submittedDate": "2025-12-15",
+      "effectiveDate": "2026-01-01",
+      "applicants": [
+        {
+          "relationship": "PRIMARY",
+          "firstName": "John",
+          "lastName": "Doe",
+          "middleName": "A",
+          "dateOfBirth": "1980-05-15",
+          "ssn": "123-45-6789",
+          "gender": "M",
+          "email": "john.doe@example.com",
+          "phone": "555-1234"
+        },
+        {
+          "relationship": "SPOUSE",
+          "firstName": "Jane",
+          "lastName": "Doe",
+          "middleName": "B",
+          "dateOfBirth": "1982-08-20",
+          "ssn": "234-56-7890",
+          "gender": "F"
+        },
+        {
+          "relationship": "DEPENDENT",
+          "firstName": "Child1",
+          "lastName": "Doe",
+          "dateOfBirth": "2010-03-15",
+          "ssn": "345-67-8901",
+          "age": 15
+        },
+        {
+          "relationship": "DEPENDENT",
+          "firstName": "Child2",
+          "lastName": "Doe",
+          "dateOfBirth": "2012-07-20",
+          "ssn": "456-78-9012",
+          "age": 13
+        },
+        {
+          "relationship": "DEPENDENT",
+          "firstName": "Child3",
+          "lastName": "Doe",
+          "dateOfBirth": "2015-11-10",
+          "ssn": "567-89-0123",
+          "age": 10
+        },
+        {
+          "relationship": "DEPENDENT",
+          "firstName": "Child4",
+          "lastName": "Doe",
+          "dateOfBirth": "2018-02-28",
+          "ssn": "678-90-1234",
+          "age": 7
+        }
+      ],
+      "addresses": [
+        {
+          "type": "BILLING",
+          "street": "123 Main Street",
+          "street2": "Apt 4B",
+          "city": "Los Angeles",
+          "state": "CA",
+          "zipCode": "90001",
+          "county": "Los Angeles"
+        },
+        {
+          "type": "MAILING",
+          "street": "456 Oak Avenue",
+          "city": "Los Angeles",
+          "state": "CA",
+          "zipCode": "90002"
+        }
+      ],
+      "proposedProducts": [
+        {
+          "productType": "MEDICAL",
+          "planName": "Platinum PPO",
+          "planId": "MED-001",
+          "monthlyPremium": 650.00,
+          "deductible": 1000.00
+        },
+        {
+          "productType": "DENTAL",
+          "planName": "Gold Dental",
+          "planId": "DEN-002",
+          "monthlyPremium": 45.00
+        },
+        {
+          "productType": "VISION",
+          "planName": "Standard Vision",
+          "planId": "VIS-003",
+          "monthlyPremium": 15.00
+        }
+      ]
+    }
+  }
+}

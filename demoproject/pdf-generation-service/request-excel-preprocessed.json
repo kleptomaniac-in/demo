@@ -1,0 +1,125 @@
+{
+  "templatePath": "enrollment-summary.xlsx",
+  "preprocessingRules": "standard-enrollment-rules.yml",
+  "cellMappings": {
+    "ApplicationId": "applicationId",
+    "SubmittedDate": "submittedDate",
+    "EffectiveDate": "effectiveDate",
+    "PrimaryFirstName": "primary.firstName",
+    "PrimaryLastName": "primary.lastName",
+    "PrimaryDOB": "primary.dateOfBirth",
+    "PrimarySSN": "primary.ssn",
+    "SpouseFirstName": "spouse.firstName",
+    "SpouseLastName": "spouse.lastName",
+    "Dependent1FirstName": "dependent1.firstName",
+    "Dependent1LastName": "dependent1.lastName",
+    "Dependent1DOB": "dependent1.dateOfBirth",
+    "Dependent2FirstName": "dependent2.firstName",
+    "Dependent2LastName": "dependent2.lastName",
+    "Dependent2DOB": "dependent2.dateOfBirth",
+    "Dependent3FirstName": "dependent3.firstName",
+    "Dependent3LastName": "dependent3.lastName",
+    "Dependent3DOB": "dependent3.dateOfBirth",
+    "BillingStreet": "billing.street",
+    "BillingCity": "billing.city",
+    "BillingState": "billing.state",
+    "BillingZip": "billing.zipCode",
+    "MedicalPlanName": "medical.planName",
+    "MedicalPlanId": "medical.planId",
+    "MedicalPremium": "medical.monthlyPremium",
+    "DentalPlanName": "dental.planName",
+    "DentalPremium": "dental.monthlyPremium",
+    "VisionPlanName": "vision.planName",
+    "VisionPremium": "vision.monthlyPremium",
+    "HasSpouse": "hasSpouse",
+    "DependentCount": "dependentCount",
+    "AdditionalDependents": "additionalDependentCount"
+  },
+  "payload": {
+    "application": {
+      "applicationId": "APP-12345",
+      "submittedDate": "2025-12-15",
+      "effectiveDate": "2026-01-01",
+      "applicants": [
+        {
+          "applicantId": "A001",
+          "relationship": "PRIMARY",
+          "firstName": "John",
+          "lastName": "Doe",
+          "dateOfBirth": "1980-05-15",
+          "ssn": "123-45-6789"
+        },
+        {
+          "applicantId": "A002",
+          "relationship": "SPOUSE",
+          "firstName": "Jane",
+          "lastName": "Doe"
+        },
+        {
+          "applicantId": "A003",
+          "relationship": "DEPENDENT",
+          "firstName": "Child1",
+          "lastName": "Doe",
+          "dateOfBirth": "2010-03-15"
+        },
+        {
+          "applicantId": "A004",
+          "relationship": "DEPENDENT",
+          "firstName": "Child2",
+          "lastName": "Doe",
+          "dateOfBirth": "2012-07-20"
+        },
+        {
+          "applicantId": "A005",
+          "relationship": "DEPENDENT",
+          "firstName": "Child3",
+          "lastName": "Doe",
+          "dateOfBirth": "2015-11-10"
+        },
+        {
+          "applicantId": "A006",
+          "relationship": "DEPENDENT",
+          "firstName": "Child4",
+          "lastName": "Doe",
+          "dateOfBirth": "2018-02-28"
+        }
+      ],
+      "addresses": [
+        {
+          "type": "BILLING",
+          "street": "123 Main Street",
+          "city": "Los Angeles",
+          "state": "CA",
+          "zipCode": "90001"
+        },
+        {
+          "type": "MAILING",
+          "street": "456 Oak Avenue",
+          "city": "Los Angeles",
+          "state": "CA",
+          "zipCode": "90002"
+        }
+      ],
+      "proposedProducts": [
+        {
+          "productType": "MEDICAL",
+          "planName": "Platinum PPO",
+          "planId": "MED-001",
+          "monthlyPremium": 650.00
+        },
+        {
+          "productType": "DENTAL",
+          "planName": "Gold Dental",
+          "planId": "DEN-002",
+          "monthlyPremium": 45.00
+        },
+        {
+          "productType": "VISION",
+          "planName": "Standard Vision",
+          "planId": "VIS-003",
+          "monthlyPremium": 15.00
+        }
+      ]
+    }
+  }
+}
