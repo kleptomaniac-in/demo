@@ -1,0 +1,13 @@
+curl -X POST http://localhost:8080/api/enrollment/generate \
+  -H "Content-Type: application/json" \
+  -o enr-external-test.pdf \
+  --data @- <<EOF    
+{
+  "enrollment": {
+    "products": ["medical", "dental"],
+    "marketCategory": "individual",
+    "state": "CA"
+  },
+  "payload": $(cat /workspaces/demo/demoproject/config-repo/examples/complex-application-structure.json)
+}
+EOF

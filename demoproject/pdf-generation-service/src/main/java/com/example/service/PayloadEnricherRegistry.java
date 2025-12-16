@@ -16,7 +16,7 @@ public class PayloadEnricherRegistry {
     
     private final Map<String, PayloadEnricher> enrichers = new HashMap<>();
     
-    @Autowired(required = false)
+    @Autowired
     public PayloadEnricherRegistry(List<PayloadEnricher> enricherList) {
         if (enricherList != null) {
             for (PayloadEnricher enricher : enricherList) {

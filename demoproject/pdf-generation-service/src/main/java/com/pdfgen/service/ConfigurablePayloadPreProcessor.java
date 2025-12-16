@@ -302,10 +302,26 @@ public class ConfigurablePayloadPreProcessor {
                 break;
                 
             case "subtract":
-                String minuendKey = (String) calcConfig.get("minuend");
-                String subtrahendKey = (String) calcConfig.get("subtrahend");
-                int minuend = (Integer) data.getOrDefault(minuendKey, 0);
-                int subtrahend = (Integer) data.getOrDefault(subtrahendKey, 0);
+                // Handle minuend: can be a String key or a Number literal
+                Object minuendConfig = calcConfig.get("minuend");
+                int minuend = 0;
+                if (minuendConfig instanceof String) {
+                    Object minuendObj = data.getOrDefault((String) minuendConfig, 0);
+                    minuend = (minuendObj instanceof Number) ? ((Number) minuendObj).intValue() : 0;
+                } else if (minuendConfig instanceof Number) {
+                    minuend = ((Number) minuendConfig).intValue();
+                }
+                
+                // Handle subtrahend: can be a String key or a Number literal
+                Object subtrahendConfig = calcConfig.get("subtrahend");
+                int subtrahend = 0;
+                if (subtrahendConfig instanceof String) {
+                    Object subtrahendObj = data.getOrDefault((String) subtrahendConfig, 0);
+                    subtrahend = (subtrahendObj instanceof Number) ? ((Number) subtrahendObj).intValue() : 0;
+                } else if (subtrahendConfig instanceof Number) {
+                    subtrahend = ((Number) subtrahendConfig).intValue();
+                }
+                
                 data.put(targetKey, Math.max(0, minuend - subtrahend));
                 break;
         }

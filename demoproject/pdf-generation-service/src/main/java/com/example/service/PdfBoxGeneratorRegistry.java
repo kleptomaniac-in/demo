@@ -16,7 +16,7 @@ public class PdfBoxGeneratorRegistry {
     
     private final Map<String, PdfBoxGenerator> generators = new HashMap<>();
     
-    @Autowired(required = false)
+    @Autowired
     public PdfBoxGeneratorRegistry(List<PdfBoxGenerator> generatorList) {
         if (generatorList != null) {
             for (PdfBoxGenerator generator : generatorList) {
