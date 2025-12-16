@@ -1,7 +1,7 @@
 package com.pdfgen.controller;
 
 import com.pdfgen.service.EnrollmentApplicationPreProcessor;
-import com.pdfgen.service.FlexiblePdfMergeService;
+import com.example.service.FlexiblePdfMergeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -37,34 +37,39 @@ public class ComplexEnrollmentPdfController {
     @PostMapping("/generate")
     public ResponseEntity<byte[]> generateEnrollmentPdf(@RequestBody Map<String, Object> request) {
         
-        // Extract application data
-        Map<String, Object> applicationData = (Map<String, Object>) request.get("application");
-        
-        // Pre-process: Flatten nested arrays for simplified field mapping
-        Map<String, Object> flattenedPayload = preprocessor.prepareForPdfMapping(
-            Map.of("application", applicationData)
-        );
-        
-        // Add back original structure for FreeMarker addendum template
-        Map<String, Object> fullPayload = new HashMap<>();
-        fullPayload.putAll(flattenedPayload);
-        fullPayload.put("application", applicationData);
-        
-        // Determine config file (use preprocessed version)
-        String configName = request.getOrDefault("configName", 
-            "examples/preprocessed-enrollment-mapping.yml").toString();
-        
-        // Generate PDF
-        byte[] pdfBytes = pdfMergeService.generatePdf(configName, fullPayload);
-        
-        // Return PDF
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("filename", "enrollment-application.pdf");
-        
-        return ResponseEntity.ok()
-            .headers(headers)
-            .body(pdfBytes);
+        try {
+            // Extract application data
+            Map<String, Object> applicationData = (Map<String, Object>) request.get("application");
+            
+            // Pre-process: Flatten nested arrays for simplified field mapping
+            Map<String, Object> flattenedPayload = preprocessor.prepareForPdfMapping(
+                Map.of("application", applicationData)
+            );
+            
+            // Add back original structure for FreeMarker addendum template
+            Map<String, Object> fullPayload = new HashMap<>();
+            fullPayload.putAll(flattenedPayload);
+            fullPayload.put("application", applicationData);
+            
+            // Determine config file (use preprocessed version)
+            String configName = request.getOrDefault("configName", 
+                "examples/preprocessed-enrollment-mapping.yml").toString();
+            
+            // Generate PDF
+            byte[] pdfBytes = pdfMergeService.generateMergedPdf(configName, fullPayload);
+            
+            // Return PDF
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("filename", "enrollment-application.pdf");
+            
+            return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
     }
     
     /**

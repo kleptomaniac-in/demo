@@ -1,9 +1,10 @@
 package com.pdfgen.service;
 
-import com.pdfgen.model.Application;
-import com.pdfgen.model.Applicant;
-import com.pdfgen.model.Address;
-import com.pdfgen.model.Product;
+// Model classes not yet implemented - using Map-based approach instead
+// import com.pdfgen.model.Application;
+// import com.pdfgen.model.Applicant;
+// import com.pdfgen.model.Address;
+// import com.pdfgen.model.Product;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

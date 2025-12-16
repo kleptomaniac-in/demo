@@ -1,6 +1,7 @@
 package com.example.service;
 
 import java.util.List;
+import java.util.Map;
 
 public class PdfMergeConfig {
     // Composition support
@@ -82,7 +83,7 @@ class SectionConfig {
     public String getInsertAfter() { return insertAfter; }
     public void setInsertAfter(String insertAfter) { this.insertAfter = insertAfter; }
     
-    public Map<String, String> getFieldMapping() { return fieldMapping; }
+    public java.util.Map<String, String> getFieldMapping() { return fieldMapping; }
     public void setFieldMapping(Map<String, String> fieldMapping) { this.fieldMapping = fieldMapping; }
     
     public List<String> getPayloadEnrichers() { return payloadEnrichers; }

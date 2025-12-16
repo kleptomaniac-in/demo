@@ -1,6 +1,6 @@
 package com.example.pdf.controller;
 
-import com.example.service.ConfigurablePayloadPreProcessor;
+import com.pdfgen.service.ConfigurablePayloadPreProcessor;
 import com.example.service.ExcelTemplateService;
 import com.example.service.ExcelMergeConfigService;
 import com.example.service.ExcelMergeConfig;
