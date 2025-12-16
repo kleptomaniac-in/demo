@@ -37,6 +37,9 @@ public class FlexiblePdfMergeService {
     
     @Autowired
     private AcroFormFillService acroFormFillService;
+    
+    @Autowired(required = false)
+    private PayloadEnricherRegistry payloadEnricherRegistry;
 
     public byte[] generateMergedPdf(String configName, Map<String, Object> payload) throws IOException {
         // Load merge configuration
@@ -149,11 +152,25 @@ public class FlexiblePdfMergeService {
     }
     
     private PDDocument generateSectionPdf(SectionConfig section, Map<String, Object> payload) throws IOException {
+        // Apply payload enrichers if specified
+        Map<String, Object> enrichedPayload = payload;
+        if (section.getPayloadEnrichers() != null && !section.getPayloadEnrichers().isEmpty()) {
+            if (payloadEnricherRegistry != null) {
+                System.out.println("Applying enrichers: " + section.getPayloadEnrichers());
+                enrichedPayload = payloadEnricherRegistry.applyEnrichers(
+                    section.getPayloadEnrichers(), 
+                    payload
+                );
+            } else {
+                System.err.println("PayloadEnricherRegistry not available, skipping enrichers");
+            }
+        }
+        
         if ("freemarker".equals(section.getType())) {
             // Generate HTML via FreeMarker
             // FreeMarker templates expect payload to be nested under "payload" key
             Map<String, Object> model = new java.util.HashMap<>();
-            model.put("payload", payload);
+            model.put("payload", enrichedPayload);
             
             String html = freemarkerService.processTemplateFromLocation(section.getTemplate(), model);
             byte[] pdfBytes = htmlPdfService.renderHtmlToPdf(html);
@@ -162,7 +179,7 @@ public class FlexiblePdfMergeService {
         } else if ("pdfbox".equals(section.getType())) {
             // Generate via PDFBox generator
             PdfBoxGenerator generator = pdfBoxRegistry.getGenerator(section.getTemplate());
-            return generator.generate(payload);
+            return generator.generate(enrichedPayload);
             
         } else if ("acroform".equals(section.getType())) {
             // Fill AcroForm PDF using field mappings
@@ -173,7 +190,7 @@ public class FlexiblePdfMergeService {
             byte[] filledPdf = acroFormFillService.fillAcroForm(
                 section.getTemplate(), 
                 section.getFieldMapping(), 
-                payload
+                enrichedPayload
             );
             return PDDocument.load(new ByteArrayInputStream(filledPdf));
             

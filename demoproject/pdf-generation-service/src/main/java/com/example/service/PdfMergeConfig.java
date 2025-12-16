@@ -64,6 +64,7 @@ class SectionConfig {
     private boolean enabled;
     private String insertAfter;
     private Map<String, String> fieldMapping; // For acroform: PDF field → payload path
+    private List<String> payloadEnrichers; // Names of enrichers to apply before rendering
 
     // Getters and setters
     public String getName() { return name; }
@@ -83,6 +84,9 @@ class SectionConfig {
     
     public Map<String, String> getFieldMapping() { return fieldMapping; }
     public void setFieldMapping(Map<String, String> fieldMapping) { this.fieldMapping = fieldMapping; }
+    
+    public List<String> getPayloadEnrichers() { return payloadEnrichers; }
+    public void setPayloadEnrichers(List<String> payloadEnrichers) { this.payloadEnrichers = payloadEnrichers; }
 }
 
 class ConditionalSection {
