@@ -1,0 +1,19 @@
+{
+  "id": "pdf-service-dev",
+  "name": "PDF Service - Dev/Remote",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "https://your-dev-server.example.com",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "outputPath",
+      "value": "/tmp/output",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

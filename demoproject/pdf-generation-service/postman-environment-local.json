@@ -1,0 +1,19 @@
+{
+  "id": "pdf-service-local",
+  "name": "PDF Service - Local",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "outputPath",
+      "value": "/workspaces/demo/output",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}
