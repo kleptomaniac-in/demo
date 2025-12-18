@@ -1,0 +1,70 @@
+# Enrollment Configuration with Field Transformation Functions
+# Demonstrates reusable functions for string operations, masking, formatting
+
+pdfMerge:
+  name: "enrollment-functions-demo"
+  description: "Demo of reusable transformation functions in field mappings"
+
+  # Payload enrichers
+  enrichers:
+    - enrollmentContext
+    - coverageSummary
+
+  # Headers and footers
+  header:
+    enabled: true
+    height: 50
+    startPage: 1
+    content:
+      center:
+        text: "Field Transformation Functions Demo"
+        font: "Helvetica-Bold"
+        fontSize: 12
+
+  footer:
+    enabled: true
+    height: 40
+    content:
+      center:
+        text: "Page {current} of {total}"
+        font: "Helvetica"
+        fontSize: 8
+
+  # Single section - AcroForm with transformation functions
+  sections:
+    - type: "acroform"
+      template: "templates/enrollment-form-base.pdf"
+      name: "form-with-functions"
+      fieldMapping:
+        # Basic concatenation
+        "FullName": "#{concat(applicants[0].firstName, ' ', applicants[0].lastName)}"
+        
+        # Uppercase/lowercase transformations
+        "EmailUpper": "#{uppercase(applicants[0].email)}"
+        "EmailLower": "#{lowercase(applicants[0].email)}"
+        
+        # Masking sensitive data
+        "SSN": "#{mask(applicants[0].ssn, 'XXX-XX-', 4)}"
+        "MaskedEmail": "#{maskEmail(applicants[0].email)}"
+        "MaskedPhone": "#{maskPhone(applicants[0].phone)}"
+        
+        # Date formatting
+        "DateOfBirth": "#{formatDate(applicants[0].dateOfBirth, 'MMM dd, yyyy')}"
+        "EffectiveDate": "#{formatDate(enrollment.effectiveDate, 'MMMM d, yyyy')}"
+        
+        # Currency formatting
+        "TotalPremium": "#{formatCurrency(productSummary.grandTotalPremium)}"
+        
+        # Conditional/default values
+        "MiddleName": "#{default(applicants[0].middleName, 'N/A')}"
+        
+        # Complex nested functions
+        "FullNameUpper": "#{uppercase(#{concat(applicants[0].firstName, ' ', applicants[0].lastName)})}"
+        
+        # String manipulation
+        "FirstInitial": "#{substring(applicants[0].firstName, 0, 1)}"
+        "LastNameCaps": "#{uppercase(applicants[0].lastName)}"
+        
+        # From enriched data
+        "CalculatedAge": "coverageSummary.enrichedApplicants[0].calculatedAge"
+        "StateInfo": "#{concat(enrollmentContext.stateFullName, ' (', enrollmentContext.state, ')')}"
