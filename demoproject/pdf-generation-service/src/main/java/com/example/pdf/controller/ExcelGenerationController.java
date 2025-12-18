@@ -4,6 +4,7 @@ import com.pdfgen.service.ConfigurablePayloadPreProcessor;
 import com.example.service.ExcelTemplateService;
 import com.example.service.ExcelMergeConfigService;
 import com.example.service.ExcelMergeConfig;
+import com.example.service.ExcelToPdfConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,9 @@ public class ExcelGenerationController {
     
     @Autowired
     private ConfigurablePayloadPreProcessor payloadPreProcessor;
+    
+    @Autowired
+    private ExcelToPdfConverter excelToPdfConverter;
     
     /**
      * Generate Excel using YAML configuration (recommended approach)
@@ -325,5 +329,91 @@ public class ExcelGenerationController {
         
         public String getPreprocessingRules() { return preprocessingRules; }
         public void setPreprocessingRules(String preprocessingRules) { this.preprocessingRules = preprocessingRules; }
+    }
+    
+    // ========== EXCEL TO PDF CONVERSION ENDPOINTS ==========
+    
+    /**
+     * Generate Excel and convert to PDF
+     * POST /api/excel/generate-as-pdf
+     * 
+     * Same as /generate but returns PDF instead of Excel
+     */
+    @PostMapping("/generate-as-pdf")
+    public ResponseEntity<byte[]> generateExcelAsPdf(@RequestBody ExcelGenerationRequest request) {
+        try {
+            // First generate Excel
+            byte[] excelData = excelTemplateService.fillExcelTemplate(
+                request.getTemplatePath(),
+                request.getCellMappings(),
+                request.getPayload()
+            );
+            
+            // Convert to PDF
+            byte[] pdfData = excelToPdfConverter.convertToPdf(excelData);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "enrollment.pdf");
+            
+            return new ResponseEntity<>(pdfData, headers, HttpStatus.OK);
+            
+        } catch (UnsupportedOperationException e) {
+            // Conversion not available - return helpful error
+            return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(("Excel-to-PDF conversion not available. " + e.getMessage()).getBytes());
+                
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(("Error: " + e.getMessage()).getBytes());
+        }
+    }
+    
+    /**
+     * Generate Excel from config and convert to PDF
+     * POST /api/excel/generate-from-config-as-pdf
+     */
+    @PostMapping("/generate-from-config-as-pdf")
+    public ResponseEntity<byte[]> generateFromConfigAsPdf(@RequestBody ExcelConfigRequest request) {
+        try {
+            ExcelMergeConfig config = excelConfigService.loadConfig(request.getConfigPath());
+            
+            byte[] excelData = excelTemplateService.fillExcelTemplate(
+                config.getTemplatePath(),
+                config.getCellMappings(),
+                request.getPayload()
+            );
+            
+            byte[] pdfData = excelToPdfConverter.convertToPdf(excelData);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "enrollment.pdf");
+            
+            return new ResponseEntity<>(pdfData, headers, HttpStatus.OK);
+            
+        } catch (UnsupportedOperationException e) {
+            return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(("Conversion not available. " + e.getMessage()).getBytes());
+                
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(("Error: " + e.getMessage()).getBytes());
+        }
+    }
+    
+    /**
+     * Check Excel-to-PDF conversion capabilities
+     * GET /api/excel/conversion-info
+     */
+    @GetMapping("/conversion-info")
+    public ResponseEntity<ExcelToPdfConverter.ConversionInfo> getConversionInfo() {
+        return ResponseEntity.ok(excelToPdfConverter.getConversionInfo());
     }
 }
