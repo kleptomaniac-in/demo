@@ -1,0 +1,104 @@
+{
+  "configName": "enrollment-multi-product",
+  "payload": {
+    "enrollment": {
+      "products": ["medical", "dental"],
+      "marketCategory": "individual",
+      "state": "CA",
+      "plansByProduct": {
+        "medical": ["GOLD_PPO"],
+        "dental": ["PREMIUM_DENTAL"]
+      }
+    },
+    "companyInfo": {
+      "name": "Acme Insurance Company",
+      "address": "123 Insurance Way, San Francisco, CA 94102",
+      "phone": "(800) 555-0123"
+    },
+    "applicationNumber": "APP-2025-CA-00789",
+    "effectiveDate": "2026-01-01",
+    "totalPremium": "495.00",
+    "planYear": "2026",
+    "applicants": [
+      {
+        "relationship": "PRIMARY",
+        "demographic": {
+          "firstName": "Sarah",
+          "lastName": "Johnson",
+          "dateOfBirth": "1987-06-15",
+          "gender": "Female",
+          "ssn": "***-**-1234",
+          "address": {
+            "street": "456 Oak Avenue",
+            "city": "Los Angeles",
+            "state": "CA",
+            "zip": "90001"
+          }
+        },
+        "products": [
+          {
+            "productType": "MEDICAL",
+            "planName": "Gold PPO",
+            "planId": "GOLD_PPO",
+            "premium": "450.00",
+            "carrierName": "Acme Health",
+            "deductible": "2000",
+            "oopMax": "6000"
+          },
+          {
+            "productType": "DENTAL",
+            "planName": "Premium Dental",
+            "planId": "PREMIUM_DENTAL",
+            "premium": "45.00",
+            "carrierName": "Smile Dental",
+            "annualMax": "2000"
+          }
+        ]
+      }
+    ],
+    "members": [
+      {
+        "memberId": "M12345",
+        "name": "Sarah Johnson",
+        "medical": {
+          "planName": "Gold PPO",
+          "planId": "GOLD_PPO",
+          "premium": 450.00,
+          "deductible": 2000,
+          "oopMax": 6000
+        },
+        "dental": {
+          "planName": "Premium Dental",
+          "planId": "PREMIUM_DENTAL",
+          "premium": 45.00,
+          "annualMax": 2000
+        }
+      }
+    ],
+    "coverages": [
+      {
+        "planName": "Gold PPO Medical Plan",
+        "carrierName": "Acme Health",
+        "productType": "MEDICAL",
+        "benefits": [
+          "Primary Care: $30 copay",
+          "Specialist: $60 copay",
+          "Emergency Room: $500 copay",
+          "Prescription Drugs: Tier 1: $10, Tier 2: $40, Tier 3: $80",
+          "Lab & X-Ray: 20% coinsurance after deductible"
+        ]
+      },
+      {
+        "planName": "Premium Dental Plan",
+        "carrierName": "Smile Dental",
+        "productType": "DENTAL",
+        "benefits": [
+          "Preventive Care: 100% covered",
+          "Basic Services: 80% covered after deductible",
+          "Major Services: 50% covered after deductible",
+          "Annual Maximum: $2,000"
+        ]
+      }
+    ]
+  }
+}
