@@ -1,0 +1,373 @@
+{
+  "info": {
+    "name": "PDF Generation Service - Complete API Collection",
+    "description": "Complete collection of all endpoints for PDF and Excel generation service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "PDF Generation",
+      "item": [
+        {
+          "name": "Generate Simple PDF",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["generate"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"templateName\": \"invoice\",\n  \"clientService\": \"demo\",\n  \"payload\": {\n    \"customer\": { \"name\": \"ACME Corp\" },\n    \"invoice\": {\n      \"number\": \"INV-100\",\n      \"date\": \"2025-12-02\",\n      \"total\": \"$123.45\",\n      \"itemsHtml\": \"<tr><td>Consulting</td><td>$123.45</td></tr>\"\n    }\n  }\n}"
+            },
+            "description": "Generate PDF from template with simple payload"
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Enrollment PDF (Simple)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollment/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "enrollment", "generate"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enrollment\": {\n    \"products\": [\"medical\", \"dental\"],\n    \"marketCategory\": \"individual\",\n    \"state\": \"CA\"\n  },\n  \"payload\": {\n    \"memberName\": \"John Doe\",\n    \"memberId\": \"12345\",\n    \"planName\": \"Gold PPO\",\n    \"effectiveDate\": \"2025-01-01\"\n  }\n}"
+            },
+            "description": "Generate enrollment PDF with simple member data"
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Enrollment PDF (Complex)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollment/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "enrollment", "generate"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enrollment\": {\n    \"products\": [\"medical\", \"dental\"],\n    \"marketCategory\": \"individual\",\n    \"state\": \"CA\"\n  },\n  \"payload\": {\n    \"application\": {\n      \"applicationId\": \"APP-2025-12345\",\n      \"submittedDate\": \"12/16/2025\",\n      \"effectiveDate\": \"01/01/2026\",\n      \"applicants\": [\n        {\n          \"applicantId\": \"A001\",\n          \"relationship\": \"PRIMARY\",\n          \"demographic\": {\n            \"firstName\": \"John\",\n            \"lastName\": \"Smith\",\n            \"dateOfBirth\": \"05/15/1980\",\n            \"ssn\": \"123-45-6789\",\n            \"gender\": \"M\",\n            \"email\": \"john.smith@email.com\",\n            \"phone\": \"555-123-4567\"\n          }\n        },\n        {\n          \"applicantId\": \"A002\",\n          \"relationship\": \"SPOUSE\",\n          \"demographic\": {\n            \"firstName\": \"Jane\",\n            \"lastName\": \"Smith\",\n            \"dateOfBirth\": \"07/22/1982\",\n            \"gender\": \"F\"\n          }\n        },\n        {\n          \"applicantId\": \"A003\",\n          \"relationship\": \"DEPENDENT\",\n          \"demographic\": {\n            \"firstName\": \"Emily\",\n            \"lastName\": \"Smith\",\n            \"dateOfBirth\": \"03/10/2015\",\n            \"gender\": \"F\"\n          }\n        }\n      ],\n      \"addresses\": [\n        {\n          \"type\": \"MAILING\",\n          \"street\": \"123 Main St\",\n          \"city\": \"Los Angeles\",\n          \"state\": \"CA\",\n          \"zipCode\": \"90001\"\n        }\n      ],\n      \"proposedProducts\": [\n        {\n          \"productId\": \"MED-GOLD-2025\",\n          \"productType\": \"medical\",\n          \"effectiveDate\": \"2025-01-01\"\n        },\n        {\n          \"productId\": \"DENTAL-PREMIER-2025\",\n          \"productType\": \"dental\",\n          \"effectiveDate\": \"2025-01-01\"\n        }\n      ]\n    }\n  }\n}"
+            },
+            "description": "Generate enrollment PDF with complex applicant structure (PRIMARY, SPOUSE, DEPENDENTS)"
+          },
+          "response": []
+        },
+        {
+          "name": "Preview Enrollment Config",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollment/preview-config",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "enrollment", "preview-config"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"products\": [\"medical\", \"dental\"],\n  \"marketCategory\": \"individual\",\n  \"state\": \"CA\"\n}"
+            },
+            "description": "Preview which config will be selected for given enrollment parameters"
+          },
+          "response": []
+        },
+        {
+          "name": "Merge Multiple PDFs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pdf/merge",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pdf", "merge"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourcePaths\": [\n    \"output1.pdf\",\n    \"output2.pdf\"\n  ]\n}"
+            },
+            "description": "Merge multiple PDF files into one"
+          },
+          "response": []
+        },
+        {
+          "name": "Complex Enrollment - Generate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollment-complex/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "enrollment-complex", "generate"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enrollment\": {\n    \"products\": [\"medical\"],\n    \"marketCategory\": \"group\",\n    \"state\": \"NY\"\n  },\n  \"payload\": {\n    \"application\": {\n      \"applicationId\": \"APP-GROUP-001\",\n      \"applicants\": [\n        {\n          \"relationship\": \"PRIMARY\",\n          \"demographic\": {\n            \"firstName\": \"Alice\",\n            \"lastName\": \"Johnson\"\n          }\n        }\n      ]\n    }\n  }\n}"
+            },
+            "description": "Generate complex enrollment PDF"
+          },
+          "response": []
+        },
+        {
+          "name": "Complex Enrollment - Preview Flattened",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollment-complex/preview-flattened",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "enrollment-complex", "preview-flattened"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"application\": {\n    \"applicationId\": \"TEST-001\",\n    \"applicants\": [\n      {\"relationship\": \"PRIMARY\", \"demographic\": {\"firstName\": \"Bob\"}}\n    ]\n  }\n}"
+            },
+            "description": "Preview how payload will be flattened before PDF generation"
+          },
+          "response": []
+        },
+        {
+          "name": "Complex Enrollment - Applicant Summary",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/enrollment-complex/applicant-summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "enrollment-complex", "applicant-summary"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"application\": {\n    \"applicants\": [\n      {\"relationship\": \"PRIMARY\", \"demographic\": {\"firstName\": \"John\", \"lastName\": \"Doe\"}},\n      {\"relationship\": \"SPOUSE\", \"demographic\": {\"firstName\": \"Jane\", \"lastName\": \"Doe\"}},\n      {\"relationship\": \"DEPENDENT\", \"demographic\": {\"firstName\": \"Junior\", \"lastName\": \"Doe\"}}\n    ]\n  }\n}"
+            },
+            "description": "Get summary of applicants by relationship type"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Excel Generation",
+      "item": [
+        {
+          "name": "Generate Excel - Simple",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/excel/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "excel", "generate"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"templatePath\": \"enrollment-summary.xlsx\",\n  \"cellMappings\": {\n    \"ApplicationId\": \"applicationId\",\n    \"SubmittedDate\": \"submittedDate\",\n    \"PrimaryFirstName\": \"primary.firstName\",\n    \"PrimaryLastName\": \"primary.lastName\",\n    \"PrimaryDOB\": \"primary.dateOfBirth\",\n    \"MedicalPlanName\": \"medical.planName\",\n    \"MedicalPremium\": \"medical.monthlyPremium\",\n    \"TotalPremium\": \"totalMonthlyPremium\"\n  },\n  \"payload\": {\n    \"applicationId\": \"APP-12345\",\n    \"submittedDate\": \"12/16/2025\",\n    \"primary\": {\n      \"firstName\": \"John\",\n      \"lastName\": \"Smith\",\n      \"dateOfBirth\": \"05/15/1980\"\n    },\n    \"medical\": {\n      \"planName\": \"Gold PPO\",\n      \"monthlyPremium\": 450.00\n    },\n    \"totalMonthlyPremium\": 450.00\n  }\n}"
+            },
+            "description": "Generate Excel file from template with named cell mappings"
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Excel - From Config",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/excel/generate-from-config",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "excel", "generate-from-config"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"configPath\": \"excel-configs/enrollment-simple.yml\",\n  \"payload\": {\n    \"applicationId\": \"APP-67890\",\n    \"memberName\": \"Jane Doe\",\n    \"planType\": \"Platinum\"\n  }\n}"
+            },
+            "description": "Generate Excel using YAML configuration file"
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Excel - With Preprocessing",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/excel/generate-with-preprocessing",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "excel", "generate-with-preprocessing"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"templatePath\": \"enrollment-summary.xlsx\",\n  \"cellMappings\": {\n    \"ApplicationId\": \"applicationId\",\n    \"TotalApplicants\": \"totalApplicants\"\n  },\n  \"preprocessingRules\": \"preprocessing/excel-rules.yml\",\n  \"payload\": {\n    \"application\": {\n      \"applicationId\": \"APP-001\",\n      \"applicants\": [\n        {\"name\": \"John\"},\n        {\"name\": \"Jane\"},\n        {\"name\": \"Junior\"}\n      ]\n    }\n  }\n}"
+            },
+            "description": "Generate Excel with preprocessing rules applied to payload"
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Excel - With Tables",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/excel/generate-with-tables",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "excel", "generate-with-tables"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"templatePath\": \"enrollment-with-tables.xlsx\",\n  \"cellMappings\": {\n    \"ApplicationId\": \"applicationId\"\n  },\n  \"tableMappings\": [\n    {\n      \"sheetName\": \"Applicants\",\n      \"startRow\": 5,\n      \"dataPath\": \"applicants\",\n      \"columnMappings\": {\n        \"A\": \"firstName\",\n        \"B\": \"lastName\",\n        \"C\": \"relationship\"\n      }\n    }\n  ],\n  \"payload\": {\n    \"applicationId\": \"APP-TABLE-001\",\n    \"applicants\": [\n      {\"firstName\": \"John\", \"lastName\": \"Doe\", \"relationship\": \"PRIMARY\"},\n      {\"firstName\": \"Jane\", \"lastName\": \"Doe\", \"relationship\": \"SPOUSE\"}\n    ]\n  }\n}"
+            },
+            "description": "Generate Excel with dynamic table/row generation"
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Excel - Complete",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/excel/generate-complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "excel", "generate-complete"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"templatePath\": \"enrollment-complete.xlsx\",\n  \"cellMappings\": {\n    \"ApplicationId\": \"applicationId\",\n    \"TotalPremium\": \"totalPremium\"\n  },\n  \"tableMappings\": [\n    {\n      \"sheetName\": \"Details\",\n      \"startRow\": 10,\n      \"dataPath\": \"applicants\",\n      \"columnMappings\": {\n        \"A\": \"name\",\n        \"B\": \"age\"\n      }\n    }\n  ],\n  \"preprocessingRules\": \"preprocessing/complete-rules.yml\",\n  \"payload\": {\n    \"application\": {\n      \"applicationId\": \"APP-COMPLETE-001\",\n      \"applicants\": [\n        {\"name\": \"Alice\", \"dateOfBirth\": \"1990-01-01\"},\n        {\"name\": \"Bob\", \"dateOfBirth\": \"1992-05-15\"}\n      ]\n    }\n  }\n}"
+            },
+            "description": "Generate Excel with preprocessing, cell mappings, and table generation"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health & Debug",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pdf/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pdf", "health"]
+            },
+            "description": "Check if PDF service is running"
+          },
+          "response": []
+        },
+        {
+          "name": "Actuator Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["actuator", "health"]
+            },
+            "description": "Spring Boot actuator health endpoint"
+          },
+          "response": []
+        },
+        {
+          "name": "Mapping Order Debug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/internal/mapping-order",
+              "host": ["{{baseUrl}}"],
+              "path": ["internal", "mapping-order"]
+            },
+            "description": "Debug endpoint to see request mapping order"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
