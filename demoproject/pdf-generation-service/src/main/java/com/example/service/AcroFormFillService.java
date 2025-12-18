@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 /**
  * Service for filling AcroForm PDF templates with data mapping
@@ -109,15 +111,100 @@ public class AcroFormFillService {
     }
     
     /**
-     * Resolve value from payload using path notation
+     * Expand pattern-based field mappings into individual field mappings
+     * 
+     * Example pattern:
+     *   fieldPattern: "Dependent{n}_*"
+     *   source: "applicants[relationship=DEPENDENT][{n}]"
+     *   maxIndex: 2
+     *   fields: { "FirstName": "demographic.firstName", "LastName": "demographic.lastName" }
+     * 
+     * Expands to:
+     *   "Dependent1_FirstName" → "applicants[relationship=DEPENDENT][0].demographic.firstName"
+     *   "Dependent1_LastName" → "applicants[relationship=DEPENDENT][0].demographic.lastName"
+     *   "Dependent2_FirstName" → "applicants[relationship=DEPENDENT][1].demographic.firstName"
+     *   ...
+     * 
+     * @param patterns List of field patterns from configuration
+     * @return Expanded field mappings
+     */
+    public Map<String, String> expandPatterns(List<FieldPattern> patterns) {
+        Map<String, String> expanded = new HashMap<>();
+        
+        if (patterns == null || patterns.isEmpty()) {
+            return expanded;
+        }
+        
+        for (FieldPattern pattern : patterns) {
+            String fieldPattern = pattern.getFieldPattern();
+            String source = pattern.getSource();
+            int maxIndex = pattern.getMaxIndex();
+            Map<String, String> fields = pattern.getFields();
+            
+            if (fieldPattern == null || source == null || fields == null) {
+                System.err.println("Warning: Invalid pattern configuration, skipping");
+                continue;
+            }
+            
+            // Expand pattern for each index (0 to maxIndex)
+            for (int i = 0; i <= maxIndex; i++) {
+                // Replace {n} with actual index in both pattern and source
+                // Note: Display index starts at 1 for field names (Dependent1, Dependent2)
+                String displayIndex = String.valueOf(i + 1);
+                String arrayIndex = String.valueOf(i);
+                
+                String expandedFieldPrefix = fieldPattern
+                    .replace("{n}", displayIndex)
+                    .replace("*", "");  // Remove wildcard
+                
+                String expandedSourcePrefix = source.replace("{n}", arrayIndex);
+                
+                // Expand each field
+                for (Map.Entry<String, String> field : fields.entrySet()) {
+                    String fieldSuffix = field.getKey();
+                    String fieldPath = field.getValue();
+                    
+                    // Build final field name and path
+                    String finalFieldName = expandedFieldPrefix + fieldSuffix;
+                    
+                    // If field path starts with "static:", don't prepend source path
+                    String finalPath;
+                    if (fieldPath != null && fieldPath.startsWith("static:")) {
+                        finalPath = fieldPath;  // Keep static value as-is
+                    } else {
+                        finalPath = expandedSourcePrefix + "." + fieldPath;
+                    }
+                    
+                    expanded.put(finalFieldName, finalPath);
+                }
+            }
+        }
+        
+        System.out.println("Expanded " + patterns.size() + " patterns into " + expanded.size() + " field mappings");
+        return expanded;
+    }
+    
+    /**
+     * Resolve value from payload using path notation with enhanced filter support
+     * 
      * Examples:
      *   "memberName" → payload.get("memberName")
      *   "member.name" → payload.get("member").get("name")
      *   "members[0].name" → payload.get("members").get(0).get("name")
+     *   "applicants[relationship=PRIMARY].firstName" → filter array by field value
+     *   "applicants[relationship=DEPENDENT][0].name" → filter then index
+     *   "coverages[applicantId=A001][productType=MEDICAL].carrier" → multiple filters
+     *   "static:Enrollment Form" → returns literal string "Enrollment Form"
+     *   "static:v2.0" → returns literal string "v2.0"
      */
     private Object resolveValue(Map<String, Object> payload, String path) {
         if (path == null || path.isEmpty()) {
             return null;
+        }
+        
+        // Handle static/literal values with "static:" prefix
+        if (path.startsWith("static:")) {
+            return path.substring(7); // Return everything after "static:"
         }
         
         Object current = payload;
@@ -128,18 +215,75 @@ public class AcroFormFillService {
                 return null;
             }
             
-            // Handle array notation: members[0]
+            // Handle array notation with filters or index
             if (part.contains("[")) {
                 String arrayName = part.substring(0, part.indexOf('['));
-                int index = Integer.parseInt(part.substring(part.indexOf('[') + 1, part.indexOf(']')));
                 
+                // Get the array/list from current object
                 if (current instanceof Map) {
                     current = ((Map<?, ?>) current).get(arrayName);
                 }
                 
-                if (current instanceof java.util.List) {
-                    current = ((java.util.List<?>) current).get(index);
+                if (current == null) {
+                    return null;
                 }
+                
+                if (!(current instanceof java.util.List)) {
+                    System.err.println("Warning: Expected list for path part '" + part + "' but got: " + current.getClass());
+                    return null;
+                }
+                
+                java.util.List<?> list = (java.util.List<?>) current;
+                
+                // Extract all filters from the path part: [filter1][filter2]...
+                java.util.List<String> filters = extractFilters(part);
+                
+                // Apply each filter in sequence
+                for (String filter : filters) {
+                    if (isNumericIndex(filter)) {
+                        // Numeric index: [0], [1], etc.
+                        int index = Integer.parseInt(filter);
+                        if (index >= 0 && index < list.size()) {
+                            current = list.get(index);
+                            list = null; // No longer a list after indexing
+                            break;
+                        } else {
+                            System.err.println("Warning: Index " + index + " out of bounds for list of size " + list.size());
+                            return null;
+                        }
+                    } else {
+                        // Filter expression: [field=value]
+                        String[] filterParts = filter.split("=", 2);
+                        if (filterParts.length != 2) {
+                            System.err.println("Warning: Invalid filter syntax: " + filter);
+                            return null;
+                        }
+                        
+                        String fieldName = filterParts[0].trim();
+                        String fieldValue = filterParts[1].trim();
+                        
+                        // Filter the list
+                        list = filterList(list, fieldName, fieldValue);
+                        
+                        if (list.isEmpty()) {
+                            System.err.println("Warning: No items match filter [" + filter + "]");
+                            return null;
+                        }
+                        
+                        current = list;
+                    }
+                }
+                
+                // If we still have a list after all filters (no index was used), take first element
+                if (current instanceof java.util.List) {
+                    java.util.List<?> resultList = (java.util.List<?>) current;
+                    if (!resultList.isEmpty()) {
+                        current = resultList.get(0);
+                    } else {
+                        return null;
+                    }
+                }
+                
             } else {
                 // Simple property access
                 if (current instanceof Map) {
@@ -151,6 +295,64 @@ public class AcroFormFillService {
         }
         
         return current;
+    }
+    
+    /**
+     * Extract all filters from a path part like "members[relationship=PRIMARY][0]"
+     * Returns: ["relationship=PRIMARY", "0"]
+     */
+    private java.util.List<String> extractFilters(String part) {
+        java.util.List<String> filters = new java.util.ArrayList<>();
+        int startIndex = part.indexOf('[');
+        
+        while (startIndex != -1) {
+            int endIndex = part.indexOf(']', startIndex);
+            if (endIndex == -1) break;
+            
+            String filter = part.substring(startIndex + 1, endIndex);
+            filters.add(filter);
+            
+            startIndex = part.indexOf('[', endIndex);
+        }
+        
+        return filters;
+    }
+    
+    /**
+     * Check if a filter is a numeric index
+     */
+    private boolean isNumericIndex(String filter) {
+        try {
+            Integer.parseInt(filter);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Filter a list by matching a field value
+     * 
+     * @param list List of objects (typically Map objects)
+     * @param fieldName Field name to match
+     * @param fieldValue Expected value (string comparison)
+     * @return Filtered list containing only matching items
+     */
+    private java.util.List<?> filterList(java.util.List<?> list, String fieldName, String fieldValue) {
+        java.util.List<Object> filtered = new java.util.ArrayList<>();
+        
+        for (Object item : list) {
+            if (item instanceof Map) {
+                Map<?, ?> map = (Map<?, ?>) item;
+                Object actualValue = map.get(fieldName);
+                
+                if (actualValue != null && actualValue.toString().equals(fieldValue)) {
+                    filtered.add(item);
+                }
+            }
+        }
+        
+        return filtered;
     }
     
     /**

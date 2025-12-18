@@ -66,6 +66,7 @@ class SectionConfig {
     private String insertAfter;
     private Map<String, String> fieldMapping; // For acroform: PDF field → payload path
     private List<String> payloadEnrichers; // Names of enrichers to apply before rendering
+    private List<FieldPattern> patterns; // Pattern-based field mappings
 
     // Getters and setters
     public String getName() { return name; }
@@ -88,6 +89,29 @@ class SectionConfig {
     
     public List<String> getPayloadEnrichers() { return payloadEnrichers; }
     public void setPayloadEnrichers(List<String> payloadEnrichers) { this.payloadEnrichers = payloadEnrichers; }
+    
+    public List<FieldPattern> getPatterns() { return patterns; }
+    public void setPatterns(List<FieldPattern> patterns) { this.patterns = patterns; }
+}
+
+class FieldPattern {
+    private String fieldPattern;  // e.g., "Dependent{n}_*"
+    private String source;        // e.g., "applicants[relationship=DEPENDENT][{n}]"
+    private int maxIndex;         // e.g., 2 (generates 0, 1, 2)
+    private Map<String, String> fields; // e.g., { "FirstName": "demographic.firstName", "LastName": "demographic.lastName" }
+
+    // Getters and setters
+    public String getFieldPattern() { return fieldPattern; }
+    public void setFieldPattern(String fieldPattern) { this.fieldPattern = fieldPattern; }
+
+    public String getSource() { return source; }
+    public void setSource(String source) { this.source = source; }
+
+    public int getMaxIndex() { return maxIndex; }
+    public void setMaxIndex(int maxIndex) { this.maxIndex = maxIndex; }
+
+    public Map<String, String> getFields() { return fields; }
+    public void setFields(Map<String, String> fields) { this.fields = fields; }
 }
 
 class ConditionalSection {

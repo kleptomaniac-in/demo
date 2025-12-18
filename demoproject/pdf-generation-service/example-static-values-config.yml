@@ -1,0 +1,102 @@
+sections:
+  - name: "enrollment-form-with-static"
+    type: "acroform"
+    template: "templates/enrollment-form.pdf"
+    enabled: true
+    
+    # Pattern-based mappings for repeating data
+    patterns:
+      # Dependent pattern with mixed static and dynamic fields
+      - fieldPattern: "Dependent{n}_*"
+        source: "applicants[relationship=DEPENDENT][{n}]"
+        maxIndex: 2  # Up to 3 dependents
+        fields:
+          # Dynamic fields from payload
+          FirstName: "demographic.firstName"
+          LastName: "demographic.lastName"
+          DOB: "demographic.dateOfBirth"
+          Gender: "demographic.gender"
+          
+          # Static fields - same for all dependents
+          RelationshipType: "static:Dependent"
+          SectionTitle: "static:Dependent Information"
+    
+    # Explicit field mappings
+    fieldMapping:
+      # ===== STATIC FORM METADATA =====
+      "FormTitle": "static:Health Insurance Enrollment Form"
+      "FormVersion": "static:v2.0"
+      "FormDate": "static:2025-12-18"
+      "Department": "static:Human Resources"
+      
+      # ===== STATIC COMPANY INFORMATION =====
+      "CompanyName": "static:Acme Insurance Company"
+      "CompanyAddress": "static:123 Main Street, Suite 100, Springfield, IL 62701"
+      "CompanyPhone": "static:(555) 123-4567"
+      "CompanyEmail": "static:enrollments@acmeinsurance.com"
+      "CompanyWebsite": "static:www.acmeinsurance.com"
+      
+      # ===== STATIC PAGE HEADERS =====
+      "Header_Page1": "static:Enrollment Application - Page 1 of 3"
+      "Header_Page2": "static:Enrollment Application - Page 2 of 3"
+      "Header_Page3": "static:Enrollment Application - Page 3 of 3"
+      
+      # ===== STATIC DISCLAIMERS =====
+      "Disclaimer1": "static:I hereby certify that the information provided is true and accurate."
+      "Disclaimer2": "static:I understand that false statements may result in denial of coverage."
+      "Disclaimer3": "static:I acknowledge that coverage is subject to approval and policy terms."
+      
+      # ===== STATIC INSTRUCTIONS =====
+      "Instructions_General": "static:Please complete all sections in blue or black ink."
+      "Instructions_Signature": "static:Sign and date below to authorize this enrollment."
+      
+      # ===== STATIC LABELS =====
+      "Label_ApplicantInfo": "static:Primary Applicant Information"
+      "Label_SpouseInfo": "static:Spouse Information (if applicable)"
+      "Label_DependentInfo": "static:Dependent Information"
+      "Label_Signature": "static:Applicant Signature"
+      "Label_Date": "static:Date"
+      
+      # ===== DYNAMIC DATA FROM PAYLOAD =====
+      
+      # Application details
+      "ApplicationNumber": "applicationNumber"
+      "EffectiveDate": "effectiveDate"
+      "TotalPremium": "totalPremium"
+      
+      # Primary applicant
+      "Primary_FirstName": "applicants[relationship=PRIMARY].demographic.firstName"
+      "Primary_LastName": "applicants[relationship=PRIMARY].demographic.lastName"
+      "Primary_DOB": "applicants[relationship=PRIMARY].demographic.dateOfBirth"
+      "Primary_Gender": "applicants[relationship=PRIMARY].demographic.gender"
+      "Primary_SSN": "applicants[relationship=PRIMARY].demographic.ssn"
+      
+      # Primary address
+      "Primary_Street": "applicants[relationship=PRIMARY].mailingAddress.street"
+      "Primary_City": "applicants[relationship=PRIMARY].mailingAddress.city"
+      "Primary_State": "applicants[relationship=PRIMARY].mailingAddress.state"
+      "Primary_Zip": "applicants[relationship=PRIMARY].mailingAddress.zipCode"
+      
+      # Primary contact
+      "Primary_Phone": "applicants[relationship=PRIMARY].contactInfo.phone"
+      "Primary_Email": "applicants[relationship=PRIMARY].contactInfo.email"
+      
+      # Primary coverage
+      "Primary_Coverage_Type": "applicants[relationship=PRIMARY].products[0].productType"
+      "Primary_Coverage_Plan": "applicants[relationship=PRIMARY].products[0].planName"
+      "Primary_Coverage_Premium": "applicants[relationship=PRIMARY].products[0].premium"
+      
+      # Spouse (if exists) - will be blank if no spouse
+      "Spouse_FirstName": "applicants[relationship=SPOUSE].demographic.firstName"
+      "Spouse_LastName": "applicants[relationship=SPOUSE].demographic.lastName"
+      "Spouse_DOB": "applicants[relationship=SPOUSE].demographic.dateOfBirth"
+      "Spouse_Gender": "applicants[relationship=SPOUSE].demographic.gender"
+      
+      # Spouse coverage
+      "Spouse_Coverage_Type": "applicants[relationship=SPOUSE].products[0].productType"
+      "Spouse_Coverage_Plan": "applicants[relationship=SPOUSE].products[0].planName"
+      "Spouse_Coverage_Premium": "applicants[relationship=SPOUSE].products[0].premium"
+      
+      # ===== STATIC FOOTER =====
+      "Footer_Copyright": "static:© 2025 Acme Insurance Company. All rights reserved."
+      "Footer_Privacy": "static:Protected under HIPAA regulations."

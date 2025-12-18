@@ -1,0 +1,61 @@
+sections:
+  - name: "enrollment-form"
+    type: "acroform"
+    template: "templates/enrollment-form.pdf"
+    enabled: true
+    
+    # Pattern-based mappings - auto-expand for multiple dependents
+    patterns:
+      # Dependent pattern: generates Dependent1_*, Dependent2_*, Dependent3_*
+      - fieldPattern: "Dependent{n}_*"
+        source: "applicants[relationship=DEPENDENT][{n}]"
+        maxIndex: 2  # Generates indices 0, 1, 2 (displayed as 1, 2, 3)
+        fields:
+          FirstName: "demographic.firstName"
+          LastName: "demographic.lastName"
+          DOB: "demographic.dateOfBirth"
+          Gender: "demographic.gender"
+          SSN: "demographic.ssn"
+          Street: "mailingAddress.street"
+          City: "mailingAddress.city"
+          State: "mailingAddress.state"
+          Zip: "mailingAddress.zipCode"
+      
+      # Coverage pattern for each dependent
+      - fieldPattern: "Dependent{n}_Coverage_*"
+        source: "applicants[relationship=DEPENDENT][{n}].products[0]"
+        maxIndex: 2
+        fields:
+          Type: "productType"
+          PlanName: "planName"
+          Premium: "premium"
+    
+    # Explicit field mappings (for non-repeating fields)
+    fieldMapping:
+      # Primary applicant
+      "Primary_FirstName": "applicants[relationship=PRIMARY].demographic.firstName"
+      "Primary_LastName": "applicants[relationship=PRIMARY].demographic.lastName"
+      "Primary_DOB": "applicants[relationship=PRIMARY].demographic.dateOfBirth"
+      "Primary_Gender": "applicants[relationship=PRIMARY].demographic.gender"
+      "Primary_SSN": "applicants[relationship=PRIMARY].demographic.ssn"
+      
+      # Primary address
+      "Primary_Street": "applicants[relationship=PRIMARY].mailingAddress.street"
+      "Primary_City": "applicants[relationship=PRIMARY].mailingAddress.city"
+      "Primary_State": "applicants[relationship=PRIMARY].mailingAddress.state"
+      "Primary_Zip": "applicants[relationship=PRIMARY].mailingAddress.zipCode"
+      
+      # Primary coverage
+      "Primary_Coverage_Type": "applicants[relationship=PRIMARY].products[0].productType"
+      "Primary_Coverage_PlanName": "applicants[relationship=PRIMARY].products[0].planName"
+      "Primary_Coverage_Premium": "applicants[relationship=PRIMARY].products[0].premium"
+      
+      # Spouse (if exists)
+      "Spouse_FirstName": "applicants[relationship=SPOUSE].demographic.firstName"
+      "Spouse_LastName": "applicants[relationship=SPOUSE].demographic.lastName"
+      "Spouse_DOB": "applicants[relationship=SPOUSE].demographic.dateOfBirth"
+      
+      # Application details
+      "ApplicationNumber": "applicationNumber"
+      "EffectiveDate": "effectiveDate"
+      "TotalPremium": "totalPremium"

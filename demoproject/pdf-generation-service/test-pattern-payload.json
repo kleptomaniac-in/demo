@@ -1,0 +1,121 @@
+{
+  "applicationNumber": "APP-2025-12345",
+  "effectiveDate": "2025-01-01",
+  "totalPremium": "850.00",
+  "applicants": [
+    {
+      "applicantId": "A001",
+      "relationship": "PRIMARY",
+      "demographic": {
+        "firstName": "John",
+        "lastName": "Smith",
+        "dateOfBirth": "1985-03-15",
+        "gender": "Male",
+        "ssn": "***-**-1234"
+      },
+      "mailingAddress": {
+        "street": "123 Main Street",
+        "city": "Springfield",
+        "state": "IL",
+        "zipCode": "62701"
+      },
+      "products": [
+        {
+          "productType": "MEDICAL",
+          "planName": "Gold Plus Plan",
+          "premium": "450.00"
+        }
+      ]
+    },
+    {
+      "applicantId": "A002",
+      "relationship": "SPOUSE",
+      "demographic": {
+        "firstName": "Jane",
+        "lastName": "Smith",
+        "dateOfBirth": "1987-07-22",
+        "gender": "Female",
+        "ssn": "***-**-5678"
+      },
+      "products": [
+        {
+          "productType": "MEDICAL",
+          "planName": "Gold Plus Plan",
+          "premium": "450.00"
+        }
+      ]
+    },
+    {
+      "applicantId": "A003",
+      "relationship": "DEPENDENT",
+      "demographic": {
+        "firstName": "Emily",
+        "lastName": "Smith",
+        "dateOfBirth": "2010-05-10",
+        "gender": "Female",
+        "ssn": "***-**-9012"
+      },
+      "mailingAddress": {
+        "street": "123 Main Street",
+        "city": "Springfield",
+        "state": "IL",
+        "zipCode": "62701"
+      },
+      "products": [
+        {
+          "productType": "MEDICAL",
+          "planName": "Gold Plus Plan - Child",
+          "premium": "125.00"
+        }
+      ]
+    },
+    {
+      "applicantId": "A004",
+      "relationship": "DEPENDENT",
+      "demographic": {
+        "firstName": "Michael",
+        "lastName": "Smith",
+        "dateOfBirth": "2012-09-18",
+        "gender": "Male",
+        "ssn": "***-**-3456"
+      },
+      "mailingAddress": {
+        "street": "123 Main Street",
+        "city": "Springfield",
+        "state": "IL",
+        "zipCode": "62701"
+      },
+      "products": [
+        {
+          "productType": "MEDICAL",
+          "planName": "Gold Plus Plan - Child",
+          "premium": "125.00"
+        }
+      ]
+    },
+    {
+      "applicantId": "A005",
+      "relationship": "DEPENDENT",
+      "demographic": {
+        "firstName": "Sarah",
+        "lastName": "Smith",
+        "dateOfBirth": "2015-12-03",
+        "gender": "Female",
+        "ssn": "***-**-7890"
+      },
+      "mailingAddress": {
+        "street": "123 Main Street",
+        "city": "Springfield",
+        "state": "IL",
+        "zipCode": "62701"
+      },
+      "products": [
+        {
+          "productType": "DENTAL",
+          "planName": "Basic Dental Plan - Child",
+          "premium": "50.00"
+        }
+      ]
+    }
+  ]
+}

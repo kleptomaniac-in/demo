@@ -183,13 +183,28 @@ public class FlexiblePdfMergeService {
             
         } else if ("acroform".equals(section.getType())) {
             // Fill AcroForm PDF using field mappings
-            if (section.getFieldMapping() == null || section.getFieldMapping().isEmpty()) {
-                throw new IllegalArgumentException("AcroForm section must have fieldMapping: " + section.getName());
+            
+            // Start with base field mappings
+            java.util.Map<String, String> allFieldMappings = new java.util.HashMap<>();
+            
+            // Expand patterns first (if any)
+            if (section.getPatterns() != null && !section.getPatterns().isEmpty()) {
+                java.util.Map<String, String> expandedMappings = acroFormFillService.expandPatterns(section.getPatterns());
+                allFieldMappings.putAll(expandedMappings);
+            }
+            
+            // Add explicit field mappings (can override pattern-generated ones)
+            if (section.getFieldMapping() != null) {
+                allFieldMappings.putAll(section.getFieldMapping());
+            }
+            
+            if (allFieldMappings.isEmpty()) {
+                throw new IllegalArgumentException("AcroForm section must have fieldMapping or patterns: " + section.getName());
             }
             
             byte[] filledPdf = acroFormFillService.fillAcroForm(
                 section.getTemplate(), 
-                section.getFieldMapping(), 
+                allFieldMappings, 
                 enrichedPayload
             );
             return PDDocument.load(new ByteArrayInputStream(filledPdf));
