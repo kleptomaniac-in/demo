@@ -1,0 +1,80 @@
+{
+  "configName": "enrollment-functions-demo",
+  "payload": {
+    "applicants": [
+      {
+        "relationship": "PRIMARY",
+        "firstName": "john",
+        "lastName": "doe",
+        "middleName": "",
+        "nickname": "",
+        "email": "JOHN.DOE@EXAMPLE.COM",
+        "workEmail": "",
+        "personalEmail": "john@personal.com",
+        "phone": "555-123-4567",
+        "ssn": "123-45-6789",
+        "dateOfBirth": "1985-05-15",
+        "age": 39
+      },
+      {
+        "relationship": "SPOUSE",
+        "firstName": "jane",
+        "lastName": "doe",
+        "middleName": "marie",
+        "email": "jane.doe@example.com",
+        "phone": "(555) 987-6543",
+        "ssn": "987-65-4321",
+        "dateOfBirth": "1987-08-20",
+        "age": 37
+      }
+    ],
+    "members": [
+      {
+        "name": "john doe",
+        "relationship": "PRIMARY",
+        "dateOfBirth": "1985-05-15",
+        "products": [
+          {
+            "type": "medical",
+            "planName": "Gold PPO",
+            "premium": 450.00
+          },
+          {
+            "type": "dental",
+            "planName": "Standard Dental",
+            "premium": 45.00
+          }
+        ]
+      },
+      {
+        "name": "jane doe",
+        "relationship": "SPOUSE",
+        "dateOfBirth": "1987-08-20",
+        "products": [
+          {
+            "type": "medical",
+            "planName": "Gold PPO",
+            "premium": 450.00
+          },
+          {
+            "type": "dental",
+            "planName": "Standard Dental",
+            "premium": 35.00
+          }
+        ]
+      }
+    ],
+    "enrollment": {
+      "products": ["medical", "dental"],
+      "marketCategory": "individual",
+      "state": "CA",
+      "effectiveDate": "2026-01-01",
+      "submittedDate": "2025-12-18"
+    },
+    "premiums": {
+      "medicalPremium": 900.00,
+      "dentalPremium": 80.00,
+      "totalPremium": 980.00
+    }
+  }
+}

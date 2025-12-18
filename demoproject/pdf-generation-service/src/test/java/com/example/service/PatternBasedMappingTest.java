@@ -1,5 +1,7 @@
 package com.example.service;
 
+import com.example.pdfgeneration.function.FunctionExpressionResolver;
+import com.example.pdfgeneration.function.FunctionRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -14,10 +16,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class PatternBasedMappingTest {
 
     private AcroFormFillService service;
+    private FunctionRegistry functionRegistry;
+    private FunctionExpressionResolver functionResolver;
 
     @BeforeEach
     void setUp() {
-        service = new AcroFormFillService();
+        functionRegistry = new FunctionRegistry();
+        functionResolver = new FunctionExpressionResolver(functionRegistry);
+        service = new AcroFormFillService(functionResolver);
     }
 
     @Test

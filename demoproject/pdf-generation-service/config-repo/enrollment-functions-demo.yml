@@ -1,0 +1,88 @@
+# Enrollment Multi-Product Configuration with Field Transformation Functions
+# Demonstrates reusable functions for string operations, masking, formatting
+
+templateType: MULTI
+name: "enrollment-functions-demo"
+description: "Demo of reusable transformation functions in field mappings"
+
+# Payload enrichers
+enrichers:
+  - enrollmentContext
+  - coverageSummary
+
+# Headers and footers
+header:
+  enabled: true
+  content: "{enrollmentContext.marketDisplay} Enrollment | {enrollmentContext.stateFullName}"
+  alignment: CENTER
+  fontSize: 10
+
+footer:
+  enabled: true
+  content: "Page {current} of {total} | Application Date: {enrollment.submittedDate}"
+  alignment: CENTER
+  fontSize: 8
+
+# Multi-section configuration
+sections:
+  # Section 1: FreeMarker cover page with function demonstrations
+  - type: FREEMARKER
+    templatePath: "enrollment-functions-demo.ftl"
+    name: "cover-with-functions"
+  
+  # Section 2: AcroForm with transformation functions
+  - type: ACROFORM
+    templatePath: "enrollment-form-template.pdf"
+    name: "form-with-functions"
+    fieldMappings:
+      # Basic concatenation
+      "FullName": "#{concat(applicants[0].firstName, ' ', applicants[0].lastName)}"
+      
+      # Uppercase/lowercase transformations
+      "EmailUpper": "#{uppercase(applicants[0].email)}"
+      "EmailLower": "#{lowercase(applicants[0].email)}"
+      
+      # Masking sensitive data
+      "SSN": "#{mask(applicants[0].ssn, 'XXX-XX-', 4)}"
+      "MaskedEmail": "#{maskEmail(applicants[0].email)}"
+      "MaskedPhone": "#{maskPhone(applicants[0].phone)}"
+      
+      # Date formatting
+      "FormattedDOB": "#{formatDate(applicants[0].dateOfBirth, 'MMM dd, yyyy')}"
+      "EffectiveDate": "#{formatDate(enrollment.effectiveDate, 'MMMM d, yyyy')}"
+      
+      # Currency formatting
+      "TotalPremium": "#{formatCurrency(productSummary.grandTotalPremium)}"
+      "MedicalPremium": "#{formatCurrency(productSummary.medicalPremiumTotal)}"
+      
+      # Conditional/default values
+      "MiddleName": "#{default(applicants[0].middleName, 'N/A')}"
+      "Nickname": "#{ifEmpty(applicants[0].nickname, applicants[0].firstName)}"
+      
+      # Complex nested functions
+      "FullNameUpper": "#{uppercase(#{concat(applicants[0].firstName, ' ', applicants[0].lastName)})}"
+      "FormattedFullName": "#{capitalize(#{concat(applicants[0].firstName, ' ', applicants[0].middleName, ' ', applicants[0].lastName)})}"
+      
+      # String manipulation
+      "FirstInitial": "#{substring(applicants[0].firstName, 0, 1)}"
+      "LastNameCaps": "#{uppercase(applicants[0].lastName)}"
+      "PhoneCleaned": "#{replace(applicants[0].phone, '-', '')}"
+      "NameTrimmed": "#{trim(applicants[0].firstName)}"
+      
+      # Coalesce for fallback values
+      "ContactEmail": "#{coalesce(applicants[0].workEmail, applicants[0].personalEmail, applicants[0].email)}"
+      
+      # From enriched data
+      "CalculatedAge": "coverageSummary.enrichedApplicants[0].calculatedAge"
+      "ProductFlags": "#{concat('Medical: ', enrollmentContext.hasMedical, ', Dental: ', enrollmentContext.hasDental)}"
+      "StateInfo": "#{concat(enrollmentContext.stateFullName, ' (', enrollmentContext.state, ')')}"
+  
+  # Section 3: PDFBox summary (uses enriched data)
+  - type: PDFBOX
+    generatorClass: "com.example.generator.CoverageSummaryGenerator"
+    name: "coverage-summary"
+  
+  # Section 4: Terms and conditions (FreeMarker)
+  - type: FREEMARKER
+    templatePath: "enrollment-terms.ftl"
+    name: "terms-and-conditions"

@@ -120,7 +120,93 @@ curl -X POST "$BASE_URL/api/enrollment/preview-config" \
   }' | jq .
 ```
 
-### 5. Merge Multiple PDFs
+### 5. Generate PDF with Multi-Template Configuration
+```bash
+curl -X POST "$BASE_URL/api/pdf/merge" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "configName": "enrollment-multi-product",
+    "payload": {
+      "applicants": [
+        {
+          "relationship": "PRIMARY",
+          "firstName": "John",
+          "lastName": "Smith",
+          "dateOfBirth": "1985-05-15"
+        }
+      ],
+      "members": [
+        {
+          "name": "John Smith",
+          "relationship": "PRIMARY",
+          "dateOfBirth": "1985-05-15",
+          "products": [
+            {"type": "medical", "planName": "Gold PPO", "premium": 450.00}
+          ]
+        }
+      ],
+      "enrollment": {
+        "products": ["medical"],
+        "marketCategory": "individual",
+        "state": "CA",
+        "effectiveDate": "2026-01-01",
+        "submittedDate": "2025-12-18"
+      }
+    }
+  }' \
+  -o "$OUTPUT_DIR/enrollment-multi-template.pdf"
+```
+
+### 6. Generate Enrollment PDF per Applicant (ZIP)
+```bash
+curl -X POST "$BASE_URL/api/enrollment/generate-per-applicant" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "products": ["medical"],
+    "marketCategory": "individual",
+    "state": "CA",
+    "payload": {
+      "applicants": [
+        {
+          "relationship": "PRIMARY",
+          "firstName": "Alice",
+          "lastName": "Williams",
+          "dateOfBirth": "1990-08-20"
+        },
+        {
+          "relationship": "SPOUSE",
+          "firstName": "Bob",
+          "lastName": "Williams",
+          "dateOfBirth": "1988-12-10"
+        }
+      ],
+      "members": [
+        {
+          "name": "Alice Williams",
+          "relationship": "PRIMARY",
+          "dateOfBirth": "1990-08-20",
+          "products": [{"type": "medical", "planName": "Platinum HMO", "premium": 500.00}]
+        },
+        {
+          "name": "Bob Williams",
+          "relationship": "SPOUSE",
+          "dateOfBirth": "1988-12-10",
+          "products": [{"type": "medical", "planName": "Platinum HMO", "premium": 500.00}]
+        }
+      ],
+      "enrollment": {
+        "products": ["medical"],
+        "marketCategory": "individual",
+        "state": "NY",
+        "effectiveDate": "2026-02-01",
+        "submittedDate": "2025-12-18"
+      }
+    }
+  }' \
+  -o "$OUTPUT_DIR/enrollment-per-applicant.zip"
+```
+
+### 7. Merge Multiple PDFs
 ```bash
 curl -X POST "$BASE_URL/api/pdf/merge" \
   -H "Content-Type: application/json" \

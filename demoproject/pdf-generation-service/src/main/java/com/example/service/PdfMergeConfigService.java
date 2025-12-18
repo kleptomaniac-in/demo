@@ -56,14 +56,17 @@ public class PdfMergeConfigService {
     private Map<String, Object> loadYamlFile(String configName) throws Exception {
         String yamlContent;
         
+        // Ensure .yml extension is present
+        String fileName = configName.endsWith(".yml") ? configName : configName + ".yml";
+        
         // Try to load from config server first (if available)
         if (configServerClient != null) {
-            System.out.println("Attempting to load config from config server: " + configName);
+            System.out.println("Attempting to load config from config server: " + fileName);
             Optional<Map<String, Object>> configOpt = configServerClient.getFileSource(
-                "default", "master", configName
+                "default", "main", fileName
             );
             if (configOpt.isPresent()) {
-                System.out.println("Config loaded from config server: " + configName);
+                System.out.println("Config loaded from config server: " + fileName);
                 return configOpt.get();
             }
         }
@@ -71,8 +74,6 @@ public class PdfMergeConfigService {
         System.out.println("Config server not available or config not found, falling back to file system.");
         
         // Fallback to loading from file system
-        // Ensure .yml extension is present
-        String fileName = configName.endsWith(".yml") ? configName : configName + ".yml";
         String configPath = configRepoPath + "/" + fileName;
         if (!Files.exists(Paths.get(configPath))) {
             // Try current working directory

@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.pdfgeneration.function.FunctionExpressionResolver;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
@@ -18,10 +19,17 @@ import java.util.Map;
 import java.util.List;
 
 /**
- * Service for filling AcroForm PDF templates with data mapping
+ * Service for filling AcroForm PDF templates with data mapping.
+ * Supports function expressions for field transformations.
  */
 @Service
 public class AcroFormFillService {
+    
+    private final FunctionExpressionResolver functionResolver;
+    
+    public AcroFormFillService(FunctionExpressionResolver functionResolver) {
+        this.functionResolver = functionResolver;
+    }
     
     /**
      * Fill AcroForm PDF using field mappings from configuration
@@ -45,8 +53,16 @@ public class AcroFormFillService {
                 String pdfFieldName = mapping.getKey();
                 String payloadPath = mapping.getValue();
                 
-                // Resolve value from payload using path notation
-                Object value = resolveValue(payload, payloadPath);
+                // Check if it's a function expression
+                Object value;
+                if (functionResolver.isFunction(payloadPath)) {
+                    // Resolve function expression
+                    String resolvedValue = functionResolver.resolve(payloadPath, payload);
+                    value = resolvedValue;
+                } else {
+                    // Resolve value from payload using path notation
+                    value = resolveValue(payload, payloadPath);
+                }
                 
                 if (value != null) {
                     fillField(acroForm, pdfFieldName, value);
