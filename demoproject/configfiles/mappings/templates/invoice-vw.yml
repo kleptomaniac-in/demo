@@ -1,5 +1,0 @@
-mapping:
-  pdf:
-    field:
-      invoiceNumber: payload.order.id
-      customerName: payload.customer.name
