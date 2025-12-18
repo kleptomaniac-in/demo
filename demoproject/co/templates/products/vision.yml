@@ -1,0 +1,24 @@
+# Vision product-specific sections and configurations
+
+pdfMerge:
+  sections:
+    # Vision coverage details section
+    - name: vision-coverage
+      type: freemarker
+      template: products/vision-coverage-details.ftl
+      enabled: true
+    
+    # Vision providers and retailers
+    - name: vision-providers
+      type: freemarker
+      template: products/vision-provider-network.ftl
+      enabled: true
+  
+  # Vision-specific bookmarks
+  bookmarks:
+    - section: vision-coverage
+      title: "Vision Coverage Details"
+      level: 1
+    - section: vision-providers
+      title: "Vision Provider Network"
+      level: 1
