@@ -1,0 +1,82 @@
+sections:
+  # ===== SECTION 1: FREEMARKER TEMPLATE (Cover Page) =====
+  - name: "cover-page"
+    type: "freemarker"
+    template: "templates/enrollment-cover.ftl"
+    enabled: true
+
+  # ===== SECTION 2: ACROFORM (Enrollment Form with Static Values) =====
+  - name: "enrollment-form"
+    type: "acroform"
+    template: "templates/enrollment-form.pdf"
+    enabled: true
+    
+    # Pattern-based mappings for dependents
+    patterns:
+      - fieldPattern: "Dependent{n}_*"
+        source: "applicants[relationship=DEPENDENT][{n}]"
+        maxIndex: 2
+        fields:
+          FirstName: "demographic.firstName"
+          LastName: "demographic.lastName"
+          DOB: "demographic.dateOfBirth"
+          Gender: "demographic.gender"
+          RelationshipLabel: "static:Dependent"  # Static value
+    
+    # Explicit field mappings
+    fieldMapping:
+      # Static form metadata
+      "FormTitle": "static:Health Insurance Enrollment Form"
+      "FormVersion": "static:v2.0"
+      "FormDate": "static:2025-12-18"
+      
+      # Dynamic application data
+      "ApplicationNumber": "applicationNumber"
+      "EffectiveDate": "effectiveDate"
+      "TotalPremium": "totalPremium"
+      
+      # Primary applicant
+      "Primary_FirstName": "applicants[relationship=PRIMARY].demographic.firstName"
+      "Primary_LastName": "applicants[relationship=PRIMARY].demographic.lastName"
+      "Primary_DOB": "applicants[relationship=PRIMARY].demographic.dateOfBirth"
+      "Primary_Gender": "applicants[relationship=PRIMARY].demographic.gender"
+      "Primary_SSN": "applicants[relationship=PRIMARY].demographic.ssn"
+      
+      # Primary address
+      "Primary_Street": "applicants[relationship=PRIMARY].mailingAddress.street"
+      "Primary_City": "applicants[relationship=PRIMARY].mailingAddress.city"
+      "Primary_State": "applicants[relationship=PRIMARY].mailingAddress.state"
+      "Primary_Zip": "applicants[relationship=PRIMARY].mailingAddress.zipCode"
+      
+      # Primary coverage
+      "Primary_Coverage_Type": "applicants[relationship=PRIMARY].products[0].productType"
+      "Primary_Coverage_Plan": "applicants[relationship=PRIMARY].products[0].planName"
+      "Primary_Coverage_Premium": "applicants[relationship=PRIMARY].products[0].premium"
+      
+      # Spouse
+      "Spouse_FirstName": "applicants[relationship=SPOUSE].demographic.firstName"
+      "Spouse_LastName": "applicants[relationship=SPOUSE].demographic.lastName"
+      "Spouse_DOB": "applicants[relationship=SPOUSE].demographic.dateOfBirth"
+
+  # ===== SECTION 3: PDFBOX (Summary Page) =====
+  - name: "coverage-summary"
+    type: "pdfbox"
+    template: "CoverageSummaryGenerator"
+    enabled: true
+
+  # ===== SECTION 4: FREEMARKER (Terms and Conditions) =====
+  - name: "terms-and-conditions"
+    type: "freemarker"
+    template: "templates/terms-and-conditions.ftl"
+    enabled: true
+
+# Optional: Add bookmarks for navigation
+bookmarks:
+  - title: "Cover Page"
+    page: 1
+  - title: "Enrollment Form"
+    page: 2
+  - title: "Coverage Summary"
+    page: 3
+  - title: "Terms and Conditions"
+    page: 4

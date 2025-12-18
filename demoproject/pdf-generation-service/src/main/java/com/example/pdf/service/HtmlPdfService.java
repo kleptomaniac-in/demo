@@ -29,6 +29,9 @@ public class HtmlPdfService {
         if (firstLt > 0) {
             html = html.substring(firstLt);
         }
+        
+        // Auto-inject @page CSS for consistent US Letter sizing if not already present
+        html = ensurePageSizeCss(html);
 
         // Use Jsoup to tidy and convert arbitrary HTML into well-formed XHTML
         try {
@@ -146,5 +149,45 @@ public class HtmlPdfService {
     private String escapeHtml(String s) {
         if (s == null) return "";
         return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#39;");
+    }
+
+    /**
+     * Ensures HTML has @page CSS for consistent US Letter page sizing.
+     * Automatically injects the CSS if not already present in the HTML.
+     */
+    private String ensurePageSizeCss(String html) {
+        if (html == null || html.isEmpty()) return html;
+        
+        // Check if @page CSS already exists
+        if (html.toLowerCase().contains("@page")) {
+            return html; // Already has @page definition, don't modify
+        }
+        
+        String pageSizeCss = "@page { size: 8.5in 11in; margin: 0; }";
+        
+        // Try to inject into existing <style> tag
+        int styleStart = html.toLowerCase().indexOf("<style");
+        if (styleStart != -1) {
+            int styleContentStart = html.indexOf('>', styleStart) + 1;
+            return html.substring(0, styleContentStart) + "\n        " + pageSizeCss + "\n" + html.substring(styleContentStart);
+        }
+        
+        // Try to inject into <head> section
+        int headEnd = html.toLowerCase().indexOf("</head>");
+        if (headEnd != -1) {
+            String styleTag = "    <style>\n        " + pageSizeCss + "\n    </style>\n";
+            return html.substring(0, headEnd) + styleTag + html.substring(headEnd);
+        }
+        
+        // Fallback: inject after <html> or at the beginning
+        int htmlStart = html.toLowerCase().indexOf("<html");
+        if (htmlStart != -1) {
+            int htmlTagEnd = html.indexOf('>', htmlStart) + 1;
+            String styleTag = "\n<head>\n    <style>\n        " + pageSizeCss + "\n    </style>\n</head>\n";
+            return html.substring(0, htmlTagEnd) + styleTag + html.substring(htmlTagEnd);
+        }
+        
+        // Last resort: prepend to the HTML
+        return "<style>" + pageSizeCss + "</style>\n" + html;
     }
 }

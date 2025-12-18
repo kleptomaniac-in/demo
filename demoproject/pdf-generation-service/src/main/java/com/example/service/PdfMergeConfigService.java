@@ -71,10 +71,12 @@ public class PdfMergeConfigService {
         System.out.println("Config server not available or config not found, falling back to file system.");
         
         // Fallback to loading from file system
-        String configPath = configRepoPath + "/" + configName;
+        // Ensure .yml extension is present
+        String fileName = configName.endsWith(".yml") ? configName : configName + ".yml";
+        String configPath = configRepoPath + "/" + fileName;
         if (!Files.exists(Paths.get(configPath))) {
             // Try current working directory
-            configPath = configName;
+            configPath = fileName;
         }
         
         try (InputStream inputStream = new FileInputStream(configPath)) {

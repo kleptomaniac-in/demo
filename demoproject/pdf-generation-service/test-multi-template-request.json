@@ -1,0 +1,190 @@
+{
+  "configName": "multi-template",
+  "outputFileName": "multi-template-output.pdf",
+  "payload": {
+    "applicationNumber": "APP-2025-12345",
+    "effectiveDate": "2026-01-01",
+    "applicationDate": "2025-12-18",
+    "totalPremium": "850.00",
+    "planYear": "2026",
+    "applicants": [
+      {
+        "applicantId": "A001",
+        "relationship": "PRIMARY",
+        "demographic": {
+          "firstName": "John",
+          "lastName": "Smith",
+          "dateOfBirth": "1985-03-15",
+          "gender": "Male",
+          "ssn": "***-**-1234"
+        },
+        "mailingAddress": {
+          "street": "123 Main Street",
+          "city": "Springfield",
+          "state": "IL",
+          "zipCode": "62701"
+        },
+        "contactInfo": {
+          "phone": "(555) 123-4567",
+          "email": "john.smith@example.com"
+        },
+        "products": [
+          {
+            "productId": "MED-001",
+            "productType": "MEDICAL",
+            "planName": "Gold Plus Plan",
+            "planLevel": "Gold",
+            "carrierName": "Acme Health",
+            "premium": "450.00",
+            "deductible": "1500.00",
+            "copay": "30.00"
+          }
+        ]
+      },
+      {
+        "applicantId": "A002",
+        "relationship": "SPOUSE",
+        "demographic": {
+          "firstName": "Jane",
+          "lastName": "Smith",
+          "dateOfBirth": "1987-07-22",
+          "gender": "Female",
+          "ssn": "***-**-5678"
+        },
+        "products": [
+          {
+            "productId": "MED-002",
+            "productType": "MEDICAL",
+            "planName": "Gold Plus Plan",
+            "planLevel": "Gold",
+            "carrierName": "Acme Health",
+            "premium": "450.00"
+          }
+        ]
+      },
+      {
+        "applicantId": "A003",
+        "relationship": "DEPENDENT",
+        "demographic": {
+          "firstName": "Emily",
+          "lastName": "Smith",
+          "dateOfBirth": "2010-05-10",
+          "gender": "Female",
+          "ssn": "***-**-9012"
+        },
+        "mailingAddress": {
+          "street": "123 Main Street",
+          "city": "Springfield",
+          "state": "IL",
+          "zipCode": "62701"
+        },
+        "products": [
+          {
+            "productId": "MED-003",
+            "productType": "MEDICAL",
+            "planName": "Gold Plus Plan - Child",
+            "planLevel": "Gold",
+            "carrierName": "Acme Health",
+            "premium": "125.00"
+          }
+        ]
+      },
+      {
+        "applicantId": "A004",
+        "relationship": "DEPENDENT",
+        "demographic": {
+          "firstName": "Michael",
+          "lastName": "Smith",
+          "dateOfBirth": "2012-09-18",
+          "gender": "Male",
+          "ssn": "***-**-3456"
+        },
+        "mailingAddress": {
+          "street": "123 Main Street",
+          "city": "Springfield",
+          "state": "IL",
+          "zipCode": "62701"
+        },
+        "products": [
+          {
+            "productId": "MED-004",
+            "productType": "MEDICAL",
+            "planName": "Gold Plus Plan - Child",
+            "planLevel": "Gold",
+            "carrierName": "Acme Health",
+            "premium": "125.00"
+          }
+        ]
+      },
+      {
+        "applicantId": "A005",
+        "relationship": "DEPENDENT",
+        "demographic": {
+          "firstName": "Sarah",
+          "lastName": "Smith",
+          "dateOfBirth": "2015-12-03",
+          "gender": "Female",
+          "ssn": "***-**-7890"
+        },
+        "mailingAddress": {
+          "street": "123 Main Street",
+          "city": "Springfield",
+          "state": "IL",
+          "zipCode": "62701"
+        },
+        "products": [
+          {
+            "productId": "DENT-001",
+            "productType": "DENTAL",
+            "planName": "Basic Dental Plan - Child",
+            "planLevel": "Basic",
+            "carrierName": "Dental Care Inc",
+            "premium": "50.00"
+          }
+        ]
+      }
+    ],
+    "coverages": [
+      {
+        "coverageId": "COV-001",
+        "applicantId": "A001",
+        "productType": "MEDICAL",
+        "planName": "Gold Plus Plan",
+        "carrierName": "Acme Health",
+        "premium": "450.00",
+        "effectiveDate": "2026-01-01",
+        "benefits": [
+          "Hospital Coverage",
+          "Doctor Visits",
+          "Prescription Drugs",
+          "Preventive Care"
+        ]
+      },
+      {
+        "coverageId": "COV-002",
+        "applicantId": "A002",
+        "productType": "MEDICAL",
+        "planName": "Gold Plus Plan",
+        "carrierName": "Acme Health",
+        "premium": "450.00",
+        "effectiveDate": "2026-01-01"
+      }
+    ],
+    "companyInfo": {
+      "name": "Acme Insurance Company",
+      "address": "123 Main Street, Suite 100",
+      "city": "Springfield",
+      "state": "IL",
+      "zipCode": "62701",
+      "phone": "(555) 123-4567",
+      "email": "info@acmeinsurance.com",
+      "website": "www.acmeinsurance.com"
+    },
+    "agentInfo": {
+      "name": "Robert Johnson",
+      "licenseNumber": "AG-12345",
+      "phone": "(555) 987-6543",
+      "email": "rjohnson@acmeinsurance.com"
+    }
+  }
+}

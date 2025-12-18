@@ -1,0 +1,1 @@
+curl -X POST http://localhost:8080/api/pdf/merge -H "Content-Type: application/json" -d @test-multi-template-request.json --output multi-template-auto-pagesize.pdf && ls -lh multi-template-auto-pagesize.pdf
