@@ -379,7 +379,7 @@ public class ExcelGenerationController {
     @PostMapping("/generate-from-config-as-pdf")
     public ResponseEntity<byte[]> generateFromConfigAsPdf(@RequestBody ExcelConfigRequest request) {
         try {
-            ExcelMergeConfig config = excelConfigService.loadConfig(request.getConfigPath());
+            ExcelMergeConfig config = excelConfigService.loadConfig(request.getConfigName());
             
             byte[] excelData = excelTemplateService.fillExcelTemplate(
                 config.getTemplatePath(),

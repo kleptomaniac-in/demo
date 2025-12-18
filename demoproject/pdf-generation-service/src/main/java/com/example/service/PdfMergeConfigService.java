@@ -3,6 +3,8 @@ package com.example.service;
 import com.example.pdf.service.ConfigServerClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
@@ -26,7 +28,13 @@ public class PdfMergeConfigService {
     @Value("${config.repo.path:../config-repo}")
     private String configRepoPath;
 
+    /**
+     * Load config with caching enabled.
+     * Same config name returns cached result, avoiding disk I/O and YAML parsing.
+     */
+    @Cacheable(value = "pdfConfigs", key = "#configName")
     public PdfMergeConfig loadConfig(String configName) {
+        System.out.println("Loading config from disk (cache miss): " + configName);
         try {
             // Load the main configuration
             Map<String, Object> data = loadYamlFile(configName);
@@ -336,5 +344,21 @@ public class PdfMergeConfigService {
         textConfig.setFont((String) textMap.getOrDefault("font", "Helvetica"));
         textConfig.setFontSize((Integer) textMap.getOrDefault("fontSize", 10));
         return textConfig;
+    }
+    
+    /**
+     * Evict specific config from cache (useful for hot-reload)
+     */
+    @CacheEvict(value = "pdfConfigs", key = "#configName")
+    public void evictConfig(String configName) {
+        System.out.println("Evicted config from cache: " + configName);
+    }
+    
+    /**
+     * Clear entire config cache
+     */
+    @CacheEvict(value = "pdfConfigs", allEntries = true)
+    public void clearCache() {
+        System.out.println("Cleared all configs from cache");
     }
 }

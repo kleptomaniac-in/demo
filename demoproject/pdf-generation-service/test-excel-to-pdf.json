@@ -1,0 +1,19 @@
+{
+  "templatePath": "../config-repo/excel-templates/invoice-template.xlsx",
+  "cellMappings": {
+    "B2": "member.name",
+    "B3": "member.memberId",
+    "B5": "plan.name",
+    "B6": "plan.premium"
+  },
+  "payload": {
+    "member": {
+      "name": "John Doe",
+      "memberId": "M12345"
+    },
+    "plan": {
+      "name": "Gold Health Plan",
+      "premium": "$450.00"
+    }
+  }
+}

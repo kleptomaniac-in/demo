@@ -3,6 +3,8 @@ package com.example.service;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -60,16 +62,28 @@ public class AcroFormFillService {
     }
     
     /**
-     * Load AcroForm template from file system
+     * Load AcroForm template from file system with caching.
+     * Returns byte array instead of PDDocument to make it cacheable.
      */
-    private PDDocument loadTemplate(String templatePath) throws IOException {
+    @Cacheable(value = "acroformTemplates", key = "#templatePath")
+    public byte[] loadTemplateBytes(String templatePath) throws IOException {
+        System.out.println("Loading AcroForm template from disk (cache miss): " + templatePath);
+        
         String fullPath = "../config-repo/acroforms/" + templatePath;
         
         if (!Files.exists(Paths.get(fullPath))) {
             fullPath = "acroforms/" + templatePath;
         }
         
-        return PDDocument.load(Files.newInputStream(Paths.get(fullPath)));
+        return Files.readAllBytes(Paths.get(fullPath));
+    }
+    
+    /**
+     * Load PDDocument from cached bytes
+     */
+    private PDDocument loadTemplate(String templatePath) throws IOException {
+        byte[] templateBytes = loadTemplateBytes(templatePath);
+        return PDDocument.load(new ByteArrayInputStream(templateBytes));
     }
     
     /**
@@ -180,5 +194,21 @@ public class AcroFormFillService {
         }
         
         return fieldNames;
+    }
+    
+    /**
+     * Evict specific AcroForm template from cache (useful for hot-reload)
+     */
+    @CacheEvict(value = "acroformTemplates", key = "#templatePath")
+    public void evictTemplate(String templatePath) {
+        System.out.println("Evicted AcroForm template from cache: " + templatePath);
+    }
+    
+    /**
+     * Clear entire AcroForm template cache
+     */
+    @CacheEvict(value = "acroformTemplates", allEntries = true)
+    public void clearTemplateCache() {
+        System.out.println("Cleared all AcroForm templates from cache");
     }
 }

@@ -1,6 +1,11 @@
 server:
   port: 8080
 
+# Application settings
+app:
+  caching:
+    enabled: true  # Set to false to disable all caching (useful for development/testing)
+
 # Config Server base (used by MappingService)
 config-server:
   url: http://localhost:8888

@@ -40,7 +40,7 @@ public class FreemarkerService {
             protected java.net.URL getURL(String name) {
                 try {
                     if (name.startsWith("http://") || name.startsWith("https://")) {
-                        return new java.net.URL(name);
+                        return java.net.URI.create(name).toURL();
                     }
                 } catch (Exception e) {
                     log.debug("Invalid URL for template loader: {}", name, e);
@@ -85,6 +85,7 @@ public class FreemarkerService {
      * - classpath: "/templates/foo.ftl" or "templates/foo.ftl"
      * - relative file: "templates/foo.ftl"
      * - absolute or http URL: "http://.../foo.ftl" or "/absolute/path.ftl" (fallback to reading file)
+     * Note: FreeMarker has built-in template caching via cfg.setTemplateUpdateDelayMilliseconds()
      */
     public String processTemplateFromLocation(String location, Map<String, Object> model) throws IOException {
         if (location == null) throw new IOException("Template location is null");
@@ -94,6 +95,7 @@ public class FreemarkerService {
 
         try (StringWriter out = new StringWriter()) {
             try {
+                // FreeMarker caches templates internally
                 Template t = cfg.getTemplate(name);
                 t.process(model, out);
                 return out.toString();
