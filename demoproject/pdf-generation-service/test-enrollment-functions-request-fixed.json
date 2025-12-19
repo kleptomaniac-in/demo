@@ -14,14 +14,7 @@
         "phone": "555-123-4567",
         "ssn": "123-45-6789",
         "dateOfBirth": "1985-05-15",
-        "age": 39,
-        "gender": "Male",
-        "mailingAddress": {
-          "street": "123 Main Street",
-          "city": "Los Angeles",
-          "state": "CA",
-          "zipCode": "90001"
-        }
+        "age": 39
       },
       {
         "relationship": "SPOUSE",
@@ -32,24 +25,7 @@
         "phone": "(555) 987-6543",
         "ssn": "987-65-4321",
         "dateOfBirth": "1987-08-20",
-        "age": 37,
-        "gender": "Female"
-      },
-      {
-        "relationship": "DEPENDENT",
-        "firstName": "Emily",
-        "lastName": "Doe",
-        "dateOfBirth": "2015-04-10",
-        "age": 9,
-        "gender": "Female"
-      },
-      {
-        "relationship": "DEPENDENT",
-        "firstName": "Michael",
-        "lastName": "Doe",
-        "dateOfBirth": "2018-09-25",
-        "age": 6,
-        "gender": "Male"
+        "age": 37
       }
     ],
     "members": [
@@ -89,15 +65,14 @@
       }
     ],
     "enrollment": {
-      "products": ["medical", "dental"],
+      "products": [
+        "medical",
+        "dental"
+      ],
       "marketCategory": "individual",
       "state": "CA",
       "effectiveDate": "2026-01-01",
-      "submittedDate": "2025-12-18",
-      "applicationId": "2025-12345"
-    },
-    "productSummary": {
-      "grandTotalPremium": 980.00
+      "submittedDate": "2025-12-18"
     },
     "premiums": {
       "medicalPremium": 900.00,

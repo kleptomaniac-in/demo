@@ -1,0 +1,24 @@
+# Dental product-specific sections and configurations
+
+pdfMerge:
+  sections:
+    # Dental coverage details section
+    - name: dental-coverage
+      type: freemarker
+      template: templates/products/dental-coverage-details.ftl
+      enabled: true
+    
+    # Dental network providers
+    - name: dental-providers
+      type: freemarker
+      template: templates/products/dental-provider-network.ftl
+      enabled: true
+  
+  # Dental-specific bookmarks
+  bookmarks:
+    - section: dental-coverage
+      title: "Dental Coverage Details"
+      level: 1
+    - section: dental-providers
+      title: "Dental Provider Network"
+      level: 1

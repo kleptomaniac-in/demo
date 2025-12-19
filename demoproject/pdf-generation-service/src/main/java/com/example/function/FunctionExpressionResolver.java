@@ -125,9 +125,11 @@ public class FunctionExpressionResolver {
             if (!inQuotes && (c == '"' || c == '\'')) {
                 inQuotes = true;
                 quoteChar = c;
+                currentArg.append(c); // Keep the quote
                 continue;
             } else if (inQuotes && c == quoteChar) {
                 inQuotes = false;
+                currentArg.append(c); // Keep the closing quote
                 continue;
             } else if (!inQuotes && c == '(') {
                 parenthesesDepth++;
@@ -194,9 +196,9 @@ public class FunctionExpressionResolver {
     }
     
     /**
-     * Resolve a field reference from the payload (supports dot notation).
+     * Resolve a field reference from the payload (supports dot notation and array indexing).
      * 
-     * @param fieldPath The field path (e.g., "applicant.firstName")
+     * @param fieldPath The field path (e.g., "applicant.firstName" or "applicants[0].firstName")
      * @param payload The payload context
      * @return The field value, or empty string if not found
      */
@@ -209,10 +211,47 @@ public class FunctionExpressionResolver {
         Object current = payload;
         
         for (String part : parts) {
-            if (current instanceof Map) {
-                current = ((Map<?, ?>) current).get(part);
-            } else {
+            if (current == null) {
                 return "";
+            }
+            
+            // Handle array notation: arrayName[index]
+            if (part.contains("[")) {
+                String arrayName = part.substring(0, part.indexOf('['));
+                String indexStr = part.substring(part.indexOf('[') + 1, part.indexOf(']'));
+                
+                // Get the array from current object
+                if (current instanceof Map) {
+                    current = ((Map<?, ?>) current).get(arrayName);
+                }
+                
+                if (current == null) {
+                    return "";
+                }
+                
+                // Parse and apply index
+                try {
+                    int index = Integer.parseInt(indexStr);
+                    if (current instanceof java.util.List) {
+                        java.util.List<?> list = (java.util.List<?>) current;
+                        if (index >= 0 && index < list.size()) {
+                            current = list.get(index);
+                        } else {
+                            return "";
+                        }
+                    } else {
+                        return "";
+                    }
+                } catch (NumberFormatException e) {
+                    return "";
+                }
+            } else {
+                // Simple field access
+                if (current instanceof Map) {
+                    current = ((Map<?, ?>) current).get(part);
+                } else {
+                    return "";
+                }
             }
             
             if (current == null) {
