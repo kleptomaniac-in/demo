@@ -1,0 +1,16 @@
+# Application metadata and tracking fields
+# Common to all enrollment forms
+
+pdfMerge:
+  sections:
+    - name: enrollment-application
+      fieldMapping:
+        # Application tracking
+        "ApplicationNumber": "#{concat('APP-', enrollment.applicationId)}"
+        "ApplicationDate": "#{formatDate(enrollment.applicationDate, 'MM/dd/yyyy')}"
+        "EffectiveDate": "#{formatDate(enrollment.effectiveDate, 'MM/dd/yyyy')}"
+        "ReceivedDate": "#{formatDate(enrollment.receivedDate, 'MM/dd/yyyy')}"
+        
+        # Application status
+        "ApplicationStatus": "enrollment.status"
+        "ProcessedBy": "enrollment.processedBy"

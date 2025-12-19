@@ -1,0 +1,20 @@
+# Dental product-specific field mappings
+
+pdfMerge:
+  sections:
+    - name: enrollment-application
+      # Dental-specific field mappings
+      fieldMapping:
+        # Dental plan fields
+        "DentalPlanName": "selectedPlans.dental.planName"
+        "DentalPlanType": "selectedPlans.dental.planType"
+        "DentalPremium": "#{formatCurrency(selectedPlans.dental.premium)}"
+        "DentalAnnualMax": "#{formatCurrency(selectedPlans.dental.annualMaximum)}"
+        
+        # Dental provider preferences
+        "PreferredDentist": "dentalInfo.preferredDentist"
+        "DentistPhoneNumber": "dentalInfo.dentistPhoneNumber"
+        
+        # Orthodontia coverage
+        "OrthodontiaCoverage": "selectedPlans.dental.orthodontiaCovered"
+        "OrthodontiaMaxBenefit": "#{formatCurrency(selectedPlans.dental.orthodontiaMax)}"

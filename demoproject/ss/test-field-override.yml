@@ -1,0 +1,31 @@
+# Test showing field-level override capabilities
+
+composition:
+  base: templates/base-payer.yml
+
+# Demonstrate field-level overrides
+pdfMerge:
+  # Override specific header fields (others inherited from base)
+  header:
+    content:
+      left:
+        text: "DEMO MODE | {companyName}"  # Override text only
+        fontSize: 12  # Override size
+        # font inherited from base (Helvetica)
+      # center and right inherited completely from base
+    border:
+      color: "#0000FF"  # Override border color to blue
+      # thickness inherited from base
+  
+  # Override footer text
+  footer:
+    content:
+      center:
+        text: "TEST COMPOSITION SYSTEM | {date}"
+        fontSize: 9
+  
+  # Keep base sections but add new bookmark
+  bookmarks:
+    - section: member-plans
+      title: "Healthcare Plans (Composed)"
+      level: 1

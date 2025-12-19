@@ -1,0 +1,11 @@
+# Medical Product Component
+
+description: "Excel Component - Medical Product Mappings"
+
+cellMappings:
+  # Medical Plan
+  MedicalPlanName: "medical.planName"
+  MedicalPlanId: "medical.planId"
+  MedicalPremium: "medical.monthlyPremium"
+  MedicalDeductible: "medical.deductible"
+  MedicalCopay: "medical.copay"

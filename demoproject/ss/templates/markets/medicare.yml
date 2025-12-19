@@ -1,0 +1,39 @@
+# Medicare market-specific configurations
+
+pdfMerge:
+  sections:
+    # Medicare eligibility
+    - name: medicare-eligibility
+      type: freemarker
+      template: markets/medicare-eligibility.ftl
+      enabled: true
+    
+    # Medicare Parts A, B, C, D information
+    - name: medicare-parts
+      type: freemarker
+      template: markets/medicare-parts-info.ftl
+      enabled: true
+    
+    # Medicare Advantage specific details
+    - name: medicare-advantage
+      type: freemarker
+      template: markets/medicare-advantage-details.ftl
+      enabled: true
+  
+  # Override header for Medicare market
+  header:
+    content:
+      left:
+        text: "Medicare Plan | {companyName}"
+        fontSize: 10
+  
+  bookmarks:
+    - section: medicare-eligibility
+      title: "Medicare Eligibility"
+      level: 1
+    - section: medicare-parts
+      title: "Medicare Parts Information"
+      level: 1
+    - section: medicare-advantage
+      title: "Medicare Advantage Details"
+      level: 1

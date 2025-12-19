@@ -1,0 +1,21 @@
+# Texas state-specific field mappings
+
+pdfMerge:
+  sections:
+    - name: enrollment-application
+      # Texas-specific fields
+      fieldMapping:
+        # TX regulatory compliance
+        "TX_LicenseNumber": "static:TX-67890-HEALTH"
+        "TX_TDIPlanNumber": "companyInfo.tdiPlanNumber"
+        
+        # TX-specific disclosures
+        "AcknowledgeTXDisclosures": "acknowledgments.txDisclosures"
+        "AcknowledgeBalanceBilling": "acknowledgments.txBalanceBilling"
+        
+        # TX coverage mandates
+        "TX_MandatedBenefits": "static:Includes TX-mandated autism coverage"
+        "TX_PregnancyCoverage": "static:Yes"
+        
+        # Override state field
+        "Primary_State": "static:TX"
