@@ -1,0 +1,70 @@
+{
+  "configName": "test-multi-template-config.yml",
+  "outputFileName": "multi-template-complete.pdf",
+  "payload": {
+    "applicationNumber": "APP-2025-12345",
+    "effectiveDate": "2026-01-01",
+    "applicationDate": "2025-12-18",
+    "totalPremium": "850.00",
+    "planYear": "2026",
+    "applicants": [
+      {
+        "applicantId": "A001",
+        "relationship": "PRIMARY",
+        "demographic": {
+          "firstName": "John",
+          "lastName": "Smith",
+          "dateOfBirth": "1985-03-15",
+          "gender": "Male",
+          "ssn": "123-45-1234"
+        },
+        "mailingAddress": {
+          "street": "123 Main Street",
+          "city": "Springfield",
+          "state": "IL",
+          "zipCode": "62701"
+        },
+        "products": [
+          {
+            "productType": "MEDICAL",
+            "planName": "Gold Plus Plan",
+            "premium": "450.00"
+          }
+        ]
+      },
+      {
+        "applicantId": "A002",
+        "relationship": "SPOUSE",
+        "demographic": {
+          "firstName": "Jane",
+          "lastName": "Smith",
+          "dateOfBirth": "1987-07-22",
+          "gender": "Female"
+        }
+      },
+      {
+        "applicantId": "A003",
+        "relationship": "DEPENDENT",
+        "demographic": {
+          "firstName": "Emily",
+          "lastName": "Smith",
+          "dateOfBirth": "2015-04-10",
+          "gender": "Female"
+        }
+      },
+      {
+        "applicantId": "A004",
+        "relationship": "DEPENDENT",
+        "demographic": {
+          "firstName": "Michael",
+          "lastName": "Smith",
+          "dateOfBirth": "2018-09-25",
+          "gender": "Male"
+        }
+      }
+    ],
+    "companyInfo": {
+      "name": "Acme Health Insurance Co."
+    }
+  }
+}

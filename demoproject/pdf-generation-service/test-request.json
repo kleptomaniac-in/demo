@@ -1,0 +1,32 @@
+{
+  "configName": "test-multi-template-simple.yml",
+  "outputFileName": "multi-template-simple.pdf",
+  "payload": {
+    "applicationNumber": "APP-2025-12345",
+    "effectiveDate": "2026-01-01",
+    "applicationDate": "2025-12-18",
+    "totalPremium": "850.00",
+    "planYear": "2026",
+    "applicants": [
+      {
+        "applicantId": "A001",
+        "relationship": "PRIMARY",
+        "demographic": {
+          "firstName": "John",
+          "lastName": "Smith",
+          "dateOfBirth": "1985-03-15",
+          "gender": "Male"
+        },
+        "products": [
+          {
+            "productType": "MEDICAL",
+            "planName": "Gold Plus Plan"
+          }
+        ]
+      }
+    ],
+    "companyInfo": {
+      "name": "Acme Health Insurance Co."
+    }
+  }
+}

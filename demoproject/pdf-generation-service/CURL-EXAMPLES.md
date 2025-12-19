@@ -42,6 +42,8 @@ curl -X POST "$BASE_URL/api/enrollment/generate" \
       "state": "CA"
     },
     "payload": {
+      "companyName": "Acme Health Insurance Co.",
+      "date": "2025-12-19",
       "memberName": "John Doe",
       "memberId": "12345",
       "planName": "Gold PPO"

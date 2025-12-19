@@ -327,13 +327,18 @@ public class FlexiblePdfMergeService {
             );
             
             PDRectangle pageSize = page.getMediaBox();
-            float yPosition = isHeader ? pageSize.getHeight() - 20 : 20;
+            // Position text with proper spacing from border
+            // For header: text near top with adequate margin (12pt from top)
+            // For footer: text with margin from bottom (12pt from bottom)  
+            float textYPosition = isHeader 
+                ? pageSize.getHeight() - 12  // 12 points from top of page
+                : 12;  // 12 points from bottom of page
             
             ContentConfig content = config.getContent();
             
             // Draw left content
             if (content.getLeft() != null) {
-                drawText(contentStream, content.getLeft(), 20, yPosition, i + 1, totalPages, payload);
+                drawText(contentStream, content.getLeft(), 20, textYPosition, i + 1, totalPages, payload);
             }
             
             // Draw center content
@@ -342,7 +347,7 @@ public class FlexiblePdfMergeService {
                 PDType1Font font = getFont(content.getCenter().getFont());
                 float textWidth = font.getStringWidth(text) / 1000 * content.getCenter().getFontSize();
                 float centerX = (pageSize.getWidth() - textWidth) / 2;
-                drawText(contentStream, content.getCenter(), centerX, yPosition, i + 1, totalPages, payload);
+                drawText(contentStream, content.getCenter(), centerX, textYPosition, i + 1, totalPages, payload);
             }
             
             // Draw right content
@@ -351,12 +356,14 @@ public class FlexiblePdfMergeService {
                 PDType1Font font = getFont(content.getRight().getFont());
                 float textWidth = font.getStringWidth(text) / 1000 * content.getRight().getFontSize();
                 float rightX = pageSize.getWidth() - textWidth - 20;
-                drawText(contentStream, content.getRight(), rightX, yPosition, i + 1, totalPages, payload);
+                drawText(contentStream, content.getRight(), rightX, textYPosition, i + 1, totalPages, payload);
             }
             
-            // Draw border if configured
+            // Draw border if configured (at the bottom edge of header / top edge of footer)
             if (config.getBorder() != null && config.getBorder().isEnabled()) {
-                float borderY = isHeader ? pageSize.getHeight() - config.getHeight() : config.getHeight();
+                float borderY = isHeader 
+                    ? pageSize.getHeight() - config.getHeight()  // Bottom of header area
+                    : config.getHeight();  // Top of footer area
                 contentStream.setLineWidth(config.getBorder().getThickness());
                 contentStream.setStrokingColor(parseColor(config.getBorder().getColor()));
                 contentStream.moveTo(20, borderY);

@@ -1,0 +1,78 @@
+pdfMerge:
+  settings:
+    addBookmarks: true
+    pageNumbering: "continuous"
+  
+  # Header configuration - appears on all pages except cover
+  header:
+    enabled: true
+    height: 50
+    startPage: 2  # Skip cover page
+    content:
+      left:
+        text: "Health Insurance Enrollment"
+        font: "Helvetica"
+        fontSize: 10
+      center:
+        text: "Application: {applicationNumber}"
+        font: "Helvetica-Bold"
+        fontSize: 11
+      right:
+        text: "Effective: {effectiveDate}"
+        font: "Helvetica"
+        fontSize: 10
+    border:
+      enabled: true
+      color: "#003366"
+      thickness: 1
+  
+  # Footer configuration - appears on all pages
+  footer:
+    enabled: true
+    height: 40
+    startPage: 1
+    content:
+      left:
+        text: "Confidential"
+        font: "Helvetica-Oblique"
+        fontSize: 8
+      center:
+        text: "Page {current} of {total}"
+        font: "Helvetica-Bold"
+        fontSize: 10
+      right:
+        text: "© 2025 Acme Health"
+        font: "Helvetica"
+        fontSize: 8
+    border:
+      enabled: true
+      color: "#CCCCCC"
+      thickness: 1
+  
+  sections:
+    # ===== SECTION 1: FREEMARKER TEMPLATE (Cover Page) =====
+    - name: "cover-page"
+      type: "freemarker"
+      template: "templates/enrollment-cover.ftl"
+      enabled: true
+
+    # ===== SECTION 2: PDFBOX (Coverage Summary) =====
+    - name: "coverage-summary"
+      type: "pdfbox"
+      template: "CoverageSummaryGenerator"
+      enabled: true
+
+    # ===== SECTION 3: FREEMARKER (Terms and Conditions) =====
+    - name: "terms-and-conditions"
+      type: "freemarker"
+      template: "templates/terms-and-conditions.ftl"
+      enabled: true
+
+  # Optional: Add bookmarks for navigation
+  bookmarks:
+    - title: "Cover Page"
+      page: 1
+    - title: "Coverage Summary"
+      page: 2
+    - title: "Terms and Conditions"
+      page: 3
