@@ -1,0 +1,19 @@
+# Base payer configuration - NOW USES COMPOSITION!
+# Composes smaller, focused components for maximum reusability
+
+composition:
+  components:
+    - templates/components/company-info.yml
+    - templates/components/application-metadata.yml
+    - templates/components/primary-applicant.yml
+    - templates/components/premium-payment.yml
+
+# Note: Spouse and dependents are NOT included in base
+# They are optional and added at higher levels (market/template) as needed
+
+# This base includes:
+# - Company info (5 fields)
+# - Application metadata (6 fields)
+# - Primary applicant (11 fields)
+# - Premium/payment (6 fields)
+# Total: 28 core fields that appear on ALL forms

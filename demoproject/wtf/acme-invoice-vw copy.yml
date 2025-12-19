@@ -1,0 +1,16 @@
+mapping:
+  pdf:
+    field:
+      issuedDate: payload.invoice.date
+      invoiceNumber: payload.order.id
+      customerName: payload.customer.name
+      planName: payload.product.planName
+
+# Also include the candidate ordering so the service can build candidate list
+mapping.candidate-order:
+  - file:mappings/base-application.yml
+  - file:mappings/templates/{template}.yml
+  - file:mappings/products/{product}.yml
+  - file:mappings/markets/{market}.yml
+  - file:mappings/states/{state}.yml
+  - file:mappings/templates/{product}/{template}.yml

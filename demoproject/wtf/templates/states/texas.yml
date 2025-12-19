@@ -1,0 +1,37 @@
+# Texas state-specific configurations and requirements
+
+pdfMerge:
+  sections:
+    # Texas TDI disclosure
+    - name: tx-tdi-disclosure
+      type: freemarker
+      template: states/texas-tdi-disclosure.ftl
+      enabled: true
+    
+    # Texas-specific benefit information
+    - name: tx-benefit-info
+      type: freemarker
+      template: states/texas-benefit-info.ftl
+      enabled: true
+  
+  # Override header with TX license number
+  header:
+    content:
+      left:
+        text: "TX License #67890 | {companyName}"
+        fontSize: 8
+  
+  # Override footer with TX-specific disclaimer
+  footer:
+    content:
+      center:
+        text: "© 2025 {companyName} | Licensed by Texas Department of Insurance | {date}"
+        fontSize: 8
+  
+  bookmarks:
+    - section: tx-tdi-disclosure
+      title: "Texas TDI Disclosure"
+      level: 1
+    - section: tx-benefit-info
+      title: "Texas Benefit Information"
+      level: 1

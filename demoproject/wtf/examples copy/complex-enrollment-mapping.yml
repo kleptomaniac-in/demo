@@ -1,0 +1,123 @@
+# Complex Enrollment Application with Role-Based Mapping and Overflow Handling
+# Handles: PRIMARY, SPOUSE, up to 3 DEPENDENTs (4th+ go to addendum)
+
+pdfMerge:
+  sections:
+    # Main enrollment form with fixed slots
+    - name: enrollment-application
+      type: acroform
+      template: enrollment-application-with-dependents.pdf
+      enabled: true
+      fieldMapping:
+        # ===== APPLICATION LEVEL =====
+        "ApplicationId": "application.applicationId"
+        "SubmittedDate": "application.submittedDate"
+        "EffectiveDate": "application.effectiveDate"
+        
+        # ===== PRIMARY APPLICANT =====
+        # Use filter syntax: applicants[relationship=PRIMARY]
+        "Primary_FirstName": "application.applicants[relationship=PRIMARY].demographic.firstName"
+        "Primary_LastName": "application.applicants[relationship=PRIMARY].demographic.lastName"
+        "Primary_MiddleName": "application.applicants[relationship=PRIMARY].demographic.middleName"
+        "Primary_DOB": "application.applicants[relationship=PRIMARY].demographic.dateOfBirth"
+        "Primary_SSN": "application.applicants[relationship=PRIMARY].demographic.ssn"
+        "Primary_Gender": "application.applicants[relationship=PRIMARY].demographic.gender"
+        "Primary_Email": "application.applicants[relationship=PRIMARY].demographic.email"
+        "Primary_Phone": "application.applicants[relationship=PRIMARY].demographic.phone"
+        
+        # ===== SPOUSE APPLICANT =====
+        # Same filter syntax for spouse
+        "Spouse_FirstName": "application.applicants[relationship=SPOUSE].demographic.firstName"
+        "Spouse_LastName": "application.applicants[relationship=SPOUSE].demographic.lastName"
+        "Spouse_MiddleName": "application.applicants[relationship=SPOUSE].demographic.middleName"
+        "Spouse_DOB": "application.applicants[relationship=SPOUSE].demographic.dateOfBirth"
+        "Spouse_SSN": "application.applicants[relationship=SPOUSE].demographic.ssn"
+        "Spouse_Gender": "application.applicants[relationship=SPOUSE].demographic.gender"
+        "Spouse_Email": "application.applicants[relationship=SPOUSE].demographic.email"
+        "Spouse_Phone": "application.applicants[relationship=SPOUSE].demographic.phone"
+        
+        # ===== DEPENDENT 1 (First dependent only) =====
+        # Use index syntax: applicants[relationship=DEPENDENT][0]
+        "Dependent1_FirstName": "application.applicants[relationship=DEPENDENT][0].demographic.firstName"
+        "Dependent1_LastName": "application.applicants[relationship=DEPENDENT][0].demographic.lastName"
+        "Dependent1_MiddleName": "application.applicants[relationship=DEPENDENT][0].demographic.middleName"
+        "Dependent1_DOB": "application.applicants[relationship=DEPENDENT][0].demographic.dateOfBirth"
+        "Dependent1_SSN": "application.applicants[relationship=DEPENDENT][0].demographic.ssn"
+        "Dependent1_Gender": "application.applicants[relationship=DEPENDENT][0].demographic.gender"
+        
+        # ===== DEPENDENT 2 =====
+        "Dependent2_FirstName": "application.applicants[relationship=DEPENDENT][1].demographic.firstName"
+        "Dependent2_LastName": "application.applicants[relationship=DEPENDENT][1].demographic.lastName"
+        "Dependent2_MiddleName": "application.applicants[relationship=DEPENDENT][1].demographic.middleName"
+        "Dependent2_DOB": "application.applicants[relationship=DEPENDENT][1].demographic.dateOfBirth"
+        "Dependent2_SSN": "application.applicants[relationship=DEPENDENT][1].demographic.ssn"
+        "Dependent2_Gender": "application.applicants[relationship=DEPENDENT][1].demographic.gender"
+        
+        # ===== DEPENDENT 3 =====
+        "Dependent3_FirstName": "application.applicants[relationship=DEPENDENT][2].demographic.firstName"
+        "Dependent3_LastName": "application.applicants[relationship=DEPENDENT][2].demographic.lastName"
+        "Dependent3_MiddleName": "application.applicants[relationship=DEPENDENT][2].demographic.middleName"
+        "Dependent3_DOB": "application.applicants[relationship=DEPENDENT][2].demographic.dateOfBirth"
+        "Dependent3_SSN": "application.applicants[relationship=DEPENDENT][2].demographic.ssn"
+        "Dependent3_Gender": "application.applicants[relationship=DEPENDENT][2].demographic.gender"
+        
+        # ===== BILLING ADDRESS =====
+        # Use filter for address type
+        "Billing_Street": "application.addresses[type=BILLING].street"
+        "Billing_Street2": "application.addresses[type=BILLING].street2"
+        "Billing_City": "application.addresses[type=BILLING].city"
+        "Billing_State": "application.addresses[type=BILLING].state"
+        "Billing_ZipCode": "application.addresses[type=BILLING].zipCode"
+        "Billing_County": "application.addresses[type=BILLING].county"
+        
+        # ===== MAILING ADDRESS =====
+        "Mailing_Street": "application.addresses[type=MAILING].street"
+        "Mailing_Street2": "application.addresses[type=MAILING].street2"
+        "Mailing_City": "application.addresses[type=MAILING].city"
+        "Mailing_State": "application.addresses[type=MAILING].state"
+        "Mailing_ZipCode": "application.addresses[type=MAILING].zipCode"
+        "Mailing_County": "application.addresses[type=MAILING].county"
+        
+        # ===== MEDICAL PLAN =====
+        # Filter by productType
+        "Medical_PlanName": "application.proposedProducts[productType=MEDICAL].planName"
+        "Medical_PlanId": "application.proposedProducts[productType=MEDICAL].planId"
+        "Medical_Premium": "application.proposedProducts[productType=MEDICAL].monthlyPremium"
+        "Medical_Deductible": "application.proposedProducts[productType=MEDICAL].deductible"
+        
+        # ===== DENTAL PLAN =====
+        "Dental_PlanName": "application.proposedProducts[productType=DENTAL].planName"
+        "Dental_PlanId": "application.proposedProducts[productType=DENTAL].planId"
+        "Dental_Premium": "application.proposedProducts[productType=DENTAL].monthlyPremium"
+        "Dental_Deductible": "application.proposedProducts[productType=DENTAL].deductible"
+        
+        # ===== VISION PLAN =====
+        "Vision_PlanName": "application.proposedProducts[productType=VISION].planName"
+        "Vision_PlanId": "application.proposedProducts[productType=VISION].planId"
+        "Vision_Premium": "application.proposedProducts[productType=VISION].monthlyPremium"
+        "Vision_Deductible": "application.proposedProducts[productType=VISION].deductible"
+        
+        # ===== CURRENT COVERAGE - PRIMARY MEDICAL =====
+        # Filter by both applicantId and productType
+        "PriorMedical_Carrier": "application.currentCoverages[applicantId=A001][productType=MEDICAL].carrierName"
+        "PriorMedical_PolicyNumber": "application.currentCoverages[applicantId=A001][productType=MEDICAL].policyNumber"
+        "PriorMedical_TerminationDate": "application.currentCoverages[applicantId=A001][productType=MEDICAL].terminationDate"
+        
+        # ===== CURRENT COVERAGE - PRIMARY DENTAL =====
+        "PriorDental_Carrier": "application.currentCoverages[applicantId=A001][productType=DENTAL].carrierName"
+        "PriorDental_PolicyNumber": "application.currentCoverages[applicantId=A001][productType=DENTAL].policyNumber"
+        "PriorDental_TerminationDate": "application.currentCoverages[applicantId=A001][productType=DENTAL].terminationDate"
+        
+        # ===== CALCULATED VALUES =====
+        "TotalMonthlyPremium": "application.calculatedValues.totalMonthlyPremium"
+        "TotalAnnualPremium": "application.calculatedValues.totalAnnualPremium"
+        "DependentCount": "application.calculatedValues.dependentCount"
+        "AdditionalDependentsNote": "application.calculatedValues.additionalDependentCount"
+    
+    # Addendum page for overflow dependents (4+)
+    - name: additional-dependents-addendum
+      type: freemarker
+      template: additional-dependents-addendum.ftl
+      enabled: true
+      # FreeMarker can access full payload, no mapping needed
+      # Template will filter applicants[relationship=DEPENDENT] and skip first 3

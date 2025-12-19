@@ -1,0 +1,32 @@
+# Dependent children field mappings
+# Supports up to 4 dependents with array indexing
+
+pdfMerge:
+  sections:
+    - name: enrollment-application
+      fieldMapping:
+        # Dependent 1 (index 2 in applicants array)
+        "Dependent1_FirstName": "#{lowercase(applicants[2].firstName)}"
+        "Dependent1_LastName": "#{lowercase(applicants[2].lastName)}"
+        "Dependent1_DOB": "applicants[2].dateOfBirth"
+        "Dependent1_Gender": "applicants[2].gender"
+        "Dependent1_Relationship": "applicants[2].relationship"
+        
+        # Dependent 2 (index 3 in applicants array)
+        "Dependent2_FirstName": "applicants[3].firstName"
+        "Dependent2_LastName": "applicants[3].lastName"
+        "Dependent2_DOB": "applicants[3].dateOfBirth"
+        "Dependent2_Gender": "applicants[3].gender"
+        "Dependent2_Relationship": "applicants[3].relationship"
+        
+        # Dependent 3 (index 4 in applicants array)
+        "Dependent3_FirstName": "applicants[4].firstName"
+        "Dependent3_LastName": "applicants[4].lastName"
+        "Dependent3_DOB": "applicants[4].dateOfBirth"
+        "Dependent3_Gender": "applicants[4].gender"
+        
+        # Dependent 4 (index 5 in applicants array)
+        "Dependent4_FirstName": "applicants[5].firstName"
+        "Dependent4_LastName": "applicants[5].lastName"
+        "Dependent4_DOB": "applicants[5].dateOfBirth"
+        "Dependent4_Gender": "applicants[5].gender"

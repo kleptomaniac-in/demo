@@ -1,0 +1,31 @@
+# California state-specific field mappings
+# Adds/overrides fields for California regulatory compliance
+
+pdfMerge:
+  sections:
+    - name: enrollment-application
+      # California-specific fields
+      fieldMapping:
+        # CA regulatory compliance
+        "CA_LicenseNumber": "static:CA-12345-HEALTH"
+        "CA_DMHCPlanNumber": "companyInfo.dmhcPlanNumber"
+        
+        # CA-specific disclosures
+        "AcknowledgeNetworkRestrictions": "acknowledgments.caNetworkRestrictions"
+        "AcknowledgeAppealProcess": "acknowledgments.caAppealProcess"
+        "AcknowledgeGrievanceRights": "acknowledgments.caGrievanceRights"
+        "AcknowledgeMentalHealthParity": "acknowledgments.caMentalHealthParity"
+        
+        # Override EffectiveDate format for CA (specific format required)
+        "EffectiveDate": "#{formatDate(enrollment.effectiveDate, 'MMM dd, yyyy')}"
+        
+        # CA language access
+        "PreferredLanguage": "applicants[0].preferredLanguage"
+        "NeedInterpreter": "applicants[0].needsInterpreter"
+        
+        # CA-specific coverage
+        "CA_MinimumEssentialCoverage": "static:Yes"
+        "CA_ActuarialValue": "selectedPlans.medical.actuarialValue"
+        
+        # CA mailing address requirement (override to ensure CA format)
+        "Primary_State": "static:CA"
