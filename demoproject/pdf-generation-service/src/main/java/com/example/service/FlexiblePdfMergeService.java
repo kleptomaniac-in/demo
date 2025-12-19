@@ -1,7 +1,7 @@
 package com.example.service;
 
-import com.example.pdf.service.FreemarkerService;
-import com.example.pdf.service.HtmlPdfService;
+import com.example.service.FreemarkerService;
+import com.example.service.HtmlPdfService;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -387,17 +387,48 @@ public class FlexiblePdfMergeService {
             .replace("{total}", String.valueOf(totalPages))
             .replace("{date}", java.time.LocalDate.now().toString());
         
-        // Replace payload variables
+        // Replace payload variables (including nested paths with dot notation)
         if (payload != null) {
-            for (Map.Entry<String, Object> entry : payload.entrySet()) {
-                String placeholder = "{" + entry.getKey() + "}";
-                if (result.contains(placeholder) && entry.getValue() != null) {
-                    result = result.replace(placeholder, entry.getValue().toString());
+            // Find all placeholders in the text
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\{([^}]+)\\}");
+            java.util.regex.Matcher matcher = pattern.matcher(result);
+            
+            while (matcher.find()) {
+                String placeholder = matcher.group(0); // e.g., "{enrollment.effectiveDate}"
+                String path = matcher.group(1);        // e.g., "enrollment.effectiveDate"
+                
+                Object value = resolveNestedPath(payload, path);
+                if (value != null) {
+                    result = result.replace(placeholder, value.toString());
                 }
             }
         }
         
         return result;
+    }
+    
+    /**
+     * Resolves nested paths in payload using dot notation.
+     * Example: "enrollment.effectiveDate" -> payload.get("enrollment").get("effectiveDate")
+     */
+    private Object resolveNestedPath(Map<String, Object> payload, String path) {
+        if (path == null || path.isEmpty()) return null;
+        
+        String[] parts = path.split("\\.");
+        Object current = payload;
+        
+        for (String part : parts) {
+            if (current instanceof Map) {
+                current = ((Map<?, ?>) current).get(part);
+                if (current == null) {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
+        
+        return current;
     }
     
     private PDType1Font getFont(String fontName) {

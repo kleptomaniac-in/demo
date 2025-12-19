@@ -19,7 +19,7 @@ For scenarios where you don't need enrollment-based configuration selection (pro
 | Enrollment Flow | Direct Template Flow |
 |----------------|---------------------|
 | Config selected based on products/market/state | You specify config name directly |
-| `/api/enrollment/generate` | `/api/pdf/merge` |
+| `/api/enrollment/generate` | `/api/document/generate` |
 | Requires enrollment parameters | Just config name + payload |
 | Dynamic composition based on rules | Static template configuration |
 
@@ -27,11 +27,11 @@ For scenarios where you don't need enrollment-based configuration selection (pro
 
 ## API Endpoint
 
-### POST `/api/pdf/merge` - Direct Template Generation
+### POST `/api/document/generate` - Direct Template Generation
 
 **Purpose:** Generate PDF using a specific template configuration name
 
-**URL:** `http://localhost:8080/api/pdf/merge`
+**URL:** `http://localhost:8080/api/document/generate`
 
 **Method:** `POST`
 
@@ -145,7 +145,7 @@ Generate a benefit summary comparing 3 medical plans for a prospect
 #### Request
 
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d '{
     "configName": "benefit-summary.yml",
@@ -390,7 +390,7 @@ Generate a quote letter with premium details and AcroForm signature page
 #### Request
 
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d '{
     "configName": "premium-quote-letter.yml",
@@ -491,7 +491,7 @@ Proposal document with Medical, Dental, and Vision plans, including AcroForm enr
 #### Request
 
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d '{
     "configName": "multi-product-proposal.yml",
@@ -639,7 +639,7 @@ pdfMerge:
 #### Request
 
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d '{
     "configName": "coverage-illustration.yml",
@@ -823,7 +823,7 @@ config-repo/
 
 **Use Case:** Benefit summaries, proposals, quotes, illustrations, reports
 
-**Endpoint:** `/api/pdf/merge`
+**Endpoint:** `/api/document/generate`
 
 **Request:**
 ```json
@@ -855,7 +855,7 @@ config-repo/
 ✅ Config depends on products/market/state
 ✅ Want automatic composition of components
 
-### Use Direct Template Flow (`/api/pdf/merge`) When:
+### Use Direct Template Flow (`/api/document/generate`) When:
 ✅ Generating benefit summaries
 ✅ Creating proposals or quotes
 ✅ Producing marketing materials
@@ -890,7 +890,7 @@ cat > /tmp/benefit-summary-payload.json <<'EOF'
 EOF
 
 # Generate PDF
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @/tmp/benefit-summary-payload.json \
   -o test-benefit-summary.pdf
@@ -902,7 +902,7 @@ pdfinfo test-benefit-summary.pdf
 ### Test with AcroForm Section
 
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d '{
     "configName": "premium-quote-letter.yml",
@@ -927,7 +927,7 @@ pdftk test-quote.pdf dump_data_fields
 ```
 Your Application
     ↓
-POST /api/pdf/merge
+POST /api/document/generate
     {
       "configName": "benefit-summary.yml",
       "payload": { ... }

@@ -21,17 +21,14 @@ ls /workspaces/demo/demoproject/config-repo/examples/complex-application-structu
 ## Available Endpoints
 
 ### 1. Preview Flattened Payload
-**Endpoint:** `POST /api/enrollment-complex/preview-flattened`  
 **Purpose:** See how pre-processor transforms nested arrays  
 **Use Case:** Debug field mappings, verify data structure
 
 ### 2. Get Applicant Summary
-**Endpoint:** `POST /api/enrollment-complex/applicant-summary`  
 **Purpose:** Quick overview of applicants (PRIMARY, SPOUSE, dependents)  
 **Use Case:** UI display, validation before PDF generation
 
 ### 3. Generate PDF
-**Endpoint:** `POST /api/enrollment-complex/generate`  
 **Purpose:** Generate complete enrollment PDF with overflow handling  
 **Use Case:** Production PDF generation
 
@@ -43,7 +40,6 @@ ls /workspaces/demo/demoproject/config-repo/examples/complex-application-structu
 
 ### Command:
 ```bash
-curl -X POST http://localhost:8080/api/enrollment-complex/preview-flattened \
   -H "Content-Type: application/json" \
   -d @/workspaces/demo/demoproject/config-repo/examples/complex-application-structure.json \
   | jq .
@@ -51,7 +47,6 @@ curl -X POST http://localhost:8080/api/enrollment-complex/preview-flattened \
 
 ### Alternative (pretty print with Python):
 ```bash
-curl -X POST http://localhost:8080/api/enrollment-complex/preview-flattened \
   -H "Content-Type: application/json" \
   -d @/workspaces/demo/demoproject/config-repo/examples/complex-application-structure.json \
   | python3 -m json.tool
@@ -159,7 +154,6 @@ curl -X POST http://localhost:8080/api/enrollment-complex/preview-flattened \
 
 ### Command:
 ```bash
-curl -X POST http://localhost:8080/api/enrollment-complex/applicant-summary \
   -H "Content-Type: application/json" \
   -d @/workspaces/demo/demoproject/config-repo/examples/complex-application-structure.json \
   | jq .
@@ -187,7 +181,6 @@ curl -X POST http://localhost:8080/api/enrollment-complex/applicant-summary \
 ### Use Case:
 ```javascript
 // Frontend validation
-const summary = await fetch('/api/enrollment-complex/applicant-summary', {...});
 if (summary.needsAddendum) {
   alert(`This application has ${summary.additionalDependentCount} additional dependents. 
          They will be shown on a separate addendum page.`);
@@ -202,7 +195,6 @@ if (summary.needsAddendum) {
 
 ### Command:
 ```bash
-curl -X POST http://localhost:8080/api/enrollment-complex/generate \
   -H "Content-Type: application/json" \
   -d @/workspaces/demo/demoproject/config-repo/examples/complex-application-structure.json \
   -o enrollment-with-overflow.pdf
@@ -243,7 +235,6 @@ Test without external file:
 
 ### Minimal Application (No Spouse, No Dependents):
 ```bash
-curl -X POST http://localhost:8080/api/enrollment-complex/generate \
   -H "Content-Type: application/json" \
   -d '{
     "application": {
@@ -293,7 +284,6 @@ curl -X POST http://localhost:8080/api/enrollment-complex/generate \
 
 ### With Spouse (No Dependents):
 ```bash
-curl -X POST http://localhost:8080/api/enrollment-complex/generate \
   -H "Content-Type: application/json" \
   -d '{
     "application": {
@@ -341,7 +331,6 @@ curl -X POST http://localhost:8080/api/enrollment-complex/generate \
 
 #### A. No Spouse:
 ```bash
-curl -X POST http://localhost:8080/api/enrollment-complex/applicant-summary \
   -H "Content-Type: application/json" \
   -d '{
     "application": {
@@ -355,7 +344,6 @@ curl -X POST http://localhost:8080/api/enrollment-complex/applicant-summary \
 
 #### B. Exactly 3 Dependents:
 ```bash
-curl -X POST http://localhost:8080/api/enrollment-complex/applicant-summary \
   -H "Content-Type: application/json" \
   -d '{
     "application": {
@@ -380,7 +368,6 @@ curl -X POST http://localhost:8080/api/enrollment-complex/applicant-summary \
 
 #### C. 6 Dependents (Overflow):
 ```bash
-curl -X POST http://localhost:8080/api/enrollment-complex/applicant-summary \
   -H "Content-Type: application/json" \
   -d '{
     "application": {
@@ -413,7 +400,6 @@ curl -X POST http://localhost:8080/api/enrollment-complex/applicant-summary \
 Use different YAML configuration:
 
 ```bash
-curl -X POST http://localhost:8080/api/enrollment-complex/generate \
   -H "Content-Type: application/json" \
   -d '{
     "configName": "examples/custom-enrollment-config.yml",
@@ -511,7 +497,6 @@ If `null`, check input has SPOUSE applicant.
 ```bash
 # Test 10 requests
 for i in {1..10}; do
-  curl -X POST http://localhost:8080/api/enrollment-complex/generate \
     -H "Content-Type: application/json" \
     -d @complex-application-structure.json \
     -o "enrollment-$i.pdf" &
@@ -521,7 +506,6 @@ wait
 
 ### Measure Response Time:
 ```bash
-time curl -X POST http://localhost:8080/api/enrollment-complex/generate \
   -H "Content-Type: application/json" \
   -d @complex-application-structure.json \
   -o enrollment.pdf
@@ -538,7 +522,6 @@ Create `test-enrollment-api.sh`:
 ```bash
 #!/bin/bash
 
-BASE_URL="http://localhost:8080/api/enrollment-complex"
 TEST_FILE="/workspaces/demo/demoproject/config-repo/examples/complex-application-structure.json"
 
 echo "=== Testing Complex Enrollment API ==="

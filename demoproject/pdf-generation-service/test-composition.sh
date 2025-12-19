@@ -9,7 +9,7 @@ echo "PDF Template Composition System Tests"
 echo "=========================================="
 echo ""
 
-BASE_URL="http://localhost:8080/api/pdf/merge"
+BASE_URL="http://localhost:8080/api/document/generate"
 OUTPUT_DIR="output"
 
 # Ensure output directory exists

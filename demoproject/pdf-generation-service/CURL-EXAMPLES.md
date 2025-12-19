@@ -50,6 +50,53 @@ curl -X POST "$BASE_URL/api/enrollment/generate" \
   -o "$OUTPUT_DIR/enrollment-simple.pdf"
 ```
 
+### 2a. Generate Enrollment PDF (Auto-Collect Products)
+**NEW:** Products array is optional - system auto-collects from members!
+```bash
+curl -X POST "$BASE_URL/api/enrollment/generate" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "enrollment": {
+      "marketCategory": "individual",
+      "state": "CA"
+    },
+    "payload": {
+      "companyInfo": {
+        "name": "HealthCare Plus Inc"
+      },
+      "enrollmentContext": {
+        "state": "CA",
+        "stateFullName": "California",
+        "marketDisplay": "Individual",
+        "effectiveDate": "2026-01-01"
+      },
+      "applicationNumber": "APP-2025-001",
+      "members": [
+        {
+          "name": "Alice Smith",
+          "relationship": "PRIMARY",
+          "dateOfBirth": "1985-05-15",
+          "products": [
+            {"type": "medical", "planName": "Gold PPO", "premium": 450.00}
+          ]
+        },
+        {
+          "name": "Bob Smith",
+          "relationship": "SPOUSE",
+          "dateOfBirth": "1987-03-20",
+          "products": [
+            {"type": "dental", "planName": "Basic Dental", "premium": 45.00},
+            {"type": "vision", "planName": "Vision Plus", "premium": 15.00}
+          ]
+        }
+      ]
+    }
+  }' \
+  -o "$OUTPUT_DIR/enrollment-auto-collected.pdf"
+# System automatically detects: ["dental", "medical", "vision"]
+# Selects config: dental-medical-vision-individual-ca.yml
+```
+
 ### 3. Generate Enrollment PDF (Complex with Applicants)
 ```bash
 curl -X POST "$BASE_URL/api/enrollment/generate" \
@@ -61,6 +108,7 @@ curl -X POST "$BASE_URL/api/enrollment/generate" \
       "state": "CA"
     },
     "payload": {
+      "companyName": "Acme Health Insurance",
       "application": {
         "applicationId": "APP-2025-001",
         "applicants": [
@@ -122,11 +170,25 @@ curl -X POST "$BASE_URL/api/enrollment/preview-config" \
 
 ### 5. Generate PDF with Multi-Template Configuration
 ```bash
-curl -X POST "$BASE_URL/api/pdf/merge" \
+curl -X POST "$BASE_URL/api/document/generate" \
   -H "Content-Type: application/json" \
   -d '{
     "configName": "enrollment-multi-product",
     "payload": {
+      "companyInfo": {
+        "name": "HealthCare Plus Inc"
+      },
+      "enrollmentContext": {
+        "products": ["medical"],
+        "marketCategory": "individual",
+        "marketDisplay": "Individual",
+        "state": "CA",
+        "stateFullName": "California",
+        "productsDisplay": "Medical",
+        "effectiveDate": "2026-01-01",
+        "submittedDate": "2025-12-18"
+      },
+      "applicationNumber": "APP-2025-001",
       "applicants": [
         {
           "relationship": "PRIMARY",
@@ -144,17 +206,10 @@ curl -X POST "$BASE_URL/api/pdf/merge" \
             {"type": "medical", "planName": "Gold PPO", "premium": 450.00}
           ]
         }
-      ],
-      "enrollment": {
-        "products": ["medical"],
-        "marketCategory": "individual",
-        "state": "CA",
-        "effectiveDate": "2026-01-01",
-        "submittedDate": "2025-12-18"
-      }
+      ]
     }
   }' \
-  -o "$OUTPUT_DIR/enrollment-multi-template.pdf"
+  -o "$OUTPUT_DIR/enrollment-multi-template-test.pdf"
 ```
 
 ### 6. Generate Enrollment PDF per Applicant (ZIP)
@@ -208,7 +263,7 @@ curl -X POST "$BASE_URL/api/enrollment/generate-per-applicant" \
 
 ### 7. Merge Multiple PDFs
 ```bash
-curl -X POST "$BASE_URL/api/pdf/merge" \
+curl -X POST "$BASE_URL/api/document/generate" \
   -H "Content-Type: application/json" \
   -d '{
     "sourcePaths": [
@@ -221,7 +276,6 @@ curl -X POST "$BASE_URL/api/pdf/merge" \
 
 ### 6. Complex Enrollment - Generate
 ```bash
-curl -X POST "$BASE_URL/api/enrollment-complex/generate" \
   -H "Content-Type: application/json" \
   -d '{
     "enrollment": {
@@ -249,7 +303,6 @@ curl -X POST "$BASE_URL/api/enrollment-complex/generate" \
 
 ### 7. Preview Flattened Payload
 ```bash
-curl -X POST "$BASE_URL/api/enrollment-complex/preview-flattened" \
   -H "Content-Type: application/json" \
   -d '{
     "application": {
@@ -263,7 +316,6 @@ curl -X POST "$BASE_URL/api/enrollment-complex/preview-flattened" \
 
 ### 8. Get Applicant Summary
 ```bash
-curl -X POST "$BASE_URL/api/enrollment-complex/applicant-summary" \
   -H "Content-Type: application/json" \
   -d '{
     "application": {

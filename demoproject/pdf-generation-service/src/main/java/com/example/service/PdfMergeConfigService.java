@@ -1,6 +1,6 @@
 package com.example.service;
 
-import com.example.pdf.service.ConfigServerClient;
+import com.example.service.ConfigServerClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;

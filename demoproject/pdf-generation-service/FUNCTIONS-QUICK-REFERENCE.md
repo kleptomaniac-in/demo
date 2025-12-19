@@ -131,7 +131,7 @@ fieldMappings:
 ## Test with CURL
 
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @test-enrollment-functions-request.json \
   --output enrollment-functions-demo.pdf

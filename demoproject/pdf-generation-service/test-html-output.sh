@@ -1,5 +1,5 @@
 #!/bin/bash
-curl -s -X POST http://localhost:8080/api/pdf/merge \
+curl -s -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d '{
     "configName": "pdf-merge-config.yml",

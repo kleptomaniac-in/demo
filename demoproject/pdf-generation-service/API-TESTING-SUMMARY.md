@@ -61,8 +61,7 @@ cd /workspaces/demo/demoproject/pdf-generation-service
 - ✅ `/generate` - Simple PDF from template
 - ✅ `/api/enrollment/generate` - Enrollment PDF (simple & complex)
 - ✅ `/api/enrollment/preview-config` - Preview config selection
-- ✅ `/api/pdf/merge` - Merge multiple PDFs
-- ✅ `/api/enrollment-complex/*` - Complex enrollment operations
+- ✅ `/api/document/generate` - Merge multiple PDFs
 
 ### Excel Generation (5 endpoints)
 - ✅ `/api/excel/generate` - Basic Excel generation

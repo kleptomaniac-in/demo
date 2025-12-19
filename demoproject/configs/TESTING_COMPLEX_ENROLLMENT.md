@@ -26,7 +26,6 @@ mvn spring-boot:run
 See how the pre-processor transforms the nested structure:
 
 ```bash
-curl -X POST http://localhost:8080/api/enrollment-complex/preview-flattened \
   -H "Content-Type: application/json" \
   -d @/workspaces/demo/demoproject/config-repo/examples/complex-application-structure.json \
   | jq .
@@ -78,7 +77,6 @@ Notice how:
 ## Step 3: Get Applicant Summary
 
 ```bash
-curl -X POST http://localhost:8080/api/enrollment-complex/applicant-summary \
   -H "Content-Type: application/json" \
   -d @/workspaces/demo/demoproject/config-repo/examples/complex-application-structure.json \
   | jq .
@@ -100,7 +98,6 @@ curl -X POST http://localhost:8080/api/enrollment-complex/applicant-summary \
 ## Step 4: Generate PDF
 
 ```bash
-curl -X POST http://localhost:8080/api/enrollment-complex/generate \
   -H "Content-Type: application/json" \
   -d @/workspaces/demo/demoproject/config-repo/examples/complex-application-structure.json \
   -o enrollment-with-overflow.pdf
@@ -154,7 +151,6 @@ Create `minimal-application.json`:
 
 Test:
 ```bash
-curl -X POST http://localhost:8080/api/enrollment-complex/generate \
   -H "Content-Type: application/json" \
   -d @minimal-application.json \
   -o minimal-enrollment.pdf
@@ -223,7 +219,6 @@ Based on the mapping in `preprocessed-enrollment-mapping.yml`:
 **Check:**
 1. Is there a SPOUSE in the applicants array?
    ```bash
-   curl -X POST http://localhost:8080/api/enrollment-complex/applicant-summary ...
    ```
    Should show `"hasSpouse": true`
 

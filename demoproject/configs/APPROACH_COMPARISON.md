@@ -228,7 +228,6 @@ Results in:
 **When field doesn't fill:**
 1. Call preview endpoint:
    ```bash
-   POST /api/enrollment-complex/preview-flattened
    ```
 2. See exact flattened structure
 3. Verify `primary`, `spouse`, etc. exist
