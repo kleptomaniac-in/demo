@@ -1,0 +1,21 @@
+# Primary applicant field mappings
+# Reusable component for the main/primary applicant on any enrollment form
+
+pdfMerge:
+  sections:
+    - name: enrollment-application
+      fieldMapping:
+        # Primary applicant - personal information
+        "Primary_FirstName": "#{uppercase(applicants[0].firstName)}"
+        "Primary_LastName": "#{uppercase(applicants[0].lastName)}"
+        "Primary_MiddleName": "applicants[0].middleName"
+        "Primary_DOB": "#{formatDate(applicants[0].dateOfBirth, 'MM/dd/yyyy')}"
+        "Primary_Gender": "applicants[0].gender"
+        "Primary_Email": "applicants[0].email"
+        "Primary_Phone": "applicants[0].phone"
+        
+        # Primary address
+        "Primary_Street": "applicants[0].mailingAddress.street"
+        "Primary_City": "applicants[0].mailingAddress.city"
+        "Primary_State": "applicants[0].mailingAddress.state"
+        "Primary_Zip": "applicants[0].mailingAddress.zipCode"

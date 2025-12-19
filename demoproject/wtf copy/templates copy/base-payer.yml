@@ -1,0 +1,46 @@
+# Base configuration for all healthcare payer documents
+# This serves as the foundation that all specific templates build upon
+
+pdfMerge:
+  settings:
+    addBookmarks: true
+    addTableOfContents: false
+  
+  # Common header for all documents
+  header:
+    enabled: true
+    height: 40
+    startPage: 1
+    content:
+      left:
+        text: "{companyName}"
+        font: "Helvetica"
+        fontSize: 10
+      right:
+        text: "{date}"
+        font: "Helvetica"
+        fontSize: 10
+    border:
+      enabled: false
+      color: "#333333"
+      thickness: 1
+  
+  # Common footer for all documents
+  footer:
+    enabled: true
+    height: 40
+    startPage: 1
+    content:
+      left:
+        text: "© 2025 {companyName}"
+        font: "Helvetica"
+        fontSize: 8
+      center:
+        text: "Page {current} of {total}"
+        font: "Helvetica"
+        fontSize: 10
+    border:
+      enabled: false
+  
+  # Base sections that all documents include
+  sections:

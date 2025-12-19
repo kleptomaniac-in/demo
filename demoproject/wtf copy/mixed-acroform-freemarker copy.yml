@@ -1,0 +1,34 @@
+# Multi-section PDF with both AcroForm and FreeMarker sections
+
+composition:
+  base: templates/base-payer.yml
+  
+pdfMerge:
+  sections:
+    # AcroForm enrollment application (pre-existing form)
+    - name: enrollment-form
+      type: acroform
+      template: enrollment-application.pdf
+      enabled: true
+      fieldMapping:
+        "MemberName": "member.name"
+        "MemberId": "member.memberId"
+        "EffectiveDate": "enrollment.effectiveDate"
+        "MedicalPlan": "plans.medical.name"
+        "DentalPlan": "plans.dental.name"
+    
+    # FreeMarker template for detailed plan comparison
+    - name: plan-comparison
+      type: freemarker
+      template: plan-comparison-table.ftl
+      enabled: true
+    
+    # Another AcroForm for California disclosures
+    - name: ca-disclosure
+      type: acroform
+      template: ca-dmhc-disclosure.pdf
+      enabled: true
+      fieldMapping:
+        "CompanyName": "companyName"
+        "PlanName": "plans.medical.name"
+        "AcknowledgeRights": "signatures.acknowledgedRights"

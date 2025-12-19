@@ -1,0 +1,35 @@
+# Base AcroForm field mappings for all payer documents
+# Common fields that apply across all products, markets, and states
+
+pdfMerge:
+  sections:
+    - name: enrollment-application
+      type: acroform
+      template: enrollment-form-base.pdf
+      enabled: true
+      fieldMapping:
+        # Base company information (common to all)
+        "CompanyName": "companyInfo.name"
+        "CompanyPhone": "companyInfo.phone"
+        "CompanyWebsite": "companyInfo.website"
+        
+        # Base applicant information (always needed)
+        "ApplicationNumber": "#{concat('APP-', enrollment.applicationId)}"
+        "ApplicationDate": "#{formatDate(enrollment.applicationDate, 'MM/dd/yyyy')}"
+        
+        # Primary applicant - base fields
+        "Primary_FirstName": "#{uppercase(applicants[0].firstName)}"
+        "Primary_LastName": "#{uppercase(applicants[0].lastName)}"
+        "Primary_DOB": "#{formatDate(applicants[0].dateOfBirth, 'MM/dd/yyyy')}"
+        "Primary_Gender": "applicants[0].gender"
+        "Primary_Email": "applicants[0].email"
+        "Primary_Phone": "applicants[0].phone"
+        
+        # Primary address
+        "Primary_Street": "applicants[0].mailingAddress.street"
+        "Primary_City": "applicants[0].mailingAddress.city"
+        "Primary_State": "applicants[0].mailingAddress.state"
+        "Primary_Zip": "applicants[0].mailingAddress.zipCode"
+        
+        # Total premium (common calculation)
+        "TotalPremium": "#{formatCurrency(productSummary.grandTotalPremium)}"
