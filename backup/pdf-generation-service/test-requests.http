@@ -10,7 +10,7 @@ GET {{baseUrl}}/api/pdf/health
 
 ### Test 1: Simple Merge Request
 # @name simpleMerge
-POST {{baseUrl}}/api/pdf/merge
+POST {{baseUrl}}/api/document/generate
 Content-Type: {{contentType}}
 
 {
@@ -82,7 +82,7 @@ Content-Type: {{contentType}}
 
 ### Test 2: Minimal Merge Request
 # @name minimalMerge
-POST {{baseUrl}}/api/pdf/merge
+POST {{baseUrl}}/api/document/generate
 Content-Type: {{contentType}}
 
 {
@@ -112,7 +112,7 @@ Content-Type: {{contentType}}
 
 ### Test 3: With Conditionals Request
 # @name conditionalsMerge
-POST {{baseUrl}}/api/pdf/merge
+POST {{baseUrl}}/api/document/generate
 Content-Type: {{contentType}}
 
 {

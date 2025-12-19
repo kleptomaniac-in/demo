@@ -23,7 +23,7 @@ echo ""
 
 # Test 1: Simple merge
 echo "2. Testing simple merge request..."
-curl -s -X POST http://localhost:8080/api/pdf/merge \
+curl -s -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @test-requests/01-simple-merge-request.json \
   --output output/healthcare-report.pdf
@@ -38,7 +38,7 @@ echo ""
 
 # Test 2: Minimal merge
 echo "3. Testing minimal merge request..."
-curl -s -X POST http://localhost:8080/api/pdf/merge \
+curl -s -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @test-requests/02-minimal-merge-request.json \
   --output output/simple-report.pdf
@@ -53,7 +53,7 @@ echo ""
 
 # Test 3: With conditionals
 echo "4. Testing with conditionals request..."
-curl -s -X POST http://localhost:8080/api/pdf/merge \
+curl -s -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @test-requests/03-with-conditionals-request.json \
   --output output/detailed-report.pdf

@@ -55,10 +55,7 @@ newman run postman-collection.json -e postman-environment-local.json --folder "P
 | `/api/enrollment/generate` | POST | Generate enrollment PDF (simple) |
 | `/api/enrollment/generate` | POST | Generate enrollment PDF (complex applicants) |
 | `/api/enrollment/preview-config` | POST | Preview config selection |
-| `/api/pdf/merge` | POST | Merge multiple PDFs |
-| `/api/enrollment-complex/generate` | POST | Complex enrollment generation |
-| `/api/enrollment-complex/preview-flattened` | POST | Preview payload flattening |
-| `/api/enrollment-complex/applicant-summary` | POST | Get applicant summary |
+| `/api/document/generate` | POST | Merge multiple PDFs |
 
 ### Excel Generation (5 endpoints)
 

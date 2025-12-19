@@ -13,7 +13,6 @@ Updated `postman-collection.json` to sync with actual codebase implementation. A
 ### ❌ Removed Endpoints
 
 1. **`/generate`** - Legacy single-template endpoint (no longer primary interface)
-2. **`/api/enrollment-complex/generate`** - Not actually implemented
 3. **`/api/pdf/health`** - Not an actual endpoint
 4. **`/internal/mapping-order`** - Debug endpoint not in main API
 5. **`/api/excel/generate-complete`** - Consolidated into other endpoints
@@ -22,7 +21,7 @@ Updated `postman-collection.json` to sync with actual codebase implementation. A
 
 All request payloads updated to match actual DTOs:
 
-1. **`/api/pdf/merge`** - Fixed payload structure to use `configName` and full payload with enrollment context
+1. **`/api/document/generate`** - Fixed payload structure to use `configName` and full payload with enrollment context
 2. **`/api/enrollment/generate`** - Updated to match `EnrollmentRequest` DTO with products, marketCategory, state, and nested payload
 3. **`/api/enrollment/preview-config`** - Simplified to just enrollment parameters
 4. **`/api/excel/*`** - All Excel endpoints updated with correct request structures
@@ -30,8 +29,6 @@ All request payloads updated to match actual DTOs:
 ### ➕ Added Endpoints
 
 1. **`/api/enrollment/generate-per-applicant`** - Generate separate PDFs per applicant (returns ZIP)
-2. **`/api/enrollment-complex/applicant-summary`** - Debug endpoint for applicant summaries
-3. **`/api/enrollment-complex/preview-flattened`** - Debug endpoint for payload flattening
 4. **`/actuator/health`** - Spring Boot actuator health check
 
 ### 📁 Collection Structure
@@ -215,7 +212,6 @@ Both files define `baseUrl` variable used throughout collection.
 
 4. **Debug Enriched Data** - See what enrichers produce
    ```
-   POST {{baseUrl}}/api/enrollment-complex/applicant-summary
    Body: (Use "Applicant Summary" request)
    ```
 

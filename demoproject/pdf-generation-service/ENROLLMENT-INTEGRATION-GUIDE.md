@@ -124,7 +124,7 @@ pdfMerge:
 
 ## Request Format
 
-**Endpoint**: `POST /api/pdf/merge`
+**Endpoint**: `POST /api/document/generate`
 
 **Request Body**:
 ```json
@@ -316,7 +316,7 @@ Total:   $495.00
 
 **Test Command**:
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @test-enrollment-multi-product-request.json \
   --output enrollment-test.pdf

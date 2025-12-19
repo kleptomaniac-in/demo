@@ -3,7 +3,7 @@ package com.example.pdf.controller;
 import com.example.service.ConfigSelectionService;
 import com.example.service.FlexiblePdfMergeService;
 import com.example.service.EnrollmentSubmission;
-import com.pdfgen.service.ConfigurablePayloadPreProcessor;
+import com.example.preprocessing.service.ConfigurablePayloadPreProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -11,8 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/enrollment")
@@ -39,17 +39,21 @@ public class EnrollmentPdfController {
      * - Handles BILLING vs MAILING addresses
      * - Separates MEDICAL, DENTAL, VISION products
      * - Manages overflow for 4+ dependents
+     * - Automatically collects products from all applicants/members if not provided
      */
     @PostMapping("/generate")
     public ResponseEntity<byte[]> generateEnrollmentPdf(@RequestBody EnrollmentPdfRequest request) {
         try {
+            // Auto-collect products from payload if not explicitly provided
+            EnrollmentSubmission enrollment = enrichEnrollmentWithProducts(request.getEnrollment(), request.getPayload());
+            
             // Strategy 1: Use convention-based selection
-            String configName = configSelectionService.selectConfigByConvention(request.getEnrollment());
+            String configName = configSelectionService.selectConfigByConvention(enrollment);
             
             System.out.println("Selected config: " + configName);
-            System.out.println("Products: " + request.getEnrollment().getProducts());
-            System.out.println("Market: " + request.getEnrollment().getMarketCategory());
-            System.out.println("State: " + request.getEnrollment().getState());
+            System.out.println("Products: " + enrollment.getProducts());
+            System.out.println("Market: " + enrollment.getMarketCategory());
+            System.out.println("State: " + enrollment.getState());
             
             // Prepare payload with optional pre-processing for complex structures
             Map<String, Object> processedPayload = preparePayload(request.getPayload());
@@ -80,8 +84,11 @@ public class EnrollmentPdfController {
     @PostMapping("/generate-with-rules")
     public ResponseEntity<byte[]> generateWithRules(@RequestBody EnrollmentPdfRequest request) {
         try {
+            // Auto-collect products from payload if not explicitly provided
+            EnrollmentSubmission enrollment = enrichEnrollmentWithProducts(request.getEnrollment(), request.getPayload());
+            
             // Strategy 4: Use business rules
-            String configName = configSelectionService.selectConfigByRules(request.getEnrollment());
+            String configName = configSelectionService.selectConfigByRules(enrollment);
             
             System.out.println("Rule-based config selection: " + configName);
             
@@ -130,6 +137,154 @@ public class EnrollmentPdfController {
             String.join(", ", enrollment.getProducts()),
             enrollment.getMarketCategory(),
             enrollment.getState());
+    }
+    
+    /**
+     * Enriches enrollment submission by auto-collecting products from payload if not explicitly provided.
+     * 
+     * This method examines the payload structure to extract all unique products selected by applicants/members.
+     * It supports multiple payload structures:
+     * - members[] with products[] arrays
+     * - application.applicants[] with products
+     * - enrollment.members with product information
+     * 
+     * @param enrollment The enrollment submission (may have empty or partial products list)
+     * @param payload The payload containing member/applicant data
+     * @return Enriched enrollment submission with complete products list
+     */
+    private EnrollmentSubmission enrichEnrollmentWithProducts(EnrollmentSubmission enrollment, Map<String, Object> payload) {
+        // If products already provided and not empty, use as-is
+        if (enrollment.getProducts() != null && !enrollment.getProducts().isEmpty()) {
+            System.out.println("Using explicitly provided products: " + enrollment.getProducts());
+            return enrollment;
+        }
+        
+        // Auto-collect products from payload
+        List<String> collectedProducts = collectProductsFromPayload(payload);
+        
+        if (!collectedProducts.isEmpty()) {
+            System.out.println("Auto-collected products from payload: " + collectedProducts);
+            enrollment.setProducts(collectedProducts);
+        } else {
+            System.out.println("Warning: No products found in payload. Using empty list.");
+            enrollment.setProducts(new ArrayList<>());
+        }
+        
+        return enrollment;
+    }
+    
+    /**
+     * Collects all unique product types from the payload by examining members/applicants data.
+     * 
+     * Supports multiple payload structures:
+     * 1. payload.members[].products[].type
+     * 2. payload.application.applicants[].products[].productType
+     * 3. payload.enrollment.members[].products[]
+     * 
+     * @param payload The request payload
+     * @return Sorted list of unique product types (e.g., ["dental", "medical", "vision"])
+     */
+    private List<String> collectProductsFromPayload(Map<String, Object> payload) {
+        Set<String> productSet = new HashSet<>();
+        
+        // Strategy 1: Check payload.members[].products[]
+        if (payload.containsKey("members") && payload.get("members") instanceof List) {
+            List<Map<String, Object>> members = (List<Map<String, Object>>) payload.get("members");
+            for (Map<String, Object> member : members) {
+                if (member.containsKey("products") && member.get("products") instanceof List) {
+                    List<Map<String, Object>> products = (List<Map<String, Object>>) member.get("products");
+                    for (Map<String, Object> product : products) {
+                        String type = extractProductType(product);
+                        if (type != null) {
+                            productSet.add(type.toLowerCase());
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Strategy 2: Check payload.application.applicants[].products[] or proposedProducts[]
+        if (payload.containsKey("application") && payload.get("application") instanceof Map) {
+            Map<String, Object> application = (Map<String, Object>) payload.get("application");
+            
+            // Check applicants
+            if (application.containsKey("applicants") && application.get("applicants") instanceof List) {
+                List<Map<String, Object>> applicants = (List<Map<String, Object>>) application.get("applicants");
+                for (Map<String, Object> applicant : applicants) {
+                    if (applicant.containsKey("products") && applicant.get("products") instanceof List) {
+                        List<Map<String, Object>> products = (List<Map<String, Object>>) applicant.get("products");
+                        for (Map<String, Object> product : products) {
+                            String type = extractProductType(product);
+                            if (type != null) {
+                                productSet.add(type.toLowerCase());
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Check proposedProducts at application level
+            if (application.containsKey("proposedProducts") && application.get("proposedProducts") instanceof List) {
+                List<Map<String, Object>> proposedProducts = (List<Map<String, Object>>) application.get("proposedProducts");
+                for (Map<String, Object> product : proposedProducts) {
+                    String type = extractProductType(product);
+                    if (type != null) {
+                        productSet.add(type.toLowerCase());
+                    }
+                }
+            }
+        }
+        
+        // Strategy 3: Check payload.enrollment.members[]
+        if (payload.containsKey("enrollment") && payload.get("enrollment") instanceof Map) {
+            Map<String, Object> enrollment = (Map<String, Object>) payload.get("enrollment");
+            if (enrollment.containsKey("members") && enrollment.get("members") instanceof List) {
+                List<Map<String, Object>> members = (List<Map<String, Object>>) enrollment.get("members");
+                for (Map<String, Object> member : members) {
+                    if (member.containsKey("products") && member.get("products") instanceof List) {
+                        List<Map<String, Object>> products = (List<Map<String, Object>>) member.get("products");
+                        for (Map<String, Object> product : products) {
+                            String type = extractProductType(product);
+                            if (type != null) {
+                                productSet.add(type.toLowerCase());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Return sorted list for consistency
+        return productSet.stream().sorted().collect(Collectors.toList());
+    }
+    
+    /**
+     * Extracts product type from a product map, handling different field names.
+     * 
+     * Checks for: type, productType, product_type, name
+     */
+    private String extractProductType(Map<String, Object> product) {
+        if (product.containsKey("type")) {
+            return (String) product.get("type");
+        }
+        if (product.containsKey("productType")) {
+            return (String) product.get("productType");
+        }
+        if (product.containsKey("product_type")) {
+            return (String) product.get("product_type");
+        }
+        if (product.containsKey("name")) {
+            String name = (String) product.get("name");
+            // Handle cases like "Medical PPO" -> "medical"
+            if (name != null) {
+                name = name.toLowerCase();
+                if (name.contains("medical")) return "medical";
+                if (name.contains("dental")) return "dental";
+                if (name.contains("vision")) return "vision";
+                if (name.contains("life")) return "life";
+            }
+        }
+        return null;
     }
     
     /**

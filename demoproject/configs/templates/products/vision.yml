@@ -5,13 +5,13 @@ pdfMerge:
     # Vision coverage details section
     - name: vision-coverage
       type: freemarker
-      template: products/vision-coverage-details.ftl
+      template: templates/products/vision-coverage-details.ftl
       enabled: true
     
     # Vision providers and retailers
     - name: vision-providers
       type: freemarker
-      template: products/vision-provider-network.ftl
+      template: templates/products/vision-provider-network.ftl
       enabled: true
   
   # Vision-specific bookmarks

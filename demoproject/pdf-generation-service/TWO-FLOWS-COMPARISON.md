@@ -58,7 +58,7 @@ Request:
 }
          │
          ▼
-POST /api/pdf/merge
+POST /api/document/generate
          │
          ▼
 Load config directly: "benefit-summary.yml"
@@ -108,7 +108,7 @@ Merge sections into final PDF
 
 ---
 
-### Direct Template Flow (`/api/pdf/merge`)
+### Direct Template Flow (`/api/document/generate`)
 
 **✅ Use When:**
 - Generating benefit summaries
@@ -135,7 +135,7 @@ Merge sections into final PDF
 
 | Aspect | Enrollment Flow | Direct Template Flow |
 |--------|----------------|---------------------|
-| **Endpoint** | `/api/enrollment/generate` | `/api/pdf/merge` |
+| **Endpoint** | `/api/enrollment/generate` | `/api/document/generate` |
 | **Config Selection** | Automatic (products/market/state) | Manual (specify name) |
 | **Use Case** | Enrollments, applications | Summaries, quotes, proposals |
 | **Complexity** | Higher (dynamic composition) | Lower (direct config) |
@@ -176,7 +176,7 @@ curl -X POST http://localhost:8080/api/enrollment/generate \
 ### Direct Template Flow
 
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d '{
     "configName": "benefit-summary.yml",
@@ -249,7 +249,7 @@ Do you have enrollment parameters
     │                          for consistency)
     │
     └─ NO ───→ Use DIRECT TEMPLATE FLOW
-               /api/pdf/merge
+               /api/document/generate
 ```
 
 ---
@@ -440,7 +440,7 @@ curl -X POST http://localhost:8080/api/enrollment/generate \
 ### Generate Benefit Summary
 
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d '{
     "configName": "benefit-summary.yml",
@@ -458,11 +458,11 @@ curl -X POST http://localhost:8080/api/pdf/merge \
 | Enrollment Application | Enrollment | `/api/enrollment/generate` | Automatic state forms |
 | Medicare Enrollment | Enrollment | `/api/enrollment/generate` | CMS compliance |
 | Group Application | Enrollment | `/api/enrollment/generate` | Market-specific rules |
-| **Benefit Summary** | **Direct** | `/api/pdf/merge` | Simple & flexible |
-| **Premium Quote** | **Direct** | `/api/pdf/merge` | Direct control |
-| **Proposal Document** | **Direct** | `/api/pdf/merge` | Custom template |
-| **Coverage Illustration** | **Direct** | `/api/pdf/merge` | Marketing focused |
-| **Marketing Brochure** | **Direct** | `/api/pdf/merge` | No enrollment data |
+| **Benefit Summary** | **Direct** | `/api/document/generate` | Simple & flexible |
+| **Premium Quote** | **Direct** | `/api/document/generate` | Direct control |
+| **Proposal Document** | **Direct** | `/api/document/generate` | Custom template |
+| **Coverage Illustration** | **Direct** | `/api/document/generate` | Marketing focused |
+| **Marketing Brochure** | **Direct** | `/api/document/generate` | No enrollment data |
 
 ---
 

@@ -1,0 +1,68 @@
+{
+  "enrollment": {
+    "marketCategory": "individual",
+    "state": "CA"
+  },
+  "payload": {
+    "companyInfo": {
+      "name": "HealthCare Plus Inc"
+    },
+    "enrollmentContext": {
+      "marketCategory": "individual",
+      "marketDisplay": "Individual",
+      "state": "CA",
+      "stateFullName": "California",
+      "effectiveDate": "2026-01-01",
+      "submittedDate": "2025-12-18"
+    },
+    "applicationNumber": "APP-2025-MIXED",
+    "applicants": [
+      {
+        "relationship": "PRIMARY",
+        "firstName": "Alice",
+        "lastName": "Johnson",
+        "dateOfBirth": "1990-08-20"
+      },
+      {
+        "relationship": "SPOUSE",
+        "firstName": "Bob",
+        "lastName": "Johnson",
+        "dateOfBirth": "1988-12-10"
+      },
+      {
+        "relationship": "DEPENDENT",
+        "firstName": "Charlie",
+        "lastName": "Johnson",
+        "dateOfBirth": "2015-05-15"
+      }
+    ],
+    "members": [
+      {
+        "name": "Alice Johnson",
+        "relationship": "PRIMARY",
+        "dateOfBirth": "1990-08-20",
+        "products": [
+          {"type": "medical", "planName": "Platinum HMO", "premium": 500.00}
+        ]
+      },
+      {
+        "name": "Bob Johnson",
+        "relationship": "SPOUSE",
+        "dateOfBirth": "1988-12-10",
+        "products": [
+          {"type": "dental", "planName": "Premium Dental", "premium": 60.00},
+          {"type": "vision", "planName": "Vision Plus", "premium": 20.00}
+        ]
+      },
+      {
+        "name": "Charlie Johnson",
+        "relationship": "DEPENDENT",
+        "dateOfBirth": "2015-05-15",
+        "products": [
+          {"type": "medical", "planName": "Platinum HMO", "premium": 300.00},
+          {"type": "dental", "planName": "Premium Dental", "premium": 40.00}
+        ]
+      }
+    ]
+  }
+}

@@ -311,7 +311,7 @@ primary = applicants.filter(a -> a.relationship == PRIMARY)
 Test with the sample payload above:
 
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d '{
     "configName": "enrollment-with-filters.yml",

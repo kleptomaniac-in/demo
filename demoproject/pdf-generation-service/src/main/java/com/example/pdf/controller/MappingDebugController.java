@@ -1,6 +1,6 @@
 package com.example.pdf.controller;
 
-import com.example.pdf.service.MappingService;
+import com.example.service.MappingService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

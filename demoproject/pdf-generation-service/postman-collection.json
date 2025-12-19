@@ -28,7 +28,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/pdf/merge",
+              "raw": "{{baseUrl}}/api/document/generate",
               "host": ["{{baseUrl}}"],
               "path": ["api", "pdf", "merge"]
             },

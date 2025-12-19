@@ -23,7 +23,7 @@
 Tests basic PDF merge with FreeMarker HTML pages and PDFBox pages.
 
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @test-requests/01-simple-merge-request.json \
   --output output/healthcare-report.pdf
@@ -42,7 +42,7 @@ curl -X POST http://localhost:8080/api/pdf/merge \
 Tests with minimal data to verify the system handles sparse data correctly.
 
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @test-requests/02-minimal-merge-request.json \
   --output output/simple-report.pdf
@@ -60,7 +60,7 @@ curl -X POST http://localhost:8080/api/pdf/merge \
 Tests conditional sections based on payload flags.
 
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @test-requests/03-with-conditionals-request.json \
   --output output/detailed-report.pdf
@@ -83,19 +83,19 @@ If you have the REST Client extension installed, create a file `test-requests.ht
 GET http://localhost:8080/api/pdf/health
 
 ### Simple Merge Request
-POST http://localhost:8080/api/pdf/merge
+POST http://localhost:8080/api/document/generate
 Content-Type: application/json
 
 < test-requests/01-simple-merge-request.json
 
 ### Minimal Merge Request
-POST http://localhost:8080/api/pdf/merge
+POST http://localhost:8080/api/document/generate
 Content-Type: application/json
 
 < test-requests/02-minimal-merge-request.json
 
 ### With Conditionals Request
-POST http://localhost:8080/api/pdf/merge
+POST http://localhost:8080/api/document/generate
 Content-Type: application/json
 
 < test-requests/03-with-conditionals-request.json
@@ -110,7 +110,7 @@ Click "Send Request" above each test to execute.
 1. **Import Collection:**
    - Create new request
    - Method: `POST`
-   - URL: `http://localhost:8080/api/pdf/merge`
+   - URL: `http://localhost:8080/api/document/generate`
    - Headers: `Content-Type: application/json`
    - Body: Copy content from any test request JSON file
    - Click "Send"
@@ -143,7 +143,7 @@ Click "Send Request" above each test to execute.
              "mode": "raw",
              "raw": "{{simple-merge-request}}"
            },
-           "url": "http://localhost:8080/api/pdf/merge"
+           "url": "http://localhost:8080/api/document/generate"
          }
        }
      ]
@@ -227,14 +227,14 @@ Look for:
 # Generate 100 requests with concurrency of 10
 ab -n 100 -c 10 -p test-requests/01-simple-merge-request.json \
    -T application/json \
-   http://localhost:8080/api/pdf/merge
+   http://localhost:8080/api/document/generate
 ```
 
 ### Memory Usage Test
 ```bash
 # Monitor memory while generating PDFs
 while true; do
-  curl -X POST http://localhost:8080/api/pdf/merge \
+  curl -X POST http://localhost:8080/api/document/generate \
     -H "Content-Type: application/json" \
     -d @test-requests/03-with-conditionals-request.json \
     --output /dev/null
@@ -276,7 +276,7 @@ curl -s http://localhost:8080/api/pdf/health | jq .
 
 # Test 1: Simple merge
 echo "2. Testing simple merge..."
-curl -s -X POST http://localhost:8080/api/pdf/merge \
+curl -s -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @test-requests/01-simple-merge-request.json \
   --output output/healthcare-report.pdf
@@ -290,7 +290,7 @@ fi
 
 # Test 2: Minimal merge
 echo "3. Testing minimal merge..."
-curl -s -X POST http://localhost:8080/api/pdf/merge \
+curl -s -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @test-requests/02-minimal-merge-request.json \
   --output output/simple-report.pdf
@@ -304,7 +304,7 @@ fi
 
 # Test 3: With conditionals
 echo "4. Testing with conditionals..."
-curl -s -X POST http://localhost:8080/api/pdf/merge \
+curl -s -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @test-requests/03-with-conditionals-request.json \
   --output output/detailed-report.pdf

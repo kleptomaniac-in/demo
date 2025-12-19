@@ -1,0 +1,54 @@
+{
+  "enrollment": {
+    "marketCategory": "individual",
+    "state": "CA"
+  },
+  "payload": {
+    "companyInfo": {
+      "name": "HealthCare Plus Inc"
+    },
+    "enrollmentContext": {
+      "marketCategory": "individual",
+      "marketDisplay": "Individual",
+      "state": "CA",
+      "stateFullName": "California",
+      "effectiveDate": "2026-01-01",
+      "submittedDate": "2025-12-18"
+    },
+    "applicationNumber": "APP-2025-AUTOTEST",
+    "applicants": [
+      {
+        "relationship": "PRIMARY",
+        "firstName": "John",
+        "lastName": "Smith",
+        "dateOfBirth": "1985-05-15"
+      },
+      {
+        "relationship": "SPOUSE",
+        "firstName": "Jane",
+        "lastName": "Smith",
+        "dateOfBirth": "1987-03-20"
+      }
+    ],
+    "members": [
+      {
+        "name": "John Smith",
+        "relationship": "PRIMARY",
+        "dateOfBirth": "1985-05-15",
+        "products": [
+          {"type": "medical", "planName": "Gold PPO", "premium": 450.00},
+          {"type": "dental", "planName": "Basic Dental", "premium": 45.00}
+        ]
+      },
+      {
+        "name": "Jane Smith",
+        "relationship": "SPOUSE",
+        "dateOfBirth": "1987-03-20",
+        "products": [
+          {"type": "medical", "planName": "Gold PPO", "premium": 450.00},
+          {"type": "vision", "planName": "Vision Plus", "premium": 15.00}
+        ]
+      }
+    ]
+  }
+}

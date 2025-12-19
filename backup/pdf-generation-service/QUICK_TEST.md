@@ -23,7 +23,7 @@ curl http://localhost:8080/api/pdf/health
 
 **Test 1 - Simple Healthcare Report:**
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @test-requests/01-simple-merge-request.json \
   --output healthcare-report.pdf
@@ -31,7 +31,7 @@ curl -X POST http://localhost:8080/api/pdf/merge \
 
 **Test 2 - Minimal Report:**
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @test-requests/02-minimal-merge-request.json \
   --output simple-report.pdf
@@ -39,7 +39,7 @@ curl -X POST http://localhost:8080/api/pdf/merge \
 
 **Test 3 - Detailed Report with Conditionals:**
 ```bash
-curl -X POST http://localhost:8080/api/pdf/merge \
+curl -X POST http://localhost:8080/api/document/generate \
   -H "Content-Type: application/json" \
   -d @test-requests/03-with-conditionals-request.json \
   --output detailed-report.pdf
@@ -53,7 +53,7 @@ curl -X POST http://localhost:8080/api/pdf/merge \
 ### Option 4: Postman
 1. Import request:
    - Method: POST
-   - URL: `http://localhost:8080/api/pdf/merge`
+   - URL: `http://localhost:8080/api/document/generate`
    - Headers: `Content-Type: application/json`
    - Body: Paste from any `test-requests/*.json` file
 2. Click Send
