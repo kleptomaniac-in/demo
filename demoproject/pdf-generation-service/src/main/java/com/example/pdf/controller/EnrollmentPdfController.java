@@ -2,8 +2,12 @@ package com.example.pdf.controller;
 
 import com.example.service.ConfigSelectionService;
 import com.example.service.FlexiblePdfMergeService;
+import com.example.service.EnrollmentPdfService;
+import com.example.service.PdfMergeConfigService;
+import com.example.service.PdfMergeConfig;
 import com.example.service.EnrollmentSubmission;
 import com.example.preprocessing.service.ConfigurablePayloadPreProcessor;
+import com.example.util.PayloadPathExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +24,12 @@ public class EnrollmentPdfController {
 
     @Autowired
     private FlexiblePdfMergeService pdfMergeService;
+    
+    @Autowired
+    private EnrollmentPdfService enrollmentPdfService;
+    
+    @Autowired
+    private PdfMergeConfigService configService;
     
     @Autowired
     private ConfigSelectionService configSelectionService;
@@ -44,11 +54,28 @@ public class EnrollmentPdfController {
     @PostMapping("/generate")
     public ResponseEntity<byte[]> generateEnrollmentPdf(@RequestBody EnrollmentPdfRequest request) {
         try {
-            // Auto-collect products from payload if not explicitly provided
-            EnrollmentSubmission enrollment = enrichEnrollmentWithProducts(request.getEnrollment(), request.getPayload());
+            // Preliminary config selection to get product collection paths
+            String preliminaryConfigName = configSelectionService.selectConfigByConvention(
+                request.getEnrollment() != null ? request.getEnrollment() : new EnrollmentSubmission()
+            );
             
-            // Strategy 1: Use convention-based selection
+            // Load config to get product collection paths
+            PdfMergeConfig config = configService.loadConfig(preliminaryConfigName);
+            
+            // Auto-collect products from payload if not explicitly provided
+            EnrollmentSubmission enrollment = enrichEnrollmentWithProducts(
+                request.getEnrollment(), 
+                request.getPayload(),
+                config
+            );
+            
+            // Re-select config with enriched enrollment data
             String configName = configSelectionService.selectConfigByConvention(enrollment);
+            
+            // Reload config if it changed
+            if (!configName.equals(preliminaryConfigName)) {
+                config = configService.loadConfig(configName);
+            }
             
             System.out.println("Selected config: " + configName);
             System.out.println("Products: " + enrollment.getProducts());
@@ -84,11 +111,28 @@ public class EnrollmentPdfController {
     @PostMapping("/generate-with-rules")
     public ResponseEntity<byte[]> generateWithRules(@RequestBody EnrollmentPdfRequest request) {
         try {
+            // Preliminary config selection
+            String preliminaryConfigName = configSelectionService.selectConfigByRules(
+                request.getEnrollment() != null ? request.getEnrollment() : new EnrollmentSubmission()
+            );
+            
+            // Load config to get product collection paths
+            PdfMergeConfig config = configService.loadConfig(preliminaryConfigName);
+            
             // Auto-collect products from payload if not explicitly provided
-            EnrollmentSubmission enrollment = enrichEnrollmentWithProducts(request.getEnrollment(), request.getPayload());
+            EnrollmentSubmission enrollment = enrichEnrollmentWithProducts(
+                request.getEnrollment(), 
+                request.getPayload(),
+                config
+            );
             
             // Strategy 4: Use business rules
             String configName = configSelectionService.selectConfigByRules(enrollment);
+            
+            // Reload config if it changed
+            if (!configName.equals(preliminaryConfigName)) {
+                config = configService.loadConfig(configName);
+            }
             
             System.out.println("Rule-based config selection: " + configName);
             
@@ -152,21 +196,28 @@ public class EnrollmentPdfController {
      * @param payload The payload containing member/applicant data
      * @return Enriched enrollment submission with complete products list
      */
-    private EnrollmentSubmission enrichEnrollmentWithProducts(EnrollmentSubmission enrollment, Map<String, Object> payload) {
+    private EnrollmentSubmission enrichEnrollmentWithProducts(
+            EnrollmentSubmission enrollment, 
+            Map<String, Object> payload,
+            PdfMergeConfig config) {
+        
         // If products already provided and not empty, use as-is
         if (enrollment.getProducts() != null && !enrollment.getProducts().isEmpty()) {
             System.out.println("Using explicitly provided products: " + enrollment.getProducts());
             return enrollment;
         }
         
-        // Auto-collect products from payload
-        List<String> collectedProducts = collectProductsFromPayload(payload);
+        // Auto-collect products from payload using config-driven paths
+        List<String> collectedProducts = collectProductsFromPayload(payload, config);
         
         if (!collectedProducts.isEmpty()) {
-            System.out.println("Auto-collected products from payload: " + collectedProducts);
+            System.out.println("Auto-collected products from payload using config paths: " + collectedProducts);
             enrollment.setProducts(collectedProducts);
+        } else if (config.getDefaultProducts() != null && !config.getDefaultProducts().isEmpty()) {
+            System.out.println("Using default products from config: " + config.getDefaultProducts());
+            enrollment.setProducts(config.getDefaultProducts());
         } else {
-            System.out.println("Warning: No products found in payload. Using empty list.");
+            System.out.println("Warning: No products found in payload and no defaults configured. Using empty list.");
             enrollment.setProducts(new ArrayList<>());
         }
         

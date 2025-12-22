@@ -17,6 +17,11 @@ public class PdfMergeConfig {
     private List<BookmarkConfig> bookmarks;
     private HeaderFooterConfig header;
     private HeaderFooterConfig footer;
+    private AddendumConfig addendums;
+    
+    // Product collection configuration
+    private List<String> productCollectionPaths;
+    private List<String> defaultProducts;
 
     // Getters and setters for composition
     public String getBase() { return base; }
@@ -56,6 +61,19 @@ public class PdfMergeConfig {
     
     public HeaderFooterConfig getFooter() { return footer; }
     public void setFooter(HeaderFooterConfig footer) { this.footer = footer; }
+    
+    public AddendumConfig getAddendums() { return addendums; }
+    public void setAddendums(AddendumConfig addendums) { this.addendums = addendums; }
+    
+    public List<String> getProductCollectionPaths() { return productCollectionPaths; }
+    public void setProductCollectionPaths(List<String> productCollectionPaths) { 
+        this.productCollectionPaths = productCollectionPaths; 
+    }
+    
+    public List<String> getDefaultProducts() { return defaultProducts; }
+    public void setDefaultProducts(List<String> defaultProducts) { 
+        this.defaultProducts = defaultProducts; 
+    }
 }
 
 class SectionConfig {
@@ -236,4 +254,40 @@ class BorderConfig {
 
     public int getThickness() { return thickness; }
     public void setThickness(int thickness) { this.thickness = thickness; }
+}
+
+class AddendumConfig {
+    private DependentAddendumConfig dependents;
+    private CoverageAddendumConfig coverages;
+
+    // Getters and setters
+    public DependentAddendumConfig getDependents() { return dependents; }
+    public void setDependents(DependentAddendumConfig dependents) { this.dependents = dependents; }
+
+    public CoverageAddendumConfig getCoverages() { return coverages; }
+    public void setCoverages(CoverageAddendumConfig coverages) { this.coverages = coverages; }
+}
+
+class DependentAddendumConfig {
+    private boolean enabled = true;
+    private int maxInMainForm = 3;
+
+    // Getters and setters
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+
+    public int getMaxInMainForm() { return maxInMainForm; }
+    public void setMaxInMainForm(int maxInMainForm) { this.maxInMainForm = maxInMainForm; }
+}
+
+class CoverageAddendumConfig {
+    private boolean enabled = true;
+    private int maxPerApplicant = 1;
+
+    // Getters and setters
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+
+    public int getMaxPerApplicant() { return maxPerApplicant; }
+    public void setMaxPerApplicant(int maxPerApplicant) { this.maxPerApplicant = maxPerApplicant; }
 }

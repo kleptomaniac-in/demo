@@ -243,4 +243,92 @@ class CoverageAddendumServiceTest {
         enrollment.put("planType", "FAMILY");
         return enrollment;
     }
+    
+    // ========== Tests for Configurable Max Values ==========
+    
+    @Test
+    @DisplayName("Custom maxPerApplicant: 2 coverages allowed per applicant")
+    void testCustomMaxPerApplicant() {
+        // PRIMARY with 2 coverages
+        List<Map<String, Object>> applicants = createApplicantsWithCoverages(new int[]{2});
+        
+        // With maxPerApplicant=2, no addendum needed
+        assertFalse(service.isAddendumNeeded(applicants, 2),
+                   "Should not need addendum when maxPerApplicant=2 and applicant has 2 coverages");
+        
+        // With maxPerApplicant=1, addendum needed
+        assertTrue(service.isAddendumNeeded(applicants, 1),
+                  "Should need addendum when maxPerApplicant=1 and applicant has 2 coverages");
+        
+        System.out.println("✓ Custom maxPerApplicant works correctly");
+    }
+    
+    @Test
+    @DisplayName("Custom maxPerApplicant: generate addendum with different thresholds")
+    void testGenerateAddendumWithCustomMax() throws Exception {
+        // PRIMARY with 4 coverages
+        List<Map<String, Object>> applicants = createApplicantsWithCoverages(new int[]{4});
+        Map<String, Object> enrollmentData = createEnrollmentData();
+        
+        // With maxPerApplicant=2, should generate addendum for 2 overflow (3rd, 4th)
+        byte[] addendum2 = service.generateCoverageAddendum(applicants, enrollmentData, 2);
+        assertTrue(addendum2.length > 0, "Should generate addendum for 2 overflow coverages");
+        
+        // With maxPerApplicant=1, should generate addendum for 3 overflow (2nd, 3rd, 4th)
+        byte[] addendum1 = service.generateCoverageAddendum(applicants, enrollmentData, 1);
+        assertTrue(addendum1.length > addendum2.length,
+                  "Addendum with maxPerApplicant=1 should be larger (more overflow coverages)");
+        
+        System.out.println("✓ maxPerApplicant=2: " + addendum2.length + " bytes (2 overflow)");
+        System.out.println("✓ maxPerApplicant=1: " + addendum1.length + " bytes (3 overflow)");
+    }
+    
+    @Test
+    @DisplayName("Multiple applicants with custom maxPerApplicant")
+    void testMultipleApplicantsCustomMax() {
+        // PRIMARY: 3 coverages, SPOUSE: 2 coverages, DEPENDENT: 1 coverage
+        List<Map<String, Object>> applicants = createApplicantsWithCoverages(new int[]{3, 2, 1});
+        
+        // With maxPerApplicant=2, only PRIMARY overflows
+        boolean needed2 = service.isAddendumNeeded(applicants, 2);
+        assertTrue(needed2, "PRIMARY has 3 coverages > maxPerApplicant=2");
+        
+        // With maxPerApplicant=1, PRIMARY and SPOUSE both overflow
+        boolean needed1 = service.isAddendumNeeded(applicants, 1);
+        assertTrue(needed1, "Both PRIMARY and SPOUSE exceed maxPerApplicant=1");
+        
+        System.out.println("✓ Multiple applicants with custom max works correctly");
+    }
+    
+    @Test
+    @DisplayName("Edge case: maxPerApplicant=0 means all coverages overflow")
+    void testMaxPerApplicantZero() {
+        List<Map<String, Object>> applicants = createApplicantsWithCoverages(new int[]{1});
+        
+        assertTrue(service.isAddendumNeeded(applicants, 0),
+                  "Should need addendum when maxPerApplicant=0 (all coverages overflow)");
+    }
+    
+    @Test
+    @DisplayName("Edge case: maxPerApplicant=5 for forms supporting many coverages")
+    void testMaxPerApplicantLarge() {
+        List<Map<String, Object>> applicants = createApplicantsWithCoverages(new int[]{4});
+        
+        assertFalse(service.isAddendumNeeded(applicants, 5),
+                   "Should not need addendum when maxPerApplicant=5 and applicant has 4 coverages");
+    }
+    
+    @Test
+    @DisplayName("No addendum when all applicants are within custom max")
+    void testNoAddendumWithCustomMax() throws Exception {
+        // All applicants have 2 coverages
+        List<Map<String, Object>> applicants = createApplicantsWithCoverages(new int[]{2, 2, 2});
+        Map<String, Object> enrollmentData = createEnrollmentData();
+        
+        // With maxPerApplicant=2, no overflow
+        byte[] addendum = service.generateCoverageAddendum(applicants, enrollmentData, 2);
+        assertEquals(0, addendum.length, "Should not generate addendum when all within max");
+        
+        System.out.println("✓ No addendum when all applicants within maxPerApplicant=2");
+    }
 }

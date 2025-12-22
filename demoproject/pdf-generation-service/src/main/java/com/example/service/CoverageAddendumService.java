@@ -37,6 +37,12 @@ public class CoverageAddendumService {
      */
     public byte[] generateCoverageAddendum(List<Map<String, Object>> applicants,
                                           Map<String, Object> enrollmentData) throws IOException {
+        return generateCoverageAddendum(applicants, enrollmentData, MAX_COVERAGES_IN_FORM);
+    }
+    
+    public byte[] generateCoverageAddendum(List<Map<String, Object>> applicants,
+                                          Map<String, Object> enrollmentData,
+                                          int maxPerApplicant) throws IOException {
         // Collect overflow coverages per applicant
         List<CoverageRecord> overflowCoverages = new ArrayList<>();
         
@@ -46,12 +52,12 @@ public class CoverageAddendumService {
             
             // Get coverages for this applicant
             List<Map<String, Object>> coverages = (List<Map<String, Object>>) applicant.get("coverages");
-            if (coverages == null || coverages.size() <= MAX_COVERAGES_IN_FORM) {
+            if (coverages == null || coverages.size() <= maxPerApplicant) {
                 continue; // No overflow for this applicant
             }
             
-            // Add overflow coverages (2nd onward)
-            for (int i = MAX_COVERAGES_IN_FORM; i < coverages.size(); i++) {
+            // Add overflow coverages (e.g., 2nd onward if maxPerApplicant=1)
+            for (int i = maxPerApplicant; i < coverages.size(); i++) {
                 Map<String, Object> coverage = coverages.get(i);
                 overflowCoverages.add(new CoverageRecord(
                     applicantName,
@@ -116,13 +122,27 @@ public class CoverageAddendumService {
      * Check if coverage addendum is needed.
      */
     public boolean isAddendumNeeded(List<Map<String, Object>> applicants) {
+        return isAddendumNeeded(applicants, MAX_COVERAGES_IN_FORM);
+    }
+    
+    public boolean isAddendumNeeded(List<Map<String, Object>> applicants, int maxPerApplicant) {
         if (applicants == null) return false;
         
-        return applicants.stream()
+        System.out.println("CoverageAddendumService: Checking if coverage addendum needed for " + applicants.size() + " applicants (MAX=" + maxPerApplicant + ")");
+        
+        boolean needed = applicants.stream()
             .anyMatch(applicant -> {
                 List<Map<String, Object>> coverages = (List<Map<String, Object>>) applicant.get("coverages");
-                return coverages != null && coverages.size() > MAX_COVERAGES_IN_FORM;
+                boolean hasOverflow = coverages != null && coverages.size() > maxPerApplicant;
+                if (hasOverflow) {
+                    String name = getApplicantName(applicant);
+                    System.out.println("CoverageAddendumService: Applicant '" + name + "' has " + coverages.size() + " coverages (overflow detected)");
+                }
+                return hasOverflow;
             });
+        
+        System.out.println("CoverageAddendumService: Coverage addendum needed=" + needed);
+        return needed;
     }
     
     private float drawTitle(PDPageContentStream contentStream, float yPosition) throws IOException {

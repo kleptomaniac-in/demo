@@ -53,7 +53,12 @@ public class PdfMergeConfigService {
         }
     }
     
-    private Map<String, Object> loadYamlFile(String configName) throws Exception {
+    /**
+     * Load YAML file with component-level caching.
+     * Each component file is cached individually and shared across multiple configs.
+     */
+    @Cacheable(value = "yamlComponents", key = "#configName")
+    public Map<String, Object> loadYamlFile(String configName) throws Exception {
         String yamlContent;
         
         // Ensure .yml extension is present
@@ -363,5 +368,68 @@ public class PdfMergeConfigService {
     @CacheEvict(value = "pdfConfigs", allEntries = true)
     public void clearCache() {
         System.out.println("Cleared all configs from cache");
+    }
+    
+    /**
+     * Evict a specific YAML component from cache.
+     * Use this when a shared component file (base, product, market) is modified.
+     */
+    @CacheEvict(value = "yamlComponents", key = "#componentName")
+    public void evictComponent(String componentName) {
+        System.out.println("Evicted YAML component from cache: " + componentName);
+    }
+    
+    /**
+     * Clear all YAML component cache.
+     */
+    @CacheEvict(value = "yamlComponents", allEntries = true)
+    public void clearComponentCache() {
+        System.out.println("Cleared all YAML components from cache");
+    }
+    
+    /**
+     * Check if a config contains only AcroForm sections (no FreeMarker or PdfBox).
+     * Useful for determining if automatic addendum generation can be used.
+     */
+    public boolean isAcroFormOnlyConfig(PdfMergeConfig config) {
+        if (config.getSections() == null || config.getSections().isEmpty()) {
+            return false;
+        }
+        
+        long acroFormCount = config.getSections().stream()
+            .filter(SectionConfig::isEnabled)
+            .filter(s -> "acroform".equalsIgnoreCase(s.getType()))
+            .count();
+        
+        long enabledCount = config.getSections().stream()
+            .filter(SectionConfig::isEnabled)
+            .count();
+        
+        return acroFormCount == enabledCount && enabledCount > 0;
+    }
+    
+    /**
+     * Get the first enabled AcroForm section from a config.
+     */
+    public SectionConfig getFirstAcroFormSection(PdfMergeConfig config) {
+        return config.getSections().stream()
+            .filter(SectionConfig::isEnabled)
+            .filter(s -> "acroform".equalsIgnoreCase(s.getType()))
+            .findFirst()
+            .orElse(null);
+    }
+    
+    /**
+     * Get the template path from a section.
+     */
+    public String getSectionTemplate(SectionConfig section) {
+        return section != null ? section.getTemplate() : null;
+    }
+    
+    /**
+     * Get the field mappings from a section.
+     */
+    public Map<String, String> getSectionFieldMapping(SectionConfig section) {
+        return section != null ? section.getFieldMapping() : null;
     }
 }

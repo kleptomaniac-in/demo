@@ -19,6 +19,7 @@ public class CacheConfig {
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(
             "pdfConfigs",           // PDF merge configurations
+            "yamlComponents",       // Individual YAML component files (shared across configs)
             "acroformTemplates",    // AcroForm PDF templates (as bytes)
             "configFile",           // Config server file cache
             "appSource"             // Config server app source cache

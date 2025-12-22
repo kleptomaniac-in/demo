@@ -37,6 +37,12 @@ public class DependentAddendumService {
      */
     public byte[] generateDependentAddendum(List<Map<String, Object>> applicants, 
                                            Map<String, Object> enrollmentData) throws IOException {
+        return generateDependentAddendum(applicants, enrollmentData, MAX_DEPENDENTS_IN_FORM);
+    }
+    
+    public byte[] generateDependentAddendum(List<Map<String, Object>> applicants, 
+                                           Map<String, Object> enrollmentData,
+                                           int maxInMainForm) throws IOException {
         // Extract dependents
         List<Map<String, Object>> dependents = applicants.stream()
             .filter(a -> {
@@ -48,12 +54,12 @@ public class DependentAddendumService {
             .toList();
         
         // Check if we need an addendum
-        if (dependents.size() <= MAX_DEPENDENTS_IN_FORM) {
+        if (dependents.size() <= maxInMainForm) {
             return new byte[0]; // No addendum needed
         }
         
-        // Get overflow dependents (4th onward)
-        List<Map<String, Object>> overflowDependents = dependents.subList(MAX_DEPENDENTS_IN_FORM, dependents.size());
+        // Get overflow dependents (e.g., 4th onward if maxInMainForm=3)
+        List<Map<String, Object>> overflowDependents = dependents.subList(maxInMainForm, dependents.size());
         
         // Generate addendum PDF
         try (PDDocument document = new PDDocument()) {
@@ -76,7 +82,7 @@ public class DependentAddendumService {
             yPosition -= 5;
             
             // Dependent rows
-            int dependentNumber = MAX_DEPENDENTS_IN_FORM + 1; // Start from 4
+            int dependentNumber = maxInMainForm + 1; // Start from max+1
             for (Map<String, Object> dependent : overflowDependents) {
                 yPosition = drawDependentRow(contentStream, dependent, dependentNumber, yPosition);
                 dependentNumber++;
@@ -239,6 +245,10 @@ public class DependentAddendumService {
      * Check if addendum is needed based on dependent count.
      */
     public boolean isAddendumNeeded(List<Map<String, Object>> applicants) {
+        return isAddendumNeeded(applicants, MAX_DEPENDENTS_IN_FORM);
+    }
+    
+    public boolean isAddendumNeeded(List<Map<String, Object>> applicants, int maxInMainForm) {
         long dependentCount = applicants.stream()
             .filter(a -> {
                 Map<String, Object> demo = (Map<String, Object>) a.get("demographic");
@@ -248,6 +258,9 @@ public class DependentAddendumService {
             })
             .count();
         
-        return dependentCount > MAX_DEPENDENTS_IN_FORM;
+        System.out.println("DependentAddendumService: Found " + dependentCount + " dependents (MAX=" + maxInMainForm + ")");
+        boolean needed = dependentCount > maxInMainForm;
+        System.out.println("DependentAddendumService: Dependent addendum needed=" + needed);
+        return needed;
     }
 }

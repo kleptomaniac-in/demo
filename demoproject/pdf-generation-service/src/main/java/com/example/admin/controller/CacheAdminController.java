@@ -41,6 +41,7 @@ public class CacheAdminController {
         Map<String, Object> allStats = new HashMap<>();
         
         allStats.put("pdfConfigs", getCacheStats("pdfConfigs"));
+        allStats.put("yamlComponents", getCacheStats("yamlComponents"));
         allStats.put("acroformTemplates", getCacheStats("acroformTemplates"));
         allStats.put("configFile", getCacheStats("configFile"));
         allStats.put("appSource", getCacheStats("appSource"));
@@ -89,6 +90,9 @@ public class CacheAdminController {
             case "pdfConfigs":
                 configService.clearCache();
                 break;
+            case "yamlComponents":
+                configService.clearComponentCache();
+                break;
             case "acroformTemplates":
                 acroFormService.clearTemplateCache();
                 break;
@@ -113,6 +117,7 @@ public class CacheAdminController {
     @PostMapping("/clear-all")
     public Map<String, String> clearAllCaches() {
         configService.clearCache();
+        configService.clearComponentCache();
         acroFormService.clearTemplateCache();
         cacheManager.getCache("configFile").clear();
         cacheManager.getCache("appSource").clear();
@@ -131,6 +136,25 @@ public class CacheAdminController {
         return Map.of(
             "message", "Config evicted successfully",
             "configName", configName
+        );
+    }
+    
+    /**
+     * Evict specific YAML component from cache
+     * POST /api/admin/cache/evict/component/{componentName}
+     * 
+     * Use this to invalidate shared components like:
+     * - templates/base.yml
+     * - products/medical-ca.yml
+     * - market/california.yml
+     */
+    @PostMapping("/evict/component/{componentName}")
+    public Map<String, String> evictComponent(@PathVariable String componentName) {
+        configService.evictComponent(componentName);
+        
+        return Map.of(
+            "message", "YAML component evicted successfully",
+            "componentName", componentName
         );
     }
     
@@ -157,6 +181,7 @@ public class CacheAdminController {
         Map<String, Object> health = new HashMap<>();
         
         Map<String, Object> pdfConfigStats = getCacheStats("pdfConfigs");
+        Map<String, Object> yamlComponentStats = getCacheStats("yamlComponents");
         Map<String, Object> acroformStats = getCacheStats("acroformTemplates");
         Map<String, Object> configFileStats = getCacheStats("configFile");
         Map<String, Object> appSourceStats = getCacheStats("appSource");
@@ -164,13 +189,15 @@ public class CacheAdminController {
         // Calculate overall health
         double avgHitRate = (
             parseHitRate(pdfConfigStats) + 
+            parseHitRate(yamlComponentStats) +
             parseHitRate(acroformStats) +
             parseHitRate(configFileStats) +
             parseHitRate(appSourceStats)
-        ) / 4.0;
+        ) / 5.0;
         
         long totalSize = 
             (long) pdfConfigStats.getOrDefault("estimatedSize", 0L) +
+            (long) yamlComponentStats.getOrDefault("estimatedSize", 0L) +
             (long) acroformStats.getOrDefault("estimatedSize", 0L) +
             (long) configFileStats.getOrDefault("estimatedSize", 0L) +
             (long) appSourceStats.getOrDefault("estimatedSize", 0L);
@@ -178,13 +205,15 @@ public class CacheAdminController {
         health.put("status", avgHitRate > 50 ? "HEALTHY" : "DEGRADED");
         health.put("averageHitRate", String.format("%.2f%%", avgHitRate));
         health.put("totalCachedItems", totalSize);
-        health.put("note", "FreeMarker templates cached natively by FreeMarker engine");
-        health.put("caches", Map.of(
-            "pdfConfigs", pdfConfigStats,
-            "acroformTemplates", acroformStats,
-            "configFile", configFileStats,
-            "appSource", appSourceStats
-        ));
+        health.put("note", "FreeMarker templates cached natively by FreeMarker engine; YAML components shared across configs");
+        
+        Map<String, Object> cacheDetails = new HashMap<>();
+        cacheDetails.put("pdfConfigs", pdfConfigStats);
+        cacheDetails.put("yamlComponents", yamlComponentStats);
+        cacheDetails.put("acroformTemplates", acroformStats);
+        cacheDetails.put("configFile", configFileStats);
+        cacheDetails.put("appSource", appSourceStats);
+        health.put("caches", cacheDetails);
         return health;
     }
     
