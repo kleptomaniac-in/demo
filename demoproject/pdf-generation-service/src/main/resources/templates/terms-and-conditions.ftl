@@ -10,25 +10,25 @@
         body {
             font-family: Arial, sans-serif;
             margin: 40px;
-            font-size: 11px;
+            font-size: 10px;
         }
         h1 {
-            font-size: 18px;
+            font-size: 16px;
             color: #003366;
             border-bottom: 2px solid #003366;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
         h2 {
-            font-size: 14px;
+            font-size: 12px;
             color: #003366;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         p {
-            line-height: 1.6;
+            line-height: 1.4;
             text-align: justify;
         }
         .section {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .important {
             font-weight: bold;
@@ -71,7 +71,7 @@
     <div class="section">
         <h2>3. Premium Payment</h2>
         <p>
-            The total monthly premium for your selected coverage is <strong>$${totalPremium!"0.00"}</strong>. 
+            The total monthly premium for your selected coverage is <strong>$${(coverageSummary.totalPremium)!totalPremium!"0.00"}</strong>. 
             Premiums are due on the first day of each month. Failure to pay premiums may result in 
             termination of coverage.
         </p>
@@ -85,7 +85,14 @@
         <ul>
             <#if applicants??>
                 <#list applicants as applicant>
-                <li>${applicant.demographic.firstName!""} ${applicant.demographic.lastName!""} - ${applicant.relationship!""}</li>
+                <li>
+                    <#if applicant.demographic??>
+                        ${applicant.demographic.firstName!""} ${applicant.demographic.lastName!""}
+                    <#else>
+                        ${applicant.firstName!""} ${applicant.lastName!""}
+                    </#if>
+                     - ${applicant.relationship!""}
+                </li>
                 </#list>
             </#if>
         </ul>
@@ -123,12 +130,12 @@
         </p>
         <#if companyInfo??>
         <p>
-            <strong>${companyInfo.name}</strong><br>
-            ${companyInfo.address}<br>
-            ${companyInfo.city}, ${companyInfo.state} ${companyInfo.zipCode}<br>
-            Phone: ${companyInfo.phone}<br>
-            Email: ${companyInfo.email}<br>
-            Website: ${companyInfo.website}
+            <strong>${companyInfo.name!""}</strong><br>
+            ${companyInfo.address!""}<br>
+            ${companyInfo.city!""}<#if companyInfo.state??>, ${companyInfo.state}</#if> ${companyInfo.zipCode!""}<br>
+            Phone: ${companyInfo.phone!""}<br>
+            Email: ${companyInfo.email!""}<br>
+            Website: ${companyInfo.website!""}
         </p>
         </#if>
         <#if agentInfo??>
@@ -141,7 +148,7 @@
         </#if>
     </div>
     
-    <div class="section" style="margin-top: 50px; text-align: center; font-size: 10px; color: #999;">
+    <div class="section" style="margin-top: 30px; text-align: center; font-size: 9px; color: #999;">
         <p>© 2025<#if companyInfo??> ${companyInfo.name}</#if>. All rights reserved.</p>
         <p>Application Number: ${applicationNumber!""} | Generated: ${applicationDate!""}</p>
     </div>

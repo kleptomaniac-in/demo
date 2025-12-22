@@ -1,0 +1,44 @@
+export BASE_URL="http://localhost:8080"
+export OUTPUT_DIR="/workspaces/demo/output"
+mkdir -p "$OUTPUT_DIR"
+
+curl -X POST "$BASE_URL/api/document/generate" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "configName": "enrollment-multi-product",
+    "payload": {
+      "companyInfo": {
+        "name": "HealthCare Plus Inc"
+      },
+      "enrollmentContext": {
+        "products": ["medical"],
+        "marketCategory": "individual",
+        "marketDisplay": "Individual",
+        "state": "CA",
+        "stateFullName": "California",
+        "productsDisplay": "Medical",
+        "effectiveDate": "2026-01-01",
+        "submittedDate": "2025-12-18"
+      },
+      "applicationNumber": "APP-2025-001",
+      "applicants": [
+        {
+          "relationship": "PRIMARY",
+          "firstName": "John",
+          "lastName": "Smith",
+          "dateOfBirth": "1985-05-15"
+        }
+      ],
+      "members": [
+        {
+          "name": "John Smith",
+          "relationship": "PRIMARY",
+          "dateOfBirth": "1985-05-15",
+          "products": [
+            {"type": "medical", "planName": "Gold PPO", "premium": 450.00}
+          ]
+        }
+      ]
+    }
+  }' \
+  -o "$OUTPUT_DIR/enrollment-multi-template-test.pdf"

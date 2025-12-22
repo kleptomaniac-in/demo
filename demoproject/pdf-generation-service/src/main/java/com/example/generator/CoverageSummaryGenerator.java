@@ -92,7 +92,8 @@ public class CoverageSummaryGenerator implements PdfBoxGenerator {
                         if (products != null && !products.isEmpty()) {
                             for (Map<String, Object> product : products) {
                                 String planName = (String) product.get("planName");
-                                String premium = (String) product.get("premium");
+                                Object premiumObj = product.get("premium");
+                                String premium = premiumObj != null ? String.valueOf(premiumObj) : "0.00";
                                 
                                 if (planName != null) {
                                     drawText(contentStream, "  Coverage: " + planName + " ($" + premium + "/mo)", margin + 20, yPosition);

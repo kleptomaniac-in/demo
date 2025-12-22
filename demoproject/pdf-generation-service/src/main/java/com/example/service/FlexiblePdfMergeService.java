@@ -45,8 +45,23 @@ public class FlexiblePdfMergeService {
         // Load merge configuration
         PdfMergeConfig config = configService.loadConfig(configName);
         
+        // Apply global enrichers from config if specified
+        Map<String, Object> enrichedPayload = payload;
+        if (config.getPayloadEnrichers() != null && !config.getPayloadEnrichers().isEmpty()) {
+            if (payloadEnricherRegistry != null) {
+                System.out.println("Applying global enrichers: " + config.getPayloadEnrichers());
+                enrichedPayload = payloadEnricherRegistry.applyEnrichers(
+                    config.getPayloadEnrichers(), 
+                    payload
+                );
+                System.out.println("Enriched payload keys: " + enrichedPayload.keySet());
+            } else {
+                System.err.println("PayloadEnricherRegistry not available, skipping global enrichers");
+            }
+        }
+        
         // Resolve sections (including conditionals)
-        List<SectionConfig> resolvedSections = resolveSections(config, payload);
+        List<SectionConfig> resolvedSections = resolveSections(config, enrichedPayload);
         
         // Generate individual PDFs for each section
         Map<String, PDDocument> sectionDocs = new HashMap<>();
@@ -58,7 +73,7 @@ public class FlexiblePdfMergeService {
                 continue;
             }
             
-            PDDocument doc = generateSectionPdf(section, payload);
+            PDDocument doc = generateSectionPdf(section, enrichedPayload);
             sectionDocs.put(section.getName(), doc);
             sectionStartPages.put(section.getName(), currentPage);
             currentPage += doc.getNumberOfPages();
@@ -74,12 +89,12 @@ public class FlexiblePdfMergeService {
         
         // Add common header if configured
         if (config.getHeader() != null && config.getHeader().isEnabled()) {
-            addHeaderFooter(mergedDoc, config.getHeader(), payload, true);
+            addHeaderFooter(mergedDoc, config.getHeader(), enrichedPayload, true);
         }
         
         // Add common footer if configured
         if (config.getFooter() != null && config.getFooter().isEnabled()) {
-            addHeaderFooter(mergedDoc, config.getFooter(), payload, false);
+            addHeaderFooter(mergedDoc, config.getFooter(), enrichedPayload, false);
         }
         
         // Add bookmarks if configured
@@ -168,11 +183,9 @@ public class FlexiblePdfMergeService {
         
         if ("freemarker".equals(section.getType())) {
             // Generate HTML via FreeMarker
-            // FreeMarker templates expect payload to be nested under "payload" key
-            Map<String, Object> model = new java.util.HashMap<>();
-            model.put("payload", enrichedPayload);
-            
-            String html = freemarkerService.processTemplateFromLocation(section.getTemplate(), model);
+            // Pass enriched payload directly as the model
+            // Templates can access fields directly: ${enrollmentContext.marketDisplay}
+            String html = freemarkerService.processTemplateFromLocation(section.getTemplate(), enrichedPayload);
             byte[] pdfBytes = htmlPdfService.renderHtmlToPdf(html);
             return PDDocument.load(new ByteArrayInputStream(pdfBytes));
             
@@ -327,12 +340,16 @@ public class FlexiblePdfMergeService {
             );
             
             PDRectangle pageSize = page.getMediaBox();
-            // Position text with proper spacing from border
-            // For header: text near top with adequate margin (12pt from top)
-            // For footer: text with margin from bottom (12pt from bottom)  
-            float textYPosition = isHeader 
-                ? pageSize.getHeight() - 12  // 12 points from top of page
-                : 12;  // 12 points from bottom of page
+            // Position text centered within the header/footer area
+            float textYPosition;
+            if (isHeader) {
+                // Center in header area: pageSize.getHeight() - (config.getHeight() / 2)
+                // Adjust slightly for baseline (approx 3-4 points)
+                textYPosition = pageSize.getHeight() - (config.getHeight() / 2) - 4;
+            } else {
+                // Center in footer area: config.getHeight() / 2
+                textYPosition = (config.getHeight() / 2) - 4;
+            }
             
             ContentConfig content = config.getContent();
             

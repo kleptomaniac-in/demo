@@ -26,6 +26,21 @@ public class EnrollmentContextEnricher implements PayloadEnricher {
     public Map<String, Object> enrich(Map<String, Object> payload) {
         Map<String, Object> enriched = new HashMap<>(payload);
         
+        // Check if enrollmentContext already exists in payload (pre-populated)
+        Map<String, Object> existingContext = (Map<String, Object>) payload.get("enrollmentContext");
+        if (existingContext != null) {
+            // Context already exists - keep it as-is and also spread fields to root for convenience
+            enriched.put("enrollmentContext", existingContext);
+            // Also add common fields to root level for backward compatibility
+            if (existingContext.get("state") != null) {
+                enriched.put("state", existingContext.get("state"));
+            }
+            if (existingContext.get("marketCategory") != null) {
+                enriched.put("marketCategory", existingContext.get("marketCategory"));
+            }
+            return enriched;
+        }
+        
         // Extract enrollment metadata if present
         Map<String, Object> enrollment = (Map<String, Object>) payload.get("enrollment");
         if (enrollment != null) {

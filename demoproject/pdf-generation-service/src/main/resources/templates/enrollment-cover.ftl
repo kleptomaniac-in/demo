@@ -48,14 +48,22 @@
 <body>
     <div class="cover-page">
         <h1>Health Insurance Enrollment Application</h1>
-        <h2>Plan Year ${planYear!""}</h2>
+        <h2>${enrollmentContext.marketDisplay!""} Market - ${enrollmentContext.stateFullName!""}</h2>
         
         <div class="application-info">
             <p><span class="label">Application Number:</span> ${applicationNumber!""}</p>
-            <p><span class="label">Application Date:</span> ${applicationDate!""}</p>
-            <p><span class="label">Effective Date:</span> ${effectiveDate!""}</p>
+            <p><span class="label">Submitted Date:</span> ${enrollmentContext.submittedDate!""}</p>
+            <p><span class="label">Effective Date:</span> ${enrollmentContext.effectiveDate!""}</p>
             <#if applicants?? && (applicants?size > 0)>
-                <p><span class="label">Primary Applicant:</span> ${applicants[0].demographic.firstName!""} ${applicants[0].demographic.lastName!""}</p>
+                <#-- Handle both nested demographic and flat structure -->
+                <#if applicants[0].demographic??>
+                    <p><span class="label">Primary Applicant:</span> ${applicants[0].demographic.firstName!""} ${applicants[0].demographic.lastName!""}</p>
+                <#else>
+                    <p><span class="label">Primary Applicant:</span> ${applicants[0].firstName!""} ${applicants[0].lastName!""}</p>
+                </#if>
+            </#if>
+            <#if enrollmentContext.productsDisplay??>
+                <p><span class="label">Products:</span> ${enrollmentContext.productsDisplay}</p>
             </#if>
         </div>
     </div>

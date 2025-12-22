@@ -22,6 +22,9 @@ public class PdfMergeConfig {
     // Product collection configuration
     private List<String> productCollectionPaths;
     private List<String> defaultProducts;
+    
+    // Global payload enrichers (applied to all sections)
+    private List<String> payloadEnrichers;
 
     // Getters and setters for composition
     public String getBase() { return base; }
@@ -73,6 +76,11 @@ public class PdfMergeConfig {
     public List<String> getDefaultProducts() { return defaultProducts; }
     public void setDefaultProducts(List<String> defaultProducts) { 
         this.defaultProducts = defaultProducts; 
+    }
+    
+    public List<String> getPayloadEnrichers() { return payloadEnrichers; }
+    public void setPayloadEnrichers(List<String> payloadEnrichers) { 
+        this.payloadEnrichers = payloadEnrichers; 
     }
 }
 

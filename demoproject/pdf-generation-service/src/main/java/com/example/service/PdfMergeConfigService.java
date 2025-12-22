@@ -211,6 +211,12 @@ public class PdfMergeConfigService {
         
         PdfMergeConfig config = new PdfMergeConfig();
         
+        // Parse global enrichers
+        if (pdfMerge.containsKey("enrichers")) {
+            List<String> enrichers = (List<String>) pdfMerge.get("enrichers");
+            config.setPayloadEnrichers(enrichers);
+        }
+        
         // Parse settings
         if (pdfMerge.containsKey("settings")) {
             Map<String, Object> settings = (Map<String, Object>) pdfMerge.get("settings");
