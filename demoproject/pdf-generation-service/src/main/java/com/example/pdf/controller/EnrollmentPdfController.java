@@ -225,117 +225,43 @@ public class EnrollmentPdfController {
     }
     
     /**
-     * Collects all unique product types from the payload by examining members/applicants data.
-     * 
-     * Supports multiple payload structures:
-     * 1. payload.members[].products[].type
-     * 2. payload.application.applicants[].products[].productType
-     * 3. payload.enrollment.members[].products[]
+     * Collects all unique product types from the payload using configurable paths.
+     * Falls back to default hardcoded paths if config doesn't specify custom paths.
      * 
      * @param payload The request payload
+     * @param config The PDF merge config (may contain productCollectionPaths)
      * @return Sorted list of unique product types (e.g., ["dental", "medical", "vision"])
      */
-    private List<String> collectProductsFromPayload(Map<String, Object> payload) {
-        Set<String> productSet = new HashSet<>();
+    private List<String> collectProductsFromPayload(Map<String, Object> payload, PdfMergeConfig config) {
+        List<String> paths;
         
-        // Strategy 1: Check payload.members[].products[]
-        if (payload.containsKey("members") && payload.get("members") instanceof List) {
-            List<Map<String, Object>> members = (List<Map<String, Object>>) payload.get("members");
-            for (Map<String, Object> member : members) {
-                if (member.containsKey("products") && member.get("products") instanceof List) {
-                    List<Map<String, Object>> products = (List<Map<String, Object>>) member.get("products");
-                    for (Map<String, Object> product : products) {
-                        String type = extractProductType(product);
-                        if (type != null) {
-                            productSet.add(type.toLowerCase());
-                        }
-                    }
-                }
-            }
+        // Use paths from config if available, otherwise use defaults
+        if (config.getProductCollectionPaths() != null && !config.getProductCollectionPaths().isEmpty()) {
+            paths = config.getProductCollectionPaths();
+            System.out.println("Using custom product collection paths from config: " + paths);
+        } else {
+            paths = getDefaultProductCollectionPaths();
+            System.out.println("Using default product collection paths");
         }
         
-        // Strategy 2: Check payload.application.applicants[].products[] or proposedProducts[]
-        if (payload.containsKey("application") && payload.get("application") instanceof Map) {
-            Map<String, Object> application = (Map<String, Object>) payload.get("application");
-            
-            // Check applicants
-            if (application.containsKey("applicants") && application.get("applicants") instanceof List) {
-                List<Map<String, Object>> applicants = (List<Map<String, Object>>) application.get("applicants");
-                for (Map<String, Object> applicant : applicants) {
-                    if (applicant.containsKey("products") && applicant.get("products") instanceof List) {
-                        List<Map<String, Object>> products = (List<Map<String, Object>>) applicant.get("products");
-                        for (Map<String, Object> product : products) {
-                            String type = extractProductType(product);
-                            if (type != null) {
-                                productSet.add(type.toLowerCase());
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // Check proposedProducts at application level
-            if (application.containsKey("proposedProducts") && application.get("proposedProducts") instanceof List) {
-                List<Map<String, Object>> proposedProducts = (List<Map<String, Object>>) application.get("proposedProducts");
-                for (Map<String, Object> product : proposedProducts) {
-                    String type = extractProductType(product);
-                    if (type != null) {
-                        productSet.add(type.toLowerCase());
-                    }
-                }
-            }
-        }
-        
-        // Strategy 3: Check payload.enrollment.members[]
-        if (payload.containsKey("enrollment") && payload.get("enrollment") instanceof Map) {
-            Map<String, Object> enrollment = (Map<String, Object>) payload.get("enrollment");
-            if (enrollment.containsKey("members") && enrollment.get("members") instanceof List) {
-                List<Map<String, Object>> members = (List<Map<String, Object>>) enrollment.get("members");
-                for (Map<String, Object> member : members) {
-                    if (member.containsKey("products") && member.get("products") instanceof List) {
-                        List<Map<String, Object>> products = (List<Map<String, Object>>) member.get("products");
-                        for (Map<String, Object> product : products) {
-                            String type = extractProductType(product);
-                            if (type != null) {
-                                productSet.add(type.toLowerCase());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Return sorted list for consistency
-        return productSet.stream().sorted().collect(Collectors.toList());
+        // Use PayloadPathExtractor to extract products from configured paths
+        return PayloadPathExtractor.extractProductTypes(payload, paths);
     }
     
     /**
-     * Extracts product type from a product map, handling different field names.
-     * 
-     * Checks for: type, productType, product_type, name
+     * Returns default product collection paths for backward compatibility.
+     * These paths cover common payload structures.
      */
-    private String extractProductType(Map<String, Object> product) {
-        if (product.containsKey("type")) {
-            return (String) product.get("type");
-        }
-        if (product.containsKey("productType")) {
-            return (String) product.get("productType");
-        }
-        if (product.containsKey("product_type")) {
-            return (String) product.get("product_type");
-        }
-        if (product.containsKey("name")) {
-            String name = (String) product.get("name");
-            // Handle cases like "Medical PPO" -> "medical"
-            if (name != null) {
-                name = name.toLowerCase();
-                if (name.contains("medical")) return "medical";
-                if (name.contains("dental")) return "dental";
-                if (name.contains("vision")) return "vision";
-                if (name.contains("life")) return "life";
-            }
-        }
-        return null;
+    private List<String> getDefaultProductCollectionPaths() {
+        return Arrays.asList(
+            "members[].products[].type",
+            "application.applicants[].products[].productType",
+            "application.proposedProducts[].type",
+            "enrollment.members[].products[].type",
+            "applicants[].coverages[].productType",
+            "members[].products[].productType",
+            "members[].products[].name"
+        );
     }
     
     /**
