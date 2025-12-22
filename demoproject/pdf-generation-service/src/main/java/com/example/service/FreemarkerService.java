@@ -113,4 +113,39 @@ public class FreemarkerService {
             }
         }
     }
+
+    /**
+     * Preload a FreeMarker template into the internal cache.
+     * This is useful for warming up the cache at application startup.
+     * 
+     * @param location Template location (e.g., "templates/invoice.ftl")
+     * @throws IOException if template cannot be loaded
+     */
+    public void preloadTemplate(String location) throws IOException {
+        if (location == null) {
+            throw new IOException("Template location is null");
+        }
+        
+        String name = location.trim();
+        if (name.startsWith("/")) {
+            name = name.substring(1);
+        }
+        
+        try {
+            // Just loading the template will cache it internally in FreeMarker
+            cfg.getTemplate(name);
+            log.debug("Preloaded FreeMarker template: {}", location);
+        } catch (freemarker.template.TemplateNotFoundException e) {
+            throw new IOException("Template not found: " + location, e);
+        }
+    }
+
+    /**
+     * Clear FreeMarker's internal template cache.
+     * Useful for hot-reload scenarios when templates are updated.
+     */
+    public void clearTemplateCache() {
+        cfg.clearTemplateCache();
+        log.info("Cleared FreeMarker template cache");
+    }
 }

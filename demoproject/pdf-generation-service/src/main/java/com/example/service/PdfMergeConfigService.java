@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -385,6 +386,59 @@ public class PdfMergeConfigService {
     @CacheEvict(value = "yamlComponents", allEntries = true)
     public void clearComponentCache() {
         System.out.println("Cleared all YAML components from cache");
+    }
+    
+    /**
+     * Load config dynamically without requiring a physical top-level file.
+     * Uses composition to build config from base + components.
+     * 
+     * This is useful for rare product/market/state combinations where
+     * creating a dedicated YAML file isn't worth it.
+     * 
+     * @param enrollment Enrollment submission with products, market, state
+     * @return Dynamically composed PdfMergeConfig
+     */
+    public PdfMergeConfig loadConfigDynamic(EnrollmentSubmission enrollment) {
+        try {
+            System.out.println("Building dynamic composition for: " + 
+                enrollment.getProducts() + ", " + 
+                enrollment.getMarketCategory() + ", " + 
+                enrollment.getState());
+            
+            // Build composition structure in memory
+            Map<String, Object> composition = new HashMap<>();
+            composition.put("base", "templates/base-payer.yml");
+            
+            List<String> components = new ArrayList<>();
+            
+            // Add product components (alphabetically sorted)
+            List<String> sortedProducts = enrollment.getProducts().stream()
+                .map(String::toLowerCase)
+                .sorted()
+                .collect(java.util.stream.Collectors.toList());
+            
+            for (String product : sortedProducts) {
+                components.add("templates/products/" + product + ".yml");
+            }
+            
+            // Add market component
+            String market = enrollment.getMarketCategory().toLowerCase();
+            components.add("templates/markets/" + market + ".yml");
+            
+            // Add state component
+            String state = enrollment.getState().toLowerCase();
+            components.add("templates/states/" + state + ".yml");
+            
+            composition.put("components", components);
+            
+            System.out.println("Dynamic composition: " + composition);
+            
+            // Load composed config (same logic as pre-generated files)
+            return loadComposedConfig(composition, new HashMap<>());
+            
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load dynamic config for enrollment", e);
+        }
     }
     
     /**

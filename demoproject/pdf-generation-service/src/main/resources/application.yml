@@ -5,6 +5,31 @@ server:
 app:
   caching:
     enabled: true  # Set to false to disable all caching (useful for development/testing)
+  
+  # Cache warming - preload configs/templates at startup
+  cache-warming:
+    enabled: true  # Set to false to disable cache warming (faster startup, slower first requests)
+    
+    # Glob patterns for configs to preload (comma-separated)
+    # Examples: *-individual-*.yml, dental-*.yml, medical-*.yml
+    config-patterns: >
+      dental-individual-*.yml,
+      dental-small-group-*.yml,
+      medical-individual-*.yml,
+      vision-*.yml,
+      enrollment-*.yml
+    
+    # Glob patterns for AcroForm PDF templates to preload (comma-separated)
+    acroform-patterns: "*.pdf"
+    
+    # Glob patterns for FreeMarker templates to preload (comma-separated)
+    freemarker-patterns: "*.ftl"
+    
+    # Number of parallel threads for preloading (higher = faster but more CPU)
+    parallel-threads: 4
+    
+    # Whether to preload component YAML files (templates/components/, templates/markets/, etc.)
+    preload-components: true
 
 # Config Server base (used by MappingService)
 config-server:

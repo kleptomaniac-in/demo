@@ -59,22 +59,28 @@ public class EnrollmentPdfController {
                 request.getEnrollment() != null ? request.getEnrollment() : new EnrollmentSubmission()
             );
             
-            // Load config to get product collection paths
-            PdfMergeConfig config = configService.loadConfig(preliminaryConfigName);
+            // Load preliminary config to get product collection paths
+            PdfMergeConfig preliminaryConfig = configService.loadConfig(preliminaryConfigName);
             
             // Auto-collect products from payload if not explicitly provided
             EnrollmentSubmission enrollment = enrichEnrollmentWithProducts(
                 request.getEnrollment(), 
                 request.getPayload(),
-                config
+                preliminaryConfig
             );
             
             // Re-select config with enriched enrollment data
             String configName = configSelectionService.selectConfigByConvention(enrollment);
             
-            // Reload config if it changed
-            if (!configName.equals(preliminaryConfigName)) {
+            // Try to load config file, fall back to dynamic composition if not found
+            PdfMergeConfig config;
+            try {
                 config = configService.loadConfig(configName);
+                System.out.println("✓ Loaded pre-generated config: " + configName);
+            } catch (Exception e) {
+                System.out.println("✗ Config file not found: " + configName);
+                System.out.println("→ Falling back to dynamic composition...");
+                config = configService.loadConfigDynamic(enrollment);
             }
             
             System.out.println("Selected config: " + configName);
