@@ -8,6 +8,8 @@ import com.example.service.PdfMergeConfig;
 import com.example.service.EnrollmentSubmission;
 import com.example.preprocessing.service.ConfigurablePayloadPreProcessor;
 import com.example.util.PayloadPathExtractor;
+import com.example.monitoring.PerformanceMonitoringContext;
+import com.example.monitoring.PerformanceMetrics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -37,6 +39,9 @@ public class EnrollmentPdfController {
     @Autowired
     private ConfigurablePayloadPreProcessor preprocessor;
     
+    @Autowired
+    private PerformanceMonitoringContext performanceMonitor;
+    
     @Value("${preprocessing.rules.default:preprocessing/standard-enrollment-rules.yml}")
     private String defaultPreprocessingRules;
 
@@ -54,7 +59,11 @@ public class EnrollmentPdfController {
     @PostMapping("/generate")
     public ResponseEntity<byte[]> generateEnrollmentPdf(@RequestBody EnrollmentPdfRequest request) {
         try {
+            // Start performance monitoring (config name will be set after selection)
+            performanceMonitor.start("Enrollment PDF Generation", "unknown");
+            
             // Preliminary config selection to get product collection paths
+            performanceMonitor.startPhase("Config Selection");
             String preliminaryConfigName = configSelectionService.selectConfigByConvention(
                 request.getEnrollment() != null ? request.getEnrollment() : new EnrollmentSubmission()
             );
@@ -87,11 +96,15 @@ public class EnrollmentPdfController {
             System.out.println("Products: " + enrollment.getProducts());
             System.out.println("Market: " + enrollment.getMarketCategory());
             System.out.println("State: " + enrollment.getState());
+            performanceMonitor.endPhase("Config Selection");
             
             // Prepare payload with optional pre-processing for complex structures
+            performanceMonitor.startPhase("Payload Processing");
             Map<String, Object> processedPayload = preparePayload(request.getPayload());
+            performanceMonitor.endPhase("Payload Processing");
             
             // Check if config has addendums enabled and use appropriate service
+            performanceMonitor.startPhase("PDF Generation");
             byte[] pdfBytes;
             if (configService.hasAddendums(config)) {
                 System.out.println("→ Addendums configured - using EnrollmentPdfService for addendum generation");
@@ -100,6 +113,10 @@ public class EnrollmentPdfController {
                 System.out.println("→ No addendums configured - using standard FlexiblePdfMergeService");
                 pdfBytes = pdfMergeService.generateMergedPdf(configName, processedPayload);
             }
+            performanceMonitor.endPhase("PDF Generation");
+            
+            // Complete monitoring and log metrics
+            performanceMonitor.complete();
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
@@ -111,6 +128,7 @@ public class EnrollmentPdfController {
                 .body(pdfBytes);
                 
         } catch (Exception e) {
+            performanceMonitor.clear();
             System.err.println("Error generating enrollment PDF: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();

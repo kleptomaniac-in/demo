@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.monitoring.PerformanceMonitoringContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,9 @@ public class EnrollmentPdfService {
     
     @Autowired
     private PdfMergerService pdfMergerService;
+    
+    @Autowired
+    private PerformanceMonitoringContext performanceMonitor;
     
     /**
      * Generate complete enrollment PDF with automatic addendums for overflow data.
@@ -83,7 +87,9 @@ public class EnrollmentPdfService {
         int maxCoverages = (covConfig == null) ? 1 : covConfig.getMaxPerApplicant();
         
         // Step 1: Fill main AcroForm template
+        performanceMonitor.startPhase("Fill AcroForm");
         byte[] mainForm = acroFormService.fillAcroForm(templatePath, fieldMappings, payload);
+        performanceMonitor.endPhase("Fill AcroForm");
         
         // Step 2: Collect all addendums needed
         List<byte[]> pdfDocuments = new ArrayList<>();
@@ -94,24 +100,28 @@ public class EnrollmentPdfService {
         
         // Step 3: Generate dependent addendum if enabled and needed
         if (dependentsEnabled && applicants != null && dependentAddendumService.isAddendumNeeded(applicants, maxDependents)) {
+            performanceMonitor.startPhase("Generate Dependent Addendum");
             System.out.println("EnrollmentPdfService: Dependent addendum IS needed - generating...");
             byte[] dependentAddendum = dependentAddendumService.generateDependentAddendum(applicants, enrollmentData, maxDependents);
             if (dependentAddendum.length > 0) {
                 System.out.println("EnrollmentPdfService: Added dependent addendum (" + dependentAddendum.length + " bytes)");
                 pdfDocuments.add(dependentAddendum);
             }
+            performanceMonitor.endPhase("Generate Dependent Addendum");
         } else if (applicants != null) {
             System.out.println("EnrollmentPdfService: Dependent addendum NOT needed (enabled=" + dependentsEnabled + ")");
         }
         
         // Step 4: Generate coverage addendum if enabled and needed
         if (coveragesEnabled && applicants != null && coverageAddendumService.isAddendumNeeded(applicants, maxCoverages)) {
+            performanceMonitor.startPhase("Generate Coverage Addendum");
             System.out.println("EnrollmentPdfService: Coverage addendum IS needed - generating...");
             byte[] coverageAddendum = coverageAddendumService.generateCoverageAddendum(applicants, enrollmentData, maxCoverages);
             if (coverageAddendum.length > 0) {
                 System.out.println("EnrollmentPdfService: Added coverage addendum (" + coverageAddendum.length + " bytes)");
                 pdfDocuments.add(coverageAddendum);
             }
+            performanceMonitor.endPhase("Generate Coverage Addendum");
         } else {
             System.out.println("EnrollmentPdfService: Coverage addendum NOT needed (enabled=" + coveragesEnabled + ")");
         }
@@ -121,6 +131,10 @@ public class EnrollmentPdfService {
             return mainForm; // No addendums needed
         }
         
-        return pdfMergerService.mergePdfs(pdfDocuments);
+        performanceMonitor.startPhase("Merge PDFs");
+        byte[] finalPdf = pdfMergerService.mergePdfs(pdfDocuments);
+        performanceMonitor.endPhase("Merge PDFs");
+        
+        return finalPdf;
     }
 }
