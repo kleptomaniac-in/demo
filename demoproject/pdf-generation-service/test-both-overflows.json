@@ -1,0 +1,125 @@
+{
+  "enrollment": {
+    "marketCategory": "INDIVIDUAL",
+    "state": "CA",
+    "products": ["dental"]
+  },
+  "payload": {
+    "applicants": [
+      {
+        "applicantId": "A001",
+        "firstName": "John",
+        "lastName": "Smith",
+        "demographic": {
+          "relationshipType": "PRIMARY",
+          "dateOfBirth": "1980-05-15",
+          "gender": "M",
+          "ssn": "123-45-6789"
+        },
+        "coverages": [
+          {
+            "productType": "DENTAL",
+            "premium": 50.00,
+            "carrier": "Delta Dental"
+          },
+          {
+            "productType": "DENTAL",
+            "premium": 60.00,
+            "carrier": "Cigna Dental"
+          }
+        ]
+      },
+      {
+        "applicantId": "A002",
+        "firstName": "Mary",
+        "lastName": "Smith",
+        "demographic": {
+          "relationshipType": "SPOUSE",
+          "dateOfBirth": "1982-08-20",
+          "gender": "F",
+          "ssn": "987-65-4321"
+        },
+        "coverages": [
+          {
+            "productType": "DENTAL",
+            "premium": 45.00,
+            "carrier": "Delta Dental"
+          }
+        ]
+      },
+      {
+        "applicantId": "A003",
+        "firstName": "Tommy",
+        "lastName": "Smith",
+        "demographic": {
+          "relationshipType": "DEPENDENT",
+          "dateOfBirth": "2010-03-10",
+          "gender": "M",
+          "ssn": "111-11-1111"
+        },
+        "coverages": [
+          {
+            "productType": "DENTAL",
+            "premium": 30.00,
+            "carrier": "Delta Dental"
+          }
+        ]
+      },
+      {
+        "applicantId": "A004",
+        "firstName": "Sarah",
+        "lastName": "Smith",
+        "demographic": {
+          "relationshipType": "DEPENDENT",
+          "dateOfBirth": "2012-07-22",
+          "gender": "F",
+          "ssn": "222-22-2222"
+        },
+        "coverages": [
+          {
+            "productType": "DENTAL",
+            "premium": 30.00,
+            "carrier": "Delta Dental"
+          }
+        ]
+      },
+      {
+        "applicantId": "A005",
+        "firstName": "Billy",
+        "lastName": "Smith",
+        "demographic": {
+          "relationshipType": "DEPENDENT",
+          "dateOfBirth": "2014-11-05",
+          "gender": "M",
+          "ssn": "333-33-3333"
+        },
+        "coverages": [
+          {
+            "productType": "DENTAL",
+            "premium": 30.00,
+            "carrier": "Delta Dental"
+          }
+        ]
+      },
+      {
+        "applicantId": "A006",
+        "firstName": "Emma",
+        "lastName": "Smith",
+        "demographic": {
+          "relationshipType": "DEPENDENT",
+          "dateOfBirth": "2016-02-14",
+          "gender": "F",
+          "ssn": "444-44-4444"
+        },
+        "coverages": [
+          {
+            "productType": "DENTAL",
+            "premium": 30.00,
+            "carrier": "Delta Dental"
+          }
+        ]
+      }
+    ]
+  },
+  "outputFileName": "enrollment-both-overflows.pdf"
+}

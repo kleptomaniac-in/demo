@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.monitoring.PerformanceMonitoringContext;
 import com.example.service.FreemarkerService;
 import com.example.service.HtmlPdfService;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
@@ -40,12 +41,31 @@ public class FlexiblePdfMergeService {
     
     @Autowired(required = false)
     private PayloadEnricherRegistry payloadEnricherRegistry;
+    
+    @Autowired
+    private PerformanceMonitoringContext performanceMonitor;
 
     public byte[] generateMergedPdf(String configName, Map<String, Object> payload) throws IOException {
+        // Start performance monitoring
+        performanceMonitor.start("PDF Generation", configName);
+        
+        try {
+            return generateMergedPdfInternal(configName, payload);
+        } finally {
+            performanceMonitor.complete();
+            performanceMonitor.clear();
+        }
+    }
+    
+    private byte[] generateMergedPdfInternal(String configName, Map<String, Object> payload) throws IOException {
         // Load merge configuration
+        performanceMonitor.startPhase("Load Config");
         PdfMergeConfig config = configService.loadConfig(configName);
+        performanceMonitor.endPhase("Load Config");
+        performanceMonitor.endPhase("Load Config");
         
         // Apply global enrichers from config if specified
+        performanceMonitor.startPhase("Apply Global Enrichers");
         Map<String, Object> enrichedPayload = payload;
         if (config.getPayloadEnrichers() != null && !config.getPayloadEnrichers().isEmpty()) {
             if (payloadEnricherRegistry != null) {
@@ -59,11 +79,15 @@ public class FlexiblePdfMergeService {
                 System.err.println("PayloadEnricherRegistry not available, skipping global enrichers");
             }
         }
+        performanceMonitor.endPhase("Apply Global Enrichers");
         
         // Resolve sections (including conditionals)
+        performanceMonitor.startPhase("Resolve Sections");
         List<SectionConfig> resolvedSections = resolveSections(config, enrichedPayload);
+        performanceMonitor.endPhase("Resolve Sections");
         
         // Generate individual PDFs for each section
+        performanceMonitor.startPhase("Generate Section PDFs");
         Map<String, PDDocument> sectionDocs = new HashMap<>();
         Map<String, Integer> sectionStartPages = new HashMap<>();
         int currentPage = 0;
@@ -73,36 +97,56 @@ public class FlexiblePdfMergeService {
                 continue;
             }
             
+            performanceMonitor.startPhase("Section: " + section.getName());
             PDDocument doc = generateSectionPdf(section, enrichedPayload);
+            performanceMonitor.endPhase("Section: " + section.getName(), Map.of(
+                "type", section.getType(),
+                "pages", doc.getNumberOfPages()
+            ));
+            
             sectionDocs.put(section.getName(), doc);
             sectionStartPages.put(section.getName(), currentPage);
             currentPage += doc.getNumberOfPages();
         }
+        performanceMonitor.endPhase("Generate Section PDFs");
         
         // Merge all documents
+        performanceMonitor.startPhase("Merge Documents");
         PDDocument mergedDoc = mergeDocs(sectionDocs, resolvedSections);
+        performanceMonitor.endPhase("Merge Documents", Map.of(
+            "totalPages", mergedDoc.getNumberOfPages()
+        ));
         
         // Add page numbers if configured
         if (config.getPageNumberingConfig() != null) {
+            performanceMonitor.startPhase("Add Page Numbers");
             addPageNumbers(mergedDoc, config.getPageNumberingConfig());
+            performanceMonitor.endPhase("Add Page Numbers");
         }
         
         // Add common header if configured
         if (config.getHeader() != null && config.getHeader().isEnabled()) {
+            performanceMonitor.startPhase("Add Header");
             addHeaderFooter(mergedDoc, config.getHeader(), enrichedPayload, true);
+            performanceMonitor.endPhase("Add Header");
         }
         
         // Add common footer if configured
         if (config.getFooter() != null && config.getFooter().isEnabled()) {
+            performanceMonitor.startPhase("Add Footer");
             addHeaderFooter(mergedDoc, config.getFooter(), enrichedPayload, false);
+            performanceMonitor.endPhase("Add Footer");
         }
         
         // Add bookmarks if configured
         if (config.isAddBookmarks() && config.getBookmarks() != null) {
+            performanceMonitor.startPhase("Add Bookmarks");
             addBookmarks(mergedDoc, config.getBookmarks(), sectionStartPages);
+            performanceMonitor.endPhase("Add Bookmarks");
         }
         
         // Convert to byte array
+        performanceMonitor.startPhase("Serialize to Bytes");
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         mergedDoc.save(output);
         mergedDoc.close();
@@ -111,6 +155,9 @@ public class FlexiblePdfMergeService {
         for (PDDocument doc : sectionDocs.values()) {
             doc.close();
         }
+        performanceMonitor.endPhase("Serialize to Bytes", Map.of(
+            "sizeBytes", output.size()
+        ));
         
         return output.toByteArray();
     }

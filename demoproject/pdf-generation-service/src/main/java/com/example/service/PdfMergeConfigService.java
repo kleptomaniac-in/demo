@@ -217,6 +217,22 @@ public class PdfMergeConfigService {
             config.setPayloadEnrichers(enrichers);
         }
         
+        // Parse addendums from root level (not under pdfMerge)
+        if (data.containsKey("addendums")) {
+            Map<String, Object> addendums = (Map<String, Object>) data.get("addendums");
+            config.setAddendums(parseAddendumConfig(addendums));
+        }
+        
+        // Parse default products from root level
+        if (data.containsKey("defaultProducts")) {
+            config.setDefaultProducts((List<String>) data.get("defaultProducts"));
+        }
+        
+        // Parse product collection paths from root level
+        if (data.containsKey("productCollectionPaths")) {
+            config.setProductCollectionPaths((List<String>) data.get("productCollectionPaths"));
+        }
+        
         // Parse settings
         if (pdfMerge.containsKey("settings")) {
             Map<String, Object> settings = (Map<String, Object>) pdfMerge.get("settings");
@@ -362,6 +378,33 @@ public class PdfMergeConfigService {
     }
     
     /**
+     * Parse addendum configuration from YAML
+     */
+    private AddendumConfig parseAddendumConfig(Map<String, Object> addendumMap) {
+        AddendumConfig addendumConfig = new AddendumConfig();
+        
+        // Parse dependent addendum config
+        if (addendumMap.containsKey("dependents")) {
+            Map<String, Object> depMap = (Map<String, Object>) addendumMap.get("dependents");
+            DependentAddendumConfig depConfig = new DependentAddendumConfig();
+            depConfig.setEnabled((Boolean) depMap.getOrDefault("enabled", false));
+            depConfig.setMaxInMainForm((Integer) depMap.getOrDefault("maxInMainForm", 0));
+            addendumConfig.setDependents(depConfig);
+        }
+        
+        // Parse coverage addendum config
+        if (addendumMap.containsKey("coverages")) {
+            Map<String, Object> covMap = (Map<String, Object>) addendumMap.get("coverages");
+            CoverageAddendumConfig covConfig = new CoverageAddendumConfig();
+            covConfig.setEnabled((Boolean) covMap.getOrDefault("enabled", false));
+            covConfig.setMaxPerApplicant((Integer) covMap.getOrDefault("maxPerApplicant", 0));
+            addendumConfig.setCoverages(covConfig);
+        }
+        
+        return addendumConfig;
+    }
+    
+    /**
      * Evict specific config from cache (useful for hot-reload)
      */
     @CacheEvict(value = "pdfConfigs", key = "#configName")
@@ -492,4 +535,63 @@ public class PdfMergeConfigService {
     public Map<String, String> getSectionFieldMapping(SectionConfig section) {
         return section != null ? section.getFieldMapping() : null;
     }
+    
+    /**
+     * Check if a config has addendums enabled (either dependents or coverages).
+     * This method is safe to call from controller since it doesn't expose package-private classes.
+     */
+    public boolean hasAddendums(PdfMergeConfig config) {
+        AddendumConfig addendumConfig = config.getAddendums();
+        if (addendumConfig == null) {
+            return false;
+        }
+        
+        DependentAddendumConfig depConfig = addendumConfig.getDependents();
+        CoverageAddendumConfig covConfig = addendumConfig.getCoverages();
+        
+        boolean depEnabled = depConfig != null && depConfig.isEnabled();
+        boolean covEnabled = covConfig != null && covConfig.isEnabled();
+        
+        return depEnabled || covEnabled;
+    }
+    
+    /**
+     * Generate PDF with addendum support using EnrollmentPdfService.
+     * This method extracts necessary info from config and delegates to EnrollmentPdfService.
+     * Safe to call from controller - all package-private class access happens here.
+     */
+    public byte[] generateWithAddendums(
+            PdfMergeConfig config, 
+            Map<String, Object> payload,
+            EnrollmentPdfService enrollmentPdfService) throws Exception {
+        
+        // Extract the AcroForm section for template and field mappings
+        SectionConfig acroformSection = config.getSections().stream()
+            .filter(s -> "ACROFORM".equalsIgnoreCase(s.getType()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("No AcroForm section found in config with addendums"));
+        
+        String templatePath = acroformSection.getTemplate();
+        Map<String, String> fieldMappings = acroformSection.getFieldMapping();
+        
+        if (templatePath == null || templatePath.isEmpty()) {
+            throw new IllegalStateException("AcroForm section must have template path for addendum generation");
+        }
+        
+        if (fieldMappings == null || fieldMappings.isEmpty()) {
+            throw new IllegalStateException("AcroForm section must have field mappings for addendum generation");
+        }
+        
+        System.out.println("Addendum generation - Using AcroForm template: " + templatePath);
+        System.out.println("Addendum generation - Field mappings: " + fieldMappings.size() + " fields");
+        
+        // Delegate to EnrollmentPdfService which handles addendum overflow logic
+        return enrollmentPdfService.generateEnrollmentPdf(
+            templatePath, 
+            fieldMappings, 
+            payload, 
+            config.getAddendums()
+        );
+    }
 }
+

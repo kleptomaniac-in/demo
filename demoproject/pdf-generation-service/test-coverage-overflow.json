@@ -1,0 +1,81 @@
+{
+  "enrollment": {
+    "marketCategory": "INDIVIDUAL",
+    "state": "CA",
+    "products": ["dental"]
+  },
+  "payload": {
+    "applicants": [
+      {
+        "applicantId": "A001",
+        "firstName": "John",
+        "lastName": "Doe",
+        "demographic": {
+          "relationshipType": "PRIMARY",
+          "dateOfBirth": "1975-04-12",
+          "gender": "M",
+          "ssn": "555-12-3456"
+        },
+        "coverages": [
+          {
+            "productType": "DENTAL",
+            "premium": 50.00,
+            "carrier": "Delta Dental"
+          },
+          {
+            "productType": "DENTAL",
+            "premium": 60.00,
+            "carrier": "Cigna Dental"
+          },
+          {
+            "productType": "DENTAL",
+            "premium": 55.00,
+            "carrier": "Guardian Dental"
+          }
+        ]
+      },
+      {
+        "applicantId": "A002",
+        "firstName": "Jane",
+        "lastName": "Doe",
+        "demographic": {
+          "relationshipType": "SPOUSE",
+          "dateOfBirth": "1977-09-22",
+          "gender": "F",
+          "ssn": "555-98-7654"
+        },
+        "coverages": [
+          {
+            "productType": "DENTAL",
+            "premium": 45.00,
+            "carrier": "Delta Dental"
+          },
+          {
+            "productType": "DENTAL",
+            "premium": 55.00,
+            "carrier": "Cigna Dental"
+          }
+        ]
+      },
+      {
+        "applicantId": "A003",
+        "firstName": "Jimmy",
+        "lastName": "Doe",
+        "demographic": {
+          "relationshipType": "DEPENDENT",
+          "dateOfBirth": "2015-06-18",
+          "gender": "M",
+          "ssn": "555-11-2233"
+        },
+        "coverages": [
+          {
+            "productType": "DENTAL",
+            "premium": 30.00,
+            "carrier": "Delta Dental"
+          }
+        ]
+      }
+    ]
+  },
+  "outputFileName": "enrollment-coverage-overflow.pdf"
+}

@@ -91,8 +91,15 @@ public class EnrollmentPdfController {
             // Prepare payload with optional pre-processing for complex structures
             Map<String, Object> processedPayload = preparePayload(request.getPayload());
             
-            // Generate PDF
-            byte[] pdfBytes = pdfMergeService.generateMergedPdf(configName, processedPayload);
+            // Check if config has addendums enabled and use appropriate service
+            byte[] pdfBytes;
+            if (configService.hasAddendums(config)) {
+                System.out.println("→ Addendums configured - using EnrollmentPdfService for addendum generation");
+                pdfBytes = configService.generateWithAddendums(config, processedPayload, enrollmentPdfService);
+            } else {
+                System.out.println("→ No addendums configured - using standard FlexiblePdfMergeService");
+                pdfBytes = pdfMergeService.generateMergedPdf(configName, processedPayload);
+            }
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
