@@ -1,0 +1,18 @@
+# Simple composed test - only uses existing templates
+
+composition:
+  base: templates/base-payer.yml
+
+# Override to use only existing sections and templates
+pdfMerge:
+  # Replace all sections with ones that use existing templates
+  sections:
+    - name: cover-page
+      type: pdfbox
+      template: cover-page-generator
+      enabled: true
+    
+    - name: member-plans
+      type: freemarker
+      template: member-healthcare-plans.ftl
+      enabled: true

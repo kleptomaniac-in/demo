@@ -1,0 +1,116 @@
+pdfMerge:
+  # Payload enrichers - transform data before template rendering
+  enrichers:
+    - coverageSummary  # Extracts logic from PDFBox code, calculates ages, formats data
+  
+  settings:
+    addBookmarks: true
+    pageNumbering: "continuous"
+  
+  # Header configuration - appears on all pages except cover
+  header:
+    enabled: true
+    height: 50
+    startPage: 2  # Skip cover page
+    content:
+      left:
+        text: "Health Insurance Enrollment"
+        font: "Helvetica"
+        fontSize: 10
+      center:
+        text: "Application: {applicationNumber}"
+        font: "Helvetica-Bold"
+        fontSize: 11
+      right:
+        text: "Effective: {effectiveDate}"
+        font: "Helvetica"
+        fontSize: 10
+    border:
+      enabled: true
+      color: "#003366"
+      thickness: 1
+  
+  # Footer configuration - appears on all pages
+  footer:
+    enabled: true
+    height: 40
+    startPage: 1
+    content:
+      left:
+        text: "Confidential"
+        font: "Helvetica-Oblique"
+        fontSize: 8
+      center:
+        text: "Page {current} of {total}"
+        font: "Helvetica-Bold"
+        fontSize: 10
+      right:
+        text: "© 2025 {companyInfo.name}"
+        font: "Helvetica"
+        fontSize: 8
+    border:
+      enabled: true
+      color: "#CCCCCC"
+      thickness: 1
+  
+  sections:
+    # ===== SECTION 1: FREEMARKER TEMPLATE (Cover Page) =====
+    - name: "cover-page"
+      type: "freemarker"
+      template: "templates/enrollment-cover.ftl"
+      enabled: true
+
+    # ===== SECTION 2: ACROFORM (Enrollment Form) =====
+    # Note: Using base PDF. In production, you'd have a PDF with actual form fields
+    - name: "enrollment-form"
+      type: "acroform"
+      template: "templates/enrollment-form-base.pdf"
+      enabled: true
+      
+      # Field mappings for the AcroForm
+      fieldMapping:
+        # Application data
+        "ApplicationNumber": "applicationNumber"
+        "EffectiveDate": "effectiveDate"
+        "TotalPremium": "totalPremium"
+        
+        # Primary applicant
+        "Primary_FirstName": "applicants[relationship=PRIMARY].demographic.firstName"
+        "Primary_LastName": "applicants[relationship=PRIMARY].demographic.lastName"
+        "Primary_DOB": "applicants[relationship=PRIMARY].demographic.dateOfBirth"
+        "Primary_Gender": "applicants[relationship=PRIMARY].demographic.gender"
+        "Primary_SSN": "applicants[relationship=PRIMARY].demographic.ssn"
+        
+        # Primary address
+        "Primary_Street": "applicants[relationship=PRIMARY].mailingAddress.street"
+        "Primary_City": "applicants[relationship=PRIMARY].mailingAddress.city"
+        "Primary_State": "applicants[relationship=PRIMARY].mailingAddress.state"
+        "Primary_Zip": "applicants[relationship=PRIMARY].mailingAddress.zipCode"
+        
+        # Spouse
+        "Spouse_FirstName": "applicants[relationship=SPOUSE].demographic.firstName"
+        "Spouse_LastName": "applicants[relationship=SPOUSE].demographic.lastName"
+        "Spouse_DOB": "applicants[relationship=SPOUSE].demographic.dateOfBirth"
+
+    # ===== SECTION 3: PDFBOX (Coverage Summary) =====
+    - name: "coverage-summary"
+      type: "pdfbox"
+      template: "CoverageSummaryGenerator"
+      enabled: true
+
+    # ===== SECTION 4: FREEMARKER (Terms and Conditions) =====
+    - name: "terms-and-conditions"
+      type: "freemarker"
+      template: "templates/terms-and-conditions.ftl"
+      enabled: true
+
+  # Optional: Add bookmarks for navigation
+  bookmarks:
+    - title: "Cover Page"
+      page: 1
+    - title: "Enrollment Form"
+      page: 2
+    - title: "Coverage Summary"
+      page: 3
+    - title: "Terms and Conditions"
+      page: 4

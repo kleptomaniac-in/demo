@@ -1,0 +1,86 @@
+# Simple Excel Configuration Example
+# Uses cell mappings with preprocessing
+
+description: "Enrollment Summary Excel - Simple Form"
+version: "1.0"
+
+templatePath: "enrollment-summary.xlsx"
+preprocessingRules: "standard-enrollment-rules.yml"
+
+cellMappings:
+  # Application Info
+  ApplicationId: "applicationId"
+  SubmittedDate: "submittedDate"
+  EffectiveDate: "effectiveDate"
+  
+  # Primary Applicant
+  PrimaryFirstName: "primary.firstName"
+  PrimaryLastName: "primary.lastName"
+  PrimaryMiddleName: "primary.middleName"
+  PrimaryDOB: "primary.dateOfBirth"
+  PrimarySSN: "primary.ssn"
+  PrimaryGender: "primary.gender"
+  PrimaryEmail: "primary.email"
+  PrimaryPhone: "primary.phone"
+  
+  # Spouse Applicant
+  SpouseFirstName: "spouse.firstName"
+  SpouseLastName: "spouse.lastName"
+  SpouseMiddleName: "spouse.middleName"
+  SpouseDOB: "spouse.dateOfBirth"
+  SpouseSSN: "spouse.ssn"
+  SpouseGender: "spouse.gender"
+  
+  # Dependents (first 3)
+  Dependent1FirstName: "dependent1.firstName"
+  Dependent1LastName: "dependent1.lastName"
+  Dependent1DOB: "dependent1.dateOfBirth"
+  Dependent1SSN: "dependent1.ssn"
+  Dependent1Age: "dependent1.age"
+  
+  Dependent2FirstName: "dependent2.firstName"
+  Dependent2LastName: "dependent2.lastName"
+  Dependent2DOB: "dependent2.dateOfBirth"
+  Dependent2SSN: "dependent2.ssn"
+  Dependent2Age: "dependent2.age"
+  
+  Dependent3FirstName: "dependent3.firstName"
+  Dependent3LastName: "dependent3.lastName"
+  Dependent3DOB: "dependent3.dateOfBirth"
+  Dependent3SSN: "dependent3.ssn"
+  Dependent3Age: "dependent3.age"
+  
+  # Billing Address
+  BillingStreet: "billing.street"
+  BillingStreet2: "billing.street2"
+  BillingCity: "billing.city"
+  BillingState: "billing.state"
+  BillingZipCode: "billing.zipCode"
+  BillingCounty: "billing.county"
+  
+  # Mailing Address
+  MailingStreet: "mailing.street"
+  MailingStreet2: "mailing.street2"
+  MailingCity: "mailing.city"
+  MailingState: "mailing.state"
+  MailingZipCode: "mailing.zipCode"
+  
+  # Products
+  MedicalPlanName: "medical.planName"
+  MedicalPlanId: "medical.planId"
+  MedicalPremium: "medical.monthlyPremium"
+  MedicalDeductible: "medical.deductible"
+  
+  DentalPlanName: "dental.planName"
+  DentalPlanId: "dental.planId"
+  DentalPremium: "dental.monthlyPremium"
+  
+  VisionPlanName: "vision.planName"
+  VisionPlanId: "vision.planId"
+  VisionPremium: "vision.monthlyPremium"
+  
+  # Calculated Fields
+  HasSpouse: "hasSpouse"
+  DependentCount: "dependentCount"
+  AdditionalDependents: "additionalDependentCount"
+  TotalMonthlyPremium: "totalMonthlyPremium"

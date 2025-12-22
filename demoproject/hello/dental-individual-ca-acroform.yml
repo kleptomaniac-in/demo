@@ -1,0 +1,24 @@
+# Dental Individual California - AcroForm PDF Generation
+# Uses actual PDF form filling with AcroForm fields
+
+composition:
+  base: templates/base-payer-acroform.yml
+  components:
+    - templates/products/dental-acroform.yml
+    - templates/markets/individual-acroform.yml
+    - templates/states/california-acroform.yml
+
+# Addendum generation configuration
+addendums:
+  dependents:
+    enabled: true         # Generate addendum for overflow dependents
+    maxInMainForm: 3      # Main form has space for 3 dependents
+  coverages:
+    enabled: true         # Generate addendum for overflow coverages
+    maxPerApplicant: 1    # Main form shows only 1 coverage per applicant
+
+# Override settings
+pdfMerge:
+  settings:
+    pageNumbering: "bottom-center"
+    addBookmarks: false

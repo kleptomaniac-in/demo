@@ -1,0 +1,41 @@
+# Single applicant enrollment (no spouse/dependents)
+# Demonstrates selective composition - PRIMARY ONLY, NO FAMILY
+
+composition:
+  base: templates/base-payer-acroform-v2.yml  # Core fields (28)
+  
+  # NOTE: Does NOT include spouse.yml or dependents.yml
+  # This is intentional for single coverage!
+  
+  components:
+    # Product component
+    - templates/products/medical-acroform.yml  # Medical fields (10)
+    
+    # State component
+    - templates/states/california-acroform-fields.yml  # CA compliance (10)
+
+pdfMerge:
+  sections:
+    - name: enrollment-application
+      fieldMapping:
+        # Individual market fields (without spouse/dependent sections)
+        "HouseholdSize": "static:1"
+        "HouseholdIncome": "#{formatCurrency(household.annualIncome)}"
+        "ApplyingForSubsidy": "subsidy.applying"
+        "CoverageTier": "static:Individual"
+
+# COMPOSITION BREAKDOWN:
+# 1. base-payer-acroform-v2.yml (28 fields)
+#    ├─ company-info.yml (5)
+#    ├─ application-metadata.yml (6)
+#    ├─ primary-applicant.yml (11)
+#    └─ premium-payment.yml (6)
+#
+# 2. products/medical-acroform.yml (10 fields)
+# 3. states/california-acroform-fields.yml (10 fields)
+# 4. This file (4 fields)
+#
+# TOTAL: 52 fields
+# EXCLUDED: spouse.yml (7), dependents.yml (20) = Saved 27 fields!
+#
+# Perfect for individual-only enrollment without family coverage!

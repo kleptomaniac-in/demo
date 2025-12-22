@@ -1,0 +1,33 @@
+# Family enrollment for individual market - COMPLETE COMPOSITION
+# Demonstrates full composition with ALL levels: base + applicants + product + market + state
+
+composition:
+  base: templates/base-payer-acroform-v2.yml  # Core fields
+  components:
+    # Applicant components (family coverage)
+    - templates/components/spouse.yml          # Include spouse
+    - templates/components/dependents.yml      # Include dependents
+    
+    # Product component
+    - templates/products/medical-acroform.yml  # Medical-specific fields
+    
+    # Market component
+    - templates/markets/individual-acroform-v2.yml  # Individual market fields
+    
+    # State component
+    - templates/states/california-acroform-fields.yml  # CA compliance
+
+# FULL COMPOSITION HIERARCHY:
+# ├─ Base (28 fields)
+# │  ├─ company-info (5)
+# │  ├─ application-metadata (6)
+# │  ├─ primary-applicant (11)
+# │  └─ premium-payment (6)
+# ├─ Spouse (7 fields)
+# ├─ Dependents (20 fields)
+# ├─ Medical product (10 fields)
+# ├─ Individual market (5 fields)
+# └─ California state (10 fields)
+#
+# TOTAL: 80 field mappings from 10 component files!
+# Result: Full family enrollment form with complete coverage

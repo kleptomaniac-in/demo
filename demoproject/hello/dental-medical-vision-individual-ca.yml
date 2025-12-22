@@ -1,0 +1,21 @@
+# Triple product template: Dental + Medical + Vision
+
+composition:
+  base: templates/base-payer.yml
+  components:
+    - templates/products/dental.yml
+    - templates/products/medical.yml
+    - templates/products/vision.yml
+    - templates/markets/individual.yml
+    - templates/states/california.yml
+
+# Addendum generation configuration
+addendums:
+  dependents:
+    enabled: true         # Generate addendum for overflow dependents
+    maxInMainForm: 3      # Main form has space for 3 dependents
+  coverages:
+    enabled: true         # Generate addendum for overflow coverages
+    maxPerApplicant: 1    # Main form shows only 1 coverage per applicant
+
+# Complete benefits package for individual market in California with multi-product support
