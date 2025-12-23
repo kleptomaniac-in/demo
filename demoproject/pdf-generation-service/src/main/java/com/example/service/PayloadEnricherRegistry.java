@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.monitoring.PerformanceMonitoringContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,9 +16,12 @@ import java.util.Map;
 public class PayloadEnricherRegistry {
     
     private final Map<String, PayloadEnricher> enrichers = new HashMap<>();
+    private final PerformanceMonitoringContext performanceMonitor;
     
     @Autowired
-    public PayloadEnricherRegistry(List<PayloadEnricher> enricherList) {
+    public PayloadEnricherRegistry(List<PayloadEnricher> enricherList, 
+                                   PerformanceMonitoringContext performanceMonitor) {
+        this.performanceMonitor = performanceMonitor;
         if (enricherList != null) {
             for (PayloadEnricher enricher : enricherList) {
                 enrichers.put(enricher.getName(), enricher);
@@ -51,8 +55,14 @@ public class PayloadEnricherRegistry {
         
         if (enricherNames != null) {
             for (String enricherName : enricherNames) {
+                // Start timing for individual enricher
+                performanceMonitor.startPhase("Enricher: " + enricherName);
+                
                 PayloadEnricher enricher = getEnricher(enricherName);
                 enriched = enricher.enrich(enriched);
+                
+                // End timing for individual enricher
+                performanceMonitor.endPhase("Enricher: " + enricherName);
             }
         }
         

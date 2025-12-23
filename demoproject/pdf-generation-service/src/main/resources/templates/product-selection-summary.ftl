@@ -3,88 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        @page {
-            size: 8.5in 11in;
-            margin: 0;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            font-size: 11px;
-        }
-        h1 {
-            font-size: 20px;
-            color: #003366;
-            border-bottom: 2px solid #003366;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        h2 {
-            font-size: 16px;
-            color: #003366;
-            margin-top: 25px;
-            margin-bottom: 15px;
-        }
-        .summary-box {
-            background-color: #f5f5f5;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .summary-item {
-            margin: 10px 0;
-            display: flex;
-            justify-content: space-between;
-        }
-        .summary-label {
-            font-weight: bold;
-            color: #333;
-        }
-        .summary-value {
-            color: #666;
-        }
-        .product-section {
-            margin: 25px 0;
-            padding: 15px;
-            border-left: 4px solid #003366;
-            background-color: #fafafa;
-        }
-        .product-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: #003366;
-            margin-bottom: 10px;
-            text-transform: capitalize;
-        }
-        .price-total {
-            font-size: 18px;
-            font-weight: bold;
-            color: #003366;
-            text-align: right;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 2px solid #003366;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th {
-            background-color: #003366;
-            color: white;
-            padding: 10px;
-            text-align: left;
-            font-weight: bold;
-        }
-        td {
-            padding: 8px 10px;
-            border-bottom: 1px solid #ddd;
-        }
-        tr:hover {
-            background-color: #f9f9f9;
-        }
+        @page { size: 8.5in 11in; margin: 0; }
+        body { font-family: Arial, sans-serif; margin: 40px; font-size: 11px; }
+        h1, h2 { color: #003366; }
+        h1 { font-size: 20px; border-bottom: 2px solid #003366; padding-bottom: 10px; margin-bottom: 20px; }
+        h2 { font-size: 16px; margin: 25px 0 15px; }
+        .summary-box { background: #f5f5f5; border: 1px solid #ddd; border-radius: 5px; padding: 20px; margin: 20px 0; }
+        .summary-item { margin: 10px 0; display: flex; justify-content: space-between; }
+        .summary-label { font-weight: bold; color: #333; }
+        .summary-value { color: #666; }
+        .product-section { margin: 25px 0; padding: 15px; border-left: 4px solid #003366; background: #fafafa; }
+        .product-title { font-size: 14px; font-weight: bold; color: #003366; margin-bottom: 10px; text-transform: capitalize; }
+        .price-total { font: bold 18px Arial; color: #003366; text-align: right; margin-top: 20px; padding-top: 15px; border-top: 2px solid #003366; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #003366; color: white; padding: 10px; text-align: left; font-weight: bold; }
+        td { padding: 8px 10px; border-bottom: 1px solid #ddd; }
+        tr:hover { background: #f9f9f9; }
     </style>
 </head>
 <body>

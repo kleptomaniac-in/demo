@@ -1,0 +1,132 @@
+╔══════════════════════════════════════════════════════════════╗
+║          FREEMARKER CSS OPTIMIZATION - QUICK REFERENCE      ║
+╚══════════════════════════════════════════════════════════════╝
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 🚀 CREATING NEW TEMPLATES                                  ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  # Generate optimized template (automatically includes best practices)
+  ./generate-template.sh my-template <type>
+  
+  Types:
+    enrollment  → Full enrollment doc (summary boxes, tables, sections)
+    terms       → Legal/terms document (justified text, structured)
+    simple      → Basic template (minimal styling, table)
+    custom      → Foundation with style macros (add custom CSS)
+
+  Example:
+    $ ./generate-template.sh enrollment-summary enrollment
+    ✅ Created enrollment template: src/.../enrollment-summary.ftl
+    🚀 Expected performance: < 50ms per page
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 📚 USING STYLE LIBRARY (IN ANY TEMPLATE)                   ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  <#import "styles.ftl" as styles>
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="UTF-8">
+      <@styles.completeEnrollmentStyles />
+  </head>
+  <body>
+      <!-- Your content -->
+  </body>
+  </html>
+
+  Available macros:
+    @styles.completeEnrollmentStyles  → All enrollment components
+    @styles.minimalStyles             → Simple docs
+    @styles.termsStyles               → Legal documents
+    @styles.basePageStyles            → Page setup only
+    @styles.headingStyles             → Headings (h1, h2, h3)
+    @styles.tableStyles               → Tables
+    @styles.summaryBoxStyles          → Info/summary boxes
+    @styles.productSectionStyles      → Product sections
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ ✅ LINTING TEMPLATES                                        ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  # Check specific files
+  python3 lint-templates.py file1.ftl file2.ftl
+  
+  # Check all templates
+  python3 lint-templates.py --all
+  
+  Checks for:
+    ❌ ERROR    position: fixed usage (10-30x slower!)
+    ⚠️  WARNING  Verbose margin/padding (use shorthand)
+    ⚠️  WARNING  CSS > 50 lines (use style macros)
+    ℹ️  INFO     Using background-color vs background
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 📏 CSS BEST PRACTICES                                       ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  ✅ DO:
+    h1, h2 { color: #003366; }            /* Consolidated */
+    margin: 20px 0;                       /* Shorthand */
+    background: #f5f5f5;                  /* Shorthand */
+    .footer { margin-top: 200px; }        /* Simple layout */
+
+  ❌ DON'T:
+    h1 { color: #003366; }                /* Repetitive */
+    h2 { color: #003366; }
+    margin-top: 20px;                     /* Longhand */
+    margin-bottom: 0;
+    background-color: #f5f5f5;            /* Longhand */
+    .footer { position: fixed; }          /* 10-30x SLOWER! */
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 📊 PERFORMANCE TARGETS                                      ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  Target metrics for all templates:
+    • Render time:  < 50ms per page (warm cache)
+    • CSS lines:    < 20 lines (ideally use macros)
+    • Linter:       Zero errors
+    • Selectors:    < 170 (automatic with optimized CSS)
+
+  Proven results:
+    enrollment-cover:           543ms → 13ms  (97.6% faster)
+    product-selection-summary:  200ms → 20ms  (90% faster)
+    terms-and-conditions:       100ms → 22ms  (78% faster)
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 🔄 WORKFLOW                                                 ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  NEW TEMPLATE:
+    1. Generate:  ./generate-template.sh my-doc enrollment
+    2. Edit:      Add your content/data bindings
+    3. Lint:      python3 lint-templates.py my-doc.ftl
+    4. Test:      Verify < 50ms in performance logs
+    5. Commit:    ✅ Ready to deploy
+
+  EXISTING TEMPLATE:
+    1. Import:    <#import "styles.ftl" as styles>
+    2. Replace:   <@styles.completeEnrollmentStyles />
+    3. Lint:      python3 lint-templates.py my-doc.ftl
+    4. Test:      Verify performance improved
+    5. Commit:    ✅ Optimized
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 📖 DOCUMENTATION                                            ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  Complete guides:
+    • docs/FREEMARKER_STYLE_GUIDE.md         (Best practices)
+    • CSS_AUTOMATION.md                      (Tool reference)
+    • docs/CSS_OPTIMIZATION_IMPLEMENTATION.md (How it works)
+    
+  Files:
+    • src/main/resources/templates/styles.ftl (Style library)
+    • generate-template.sh                    (Generator)
+    • lint-templates.py                       (Linter)
+
+╔══════════════════════════════════════════════════════════════╗
+║  🎯 REMEMBER: Use tools → Zero manual CSS optimization!     ║
+╚══════════════════════════════════════════════════════════════╝

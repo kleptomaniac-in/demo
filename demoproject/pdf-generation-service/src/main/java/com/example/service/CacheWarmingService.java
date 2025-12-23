@@ -231,8 +231,24 @@ public class CacheWarmingService {
         String patterns = properties.getFreemarkerPatterns();
         log.info("Discovering FreeMarker template files with patterns: {}", patterns);
         
+        // Scan both config-repo and classpath templates
+        List<String> templateFiles = new ArrayList<>();
+        
+        // Scan config-repo templates
         String templatesPath = configRepoPath + "/templates";
-        List<String> templateFiles = discoverFiles(templatesPath, patterns, ".ftl");
+        templateFiles.addAll(discoverFiles(templatesPath, patterns, ".ftl"));
+        
+        // Scan classpath templates (src/main/resources/templates)
+        try {
+            ClassLoader classLoader = getClass().getClassLoader();
+            Path resourceTemplates = Paths.get(classLoader.getResource("templates").toURI());
+            if (Files.exists(resourceTemplates)) {
+                templateFiles.addAll(discoverFiles(resourceTemplates.toString(), patterns, ".ftl"));
+            }
+        } catch (Exception e) {
+            log.debug("Could not scan classpath templates: {}", e.getMessage());
+        }
+        
         log.info("Discovered {} FreeMarker template files matching patterns", templateFiles.size());
         
         if (templateFiles.isEmpty()) {

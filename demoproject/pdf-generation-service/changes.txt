@@ -1,0 +1,17 @@
+        new file:   demoproject/pdf-generation-service/CSS_AUTOMATION.md
+        new file:   demoproject/pdf-generation-service/QUICK_REFERENCE.txt
+        new file:   demoproject/pdf-generation-service/docs/CSS_OPTIMIZATION_IMPLEMENTATION.md
+        new file:   demoproject/pdf-generation-service/docs/FREEMARKER_STYLE_GUIDE.md
+        new file:   demoproject/pdf-generation-service/generate-template.sh
+        new file:   demoproject/pdf-generation-service/lint-templates.py
+        modified:   demoproject/pdf-generation-service/src/main/java/com/example/service/CacheWarmingService.java
+        modified:   demoproject/pdf-generation-service/src/main/java/com/example/service/PayloadEnricherRegistry.java
+        modified:   demoproject/pdf-generation-service/src/main/resources/templates/additional-dependents-addendum.ftl
+        modified:   demoproject/pdf-generation-service/src/main/resources/templates/enrollment-cover.ftl
+        modified:   demoproject/pdf-generation-service/src/main/resources/templates/product-selection-summary.ftl
+        new file:   demoproject/pdf-generation-service/src/main/resources/templates/styles.ftl
+        modified:   demoproject/pdf-generation-service/src/main/resources/templates/terms-and-conditions.ftl
+        new file:   demoproject/pdf-generation-service/src/main/resources/templates/test-enrollment.ftl
+        new file:   demoproject/pdf-generation-service/testme.txt
+        new file:   output/enrollment-complex.pdf
+        new file:   output/enrollment-multi-template-test.pdf

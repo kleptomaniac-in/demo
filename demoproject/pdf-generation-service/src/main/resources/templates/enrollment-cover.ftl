@@ -3,46 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        @page {
-            size: 8.5in 11in;  /* US Letter explicit dimensions */
-            margin: 0;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-        }
-        .cover-page {
-            text-align: center;
-            padding-top: 150px;
-        }
-        h1 {
-            font-size: 36px;
-            color: #003366;
-            margin-bottom: 20px;
-        }
-        h2 {
-            font-size: 24px;
-            color: #666;
-            margin-bottom: 40px;
-        }
-        .application-info {
-            margin-top: 100px;
-            font-size: 18px;
-            line-height: 2;
-        }
-        .label {
-            font-weight: bold;
-            color: #003366;
-        }
-        .footer {
-            position: fixed;
-            bottom: 40px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 12px;
-            color: #999;
-        }
+        @page { size: 8.5in 11in; margin: 0; }
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .cover-page { text-align: center; padding: 150px 0 0; }
+        .cover-page h1 { font-size: 36px; color: #003366; margin: 0 0 20px; }
+        .cover-page h2 { font-size: 24px; color: #666; margin: 0 0 40px; }
+        .application-info { margin: 100px 0 0; font-size: 18px; line-height: 2; }
+        .label { font-weight: bold; color: #003366; }
+        .footer { margin-top: 200px; text-align: center; font-size: 12px; color: #999; }
     </style>
 </head>
 <body>

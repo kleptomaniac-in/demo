@@ -3,48 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-            border-bottom: 3px solid #0066cc;
-            padding-bottom: 10px;
-        }
-        h2 {
-            color: #0066cc;
-            margin-top: 30px;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 20px 0;
-        }
-        th {
-            background-color: #0066cc;
-            color: white;
-            padding: 12px;
-            text-align: left;
-            font-weight: bold;
-        }
-        td {
-            border: 1px solid #ddd;
-            padding: 10px;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .info-section {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #f0f8ff;
-            border-left: 4px solid #0066cc;
-        }
-        .page-break {
-            page-break-after: always;
-        }
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1, h2 { color: #0066cc; }
+        h1 { text-align: center; color: #333; border-bottom: 3px solid #0066cc; padding-bottom: 10px; }
+        h2 { margin-top: 30px; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th { background: #0066cc; color: white; padding: 12px; text-align: left; font-weight: bold; }
+        td { border: 1px solid #ddd; padding: 10px; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .info-section { margin: 20px 0; padding: 15px; background: #f0f8ff; border-left: 4px solid #0066cc; }
+        .page-break { page-break-after: always; }
     </style>
 </head>
 <body>
